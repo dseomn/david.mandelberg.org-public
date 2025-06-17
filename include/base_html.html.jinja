@@ -13,11 +13,13 @@
   {% set write_caller = caller %}
   {% call ginjarator.fs.write_text_macro(paths.from_url_path(url_path)) -%}
     <!doctype html>
-    <html>
+    <html dir="ltr" lang="en-US">
       <head>
+        <meta charset="utf-8">
         <title>
           {{- (title, "David Mandelberg") | reject("none") | join(" — ") | e -}}
         </title>
+        <meta name="viewport" content="width=device-width">
       </head>
       <body>
         <main>
