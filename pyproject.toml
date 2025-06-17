@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[tool.black]
+line-length = 80
+
+[tool.coverage.run]
+omit = [
+  "**/*_test.py",
+]
+
+[tool.isort]
+profile = "google"
+skip_gitignore = true
+src_paths = ["src"]
+
+[tool.mypy]
+disallow_any_generics = true
+disallow_untyped_defs = true
+mypy_path = ["$MYPY_CONFIG_FILE_DIR/src"]
+packages = ["dseomn_website"]
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+addopts = """\
+  --cov=. \
+  --cov-branch \
+  --cov-report=term-missing \
+  """
