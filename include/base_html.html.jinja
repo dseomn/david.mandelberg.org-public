@@ -1,0 +1,29 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% set paths = ginjarator.py.import_("dseomn_website.paths") %}
+
+{% macro write(
+  url_path,
+  title
+) %}
+  {% set write_caller = caller %}
+  {% call ginjarator.fs.write_text_macro(paths.from_url_path(url_path)) -%}
+    <!doctype html>
+    <html>
+      <head>
+        <title>
+          {{- (title, "David Mandelberg") | reject("none") | join(" — ") | e -}}
+        </title>
+      </head>
+      <body>
+        <main>
+          {{ write_caller() }}
+        </main>
+      </body>
+    </html>
+  {% endcall %}
+{% endmacro %}

@@ -3,5 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 /.coverage
+/.ninja_log
+/build.ninja
+/output/
 
 __pycache__/

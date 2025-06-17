@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+source_paths = [
+  "include",
+  "src",
+  "standalone",
+]
+build_paths = [
+  "output",
+]
+python_paths = [
+  "src",
+]
+templates = [
+  "standalone/about/index.html.jinja",
+]

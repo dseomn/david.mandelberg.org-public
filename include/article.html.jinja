@@ -1,0 +1,20 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% import "include/base_html.html.jinja" as base_html %}
+
+{% macro standalone(
+  url_path,
+  title
+) %}
+  {% set standalone_caller = caller %}
+  {% call base_html.write(url_path=url_path, title=title) %}
+    <article>
+      <h1>{{ title | e }}</h1>
+      {{ standalone_caller() }}
+    </article>
+  {% endcall %}
+{% endmacro %}
