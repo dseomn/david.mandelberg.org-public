@@ -1,0 +1,59 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% set rules %}
+rule cache_buster_hash
+  command = $
+    ./src/dseomn_website/cache_buster.py $
+    hash $
+    --dyndep=$work_prefix.dd $
+    --write-filename=$work_prefix $
+    --prefix=$prefix $
+    --suffix=$suffix $
+    $in
+  description = HASH $in
+
+rule cache_buster_copy
+  command = $
+    ./src/dseomn_website/cache_buster.py $
+    copy $
+    --read-filename=$work_prefix $
+    $in
+  description = COPY $in
+{% endset %}
+
+{% macro build(
+  to_hash,
+  work_prefix,
+  prefix,
+  suffix
+) %}
+build $
+    {{ ginjarator.to_ninja(work_prefix) }} $
+    | $
+    {{ ginjarator.to_ninja(work_prefix) }}.dd $
+    : $
+    cache_buster_hash $
+    {{ ginjarator.to_ninja(to_hash) }} $
+    | $
+    src/dseomn_website/cache_buster.py
+  work_prefix = {{ ginjarator.to_ninja(work_prefix, escape_shell=true) }}
+  prefix = {{ ginjarator.to_ninja(prefix, escape_shell=true) }}
+  suffix = {{ ginjarator.to_ninja(suffix, escape_shell=true) }}
+
+build $
+    {{ ginjarator.to_ninja(work_prefix) }}.copy-stamp $
+    : $
+    cache_buster_copy $
+    {{ ginjarator.to_ninja(to_hash) }} $
+    | $
+    {{ ginjarator.to_ninja(work_prefix) }} $
+    src/dseomn_website/cache_buster.py $
+    || $
+    {{ ginjarator.to_ninja(work_prefix) }}.dd
+  dyndep = {{ ginjarator.to_ninja(work_prefix) }}.dd
+  work_prefix = {{ ginjarator.to_ninja(work_prefix, escape_shell=true) }}
+{% endmacro %}
