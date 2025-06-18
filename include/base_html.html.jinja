@@ -8,6 +8,8 @@
 
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
+{% set site_title = "David Mandelberg" %}
+
 {% macro write(
   url_path,
   title
@@ -18,12 +20,21 @@
       <head>
         <meta charset="utf-8">
         <title>
-          {{- (title, "David Mandelberg") | reject("none") | join(" — ") | e -}}
+          {{- (title, site_title) | reject("none") | join(" — ") | e -}}
         </title>
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="/main.css">
       </head>
       <body>
+        <header>
+          {% if url_path == "/" %}
+            {% do ginjarator.py.assert_(title is none) %}
+            <h1 class="h1">{{ site_title | e }}</h1>
+          {% else %}
+            {% do ginjarator.py.assert_(title is not none) %}
+            <p class="h1"><a href="/">{{ site_title | e }}</a></p>
+          {% endif %}
+        </header>
         <main>
           {{ caller() }}
         </main>
