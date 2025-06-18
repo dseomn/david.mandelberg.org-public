@@ -15,6 +15,8 @@ def from_url_path(
     """Returns an fs path from a url path."""
     if not url_path.startswith("/"):
         raise NotImplementedError("Relative url paths are not supported.")
+    elif url_path == "/":
+        return OUTPUT / dir_index
     relative = url_path.removeprefix("/")
     if relative.endswith("/"):
         return OUTPUT / relative / dir_index

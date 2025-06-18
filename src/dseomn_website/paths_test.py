@@ -17,6 +17,7 @@ def test_from_url_path_error() -> None:
 @pytest.mark.parametrize(
     "url_path,expected",
     (
+        ("/", "output/index.html"),
         ("/foo/", "output/foo/index.html"),
         ("/foo", "output/foo"),
     ),
