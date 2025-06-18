@@ -4,6 +4,10 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% import "include/cache_buster.ninja.jinja" as cache_buster %}
+
+{{ cache_buster.rules }}
+
 rule lessc
   # TODO: https://github.com/less/less.js/issues/2925 - Run lessc once.
   command = lessc --depends $in $out > $out.d && lessc $in $out
@@ -20,4 +24,10 @@ rule minify
 
 build work/css/compiled.css | work/css/compiled.css.d: lessc css/main.less
 build work/css/postcss.css: postcss work/css/compiled.css | css/postcss.config.js
-build output/main.css: minify work/css/postcss.css
+build work/css/main.css: minify work/css/postcss.css
+{{ cache_buster.build(
+  to_hash="work/css/main.css",
+  work_prefix="work/css/main.css.cache-buster",
+  prefix="output/css/main",
+  suffix=".css",
+) }}
