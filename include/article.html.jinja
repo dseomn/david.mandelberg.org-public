@@ -4,17 +4,26 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% set headings = ginjarator.py.import_("dseomn_website.headings") %}
+
 {% import "include/base_html.html.jinja" as base_html %}
+
+{% macro _fragment(
+  title,
+  contents
+) %}
+  <article>
+    <h1>{{ title | e }}</h1>
+    {{ contents }}
+  </article>
+{% endmacro %}
 
 {% macro standalone(
   url_path,
   title
 ) %}
-  {% set standalone_caller = caller %}
+  {% set fragment = _fragment(title=title, contents=caller()) %}
   {% call base_html.write(url_path=url_path, title=title) %}
-    <article>
-      <h1>{{ title | e }}</h1>
-      {{ standalone_caller() }}
-    </article>
+    {{ headings.article(fragment) }}
   {% endcall %}
 {% endmacro %}
