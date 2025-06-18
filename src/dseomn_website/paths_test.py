@@ -24,3 +24,20 @@ def test_from_url_path_error() -> None:
 )
 def test_from_url_path(url_path: str, expected: str) -> None:
     assert paths.from_url_path(url_path) == pathlib.PurePath(expected)
+
+
+def test_to_url_path_error() -> None:
+    with pytest.raises(ValueError, match="not in"):
+        paths.to_url_path("foo")
+
+
+@pytest.mark.parametrize(
+    "path,expected",
+    (
+        ("output/index.html", "/"),
+        ("output/foo/index.html", "/foo/"),
+        ("output/foo", "/foo"),
+    ),
+)
+def test_to_url_path(path: str, expected: str) -> None:
+    assert paths.to_url_path(path) == expected
