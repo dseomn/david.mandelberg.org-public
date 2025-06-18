@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 /.coverage
+/.ninja_deps
 /.ninja_log
 /build.ninja
 /output/
