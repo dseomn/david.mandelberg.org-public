@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euxo pipefail
+
+python3 -m http.server --bind localhost --directory output 19265
