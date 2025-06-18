@@ -34,6 +34,22 @@
             {% do ginjarator.py.assert_(title is not none) %}
             <p class="h1"><a href="/">{{ site_title | e }}</a></p>
           {% endif %}
+          <nav>
+            <ul>
+              {% for nav_url_path, nav_title in (
+                ("/about/", "About"),
+              ) %}
+                {% if nav_url_path == url_path %}
+                  {% do ginjarator.py.assert_(nav_title == title) %}
+                  <li>{{ nav_title | e }}</li>
+                {% else %}
+                  <li>
+                    <a href="{{ nav_url_path | e }}">{{ nav_title | e }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </nav>
         </header>
         <main>
           {{ caller() }}
