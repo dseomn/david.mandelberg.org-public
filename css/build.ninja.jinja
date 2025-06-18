@@ -1,0 +1,23 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+rule lessc
+  # TODO: https://github.com/less/less.js/issues/2925 - Run lessc once.
+  command = lessc --depends $in $out > $out.d && lessc $in $out
+  depfile = $out.d
+  description = LESSC $in
+
+rule postcss
+  command = postcss $in --config css --output $out
+  description = POSTCSS $in
+
+rule minify
+  command = minify --output $out --type=css $in
+  description = MINIFY $in
+
+build work/css/compiled.css | work/css/compiled.css.d: lessc css/main.less
+build work/css/postcss.css: postcss work/css/compiled.css | css/postcss.config.js
+build output/main.css: minify work/css/postcss.css

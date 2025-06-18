@@ -3,15 +3,20 @@
 # SPDX-License-Identifier: Apache-2.0
 
 source_paths = [
+  "css",
   "include",
   "src",
   "standalone",
 ]
 build_paths = [
   "output",
+  "work",
 ]
 python_paths = [
   "src",
+]
+ninja_templates = [
+  "css/build.ninja.jinja",
 ]
 templates = [
   "standalone/about/index.html.jinja",
