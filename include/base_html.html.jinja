@@ -32,30 +32,34 @@
         {% endif %}
       </head>
       <body>
-        <header>
-          {% if url_path == "/" %}
-            {% do ginjarator.py.assert_(title is none) %}
-            <h1 class="h1">{{ site_title | e }}</h1>
-          {% else %}
-            {% do ginjarator.py.assert_(title is not none) %}
-            <p class="h1"><a href="/">{{ site_title | e }}</a></p>
-          {% endif %}
-          <nav>
-            <ul>
-              {% for nav_url_path, nav_title in (
-                ("/about/", "About"),
-              ) %}
-                {% if nav_url_path == url_path %}
-                  {% do ginjarator.py.assert_(nav_title == title) %}
-                  <li>{{ nav_title | e }}</li>
-                {% else %}
-                  <li>
-                    <a href="{{ nav_url_path | e }}">{{ nav_title | e }}</a>
-                  </li>
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </nav>
+        <header class="site-header">
+          <div class="site-header-inner">
+            {% if url_path == "/" %}
+              {% do ginjarator.py.assert_(title is none) %}
+              <h1 class="h1 site-header-title">{{ site_title | e }}</h1>
+            {% else %}
+              {% do ginjarator.py.assert_(title is not none) %}
+              <p class="h1 site-header-title">
+                <a href="/">{{ site_title | e }}</a>
+              </p>
+            {% endif %}
+            <nav>
+              <ul class="site-header-nav-list">
+                {% for nav_url_path, nav_title in (
+                  ("/about/", "About"),
+                ) %}
+                  {% if nav_url_path == url_path %}
+                    {% do ginjarator.py.assert_(nav_title == title) %}
+                    <li>{{ nav_title | e }}</li>
+                  {% else %}
+                    <li>
+                      <a href="{{ nav_url_path | e }}">{{ nav_title | e }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </nav>
+          </div>
         </header>
         <main>
           {{ caller() }}

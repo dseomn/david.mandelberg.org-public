@@ -2,8 +2,30 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+.section-outer() {
+  background: Canvas;
+  display: flow-root;
+  margin-block: 1em;
+}
+
+.section-inner() {
+  margin-inline: auto;
+  max-inline-size: 60em;
+  padding: 1em;
+}
+
+.section() {
+  .section-outer();
+  .section-inner();
+}
+
 :root {
+  background: color-mix(in srgb, Canvas 95%, CanvasText);
   color-scheme: light dark;
+}
+
+body {
+  margin: 0;
 }
 
 // On the homepage, the site title in the <header> is an <h1> because it's the
@@ -43,4 +65,38 @@
   margin-block: 2.33em;
   font-size: 0.67em;
   font-weight: bold;
+}
+
+.site-header {
+  .section-outer();
+  margin-block-start: 0;
+}
+
+.site-header-inner {
+  .section-inner();
+  align-items: baseline;
+  display: flex;
+  flex-flow: wrap;
+  gap: 1em 10em;
+  justify-content: space-between;
+}
+
+.site-header-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.site-header-nav-list {
+  display: flex;
+  flex-flow: wrap;
+  font-weight: bold;
+  gap: 1em 2em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.article {
+  .section();
 }
