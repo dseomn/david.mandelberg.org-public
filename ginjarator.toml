@@ -3,8 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 source_paths = [
+  "../private/media",
   "css",
   "include",
+  "media",
   "src",
   "standalone",
 ]
@@ -17,6 +19,7 @@ python_paths = [
 ]
 ninja_templates = [
   "css/build.ninja.jinja",
+  "media/build.ninja.jinja",
 ]
 templates = [
   "standalone/about/index.html.jinja",

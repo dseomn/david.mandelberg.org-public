@@ -9,6 +9,8 @@
 {% set headings = ginjarator.py.import_("dseomn_website.headings") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
+{% import "include/media.jinja" as media %}
+
 {% set site_title = "David Mandelberg" %}
 
 {% macro write(
@@ -30,6 +32,18 @@
         {% if main_css is not none %}
           <link rel="stylesheet" href="{{ paths.to_url_path(main_css) | e }}">
         {% endif %}
+        {% call(url_path, metadata) media.image_for_each(
+          media.favicon,
+          conversions=media.image_profiles.favicon,
+        ) %}
+          {% set geometry = metadata.geometry %}
+          <link
+              rel="icon"
+              href="{{ url_path | e }}"
+              type="{{ metadata.mimeType | e }}"
+              sizes="{{ geometry.width }}x{{ geometry.height }}"
+              >
+        {% endcall %}
       </head>
       <body>
         <header class="site-header">

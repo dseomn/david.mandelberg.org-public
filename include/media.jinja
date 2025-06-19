@@ -1,0 +1,56 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% set json = ginjarator.py.import_("json") %}
+
+{% set paths = ginjarator.py.import_("dseomn_website.paths") %}
+
+{#
+ # Map from image use case to the conversions that should be done to the image.
+ # Favicon sizes are from
+ # https://blog.hubspot.com/website/what-is-a-favicon#size
+ #}
+{% set image_profiles = {
+  "favicon": (
+    "16x16.png",
+    "32x32.png",
+    "96x96.png",
+    "180x180.png",
+    "300x300.png",
+    "512x512.png",
+  ),
+} %}
+
+{% macro image_filename(original_filename, conversion) -%}
+  {%- set without_private = original_filename.removeprefix("../private/") -%}
+  {%- set without_suffix, _ = without_private.rsplit(".", 1) -%}
+  work/{{ without_suffix }}-{{ conversion }}
+{%- endmacro %}
+
+{#
+ # For each converted output, calls the caller back with the url path and
+ # metadata.
+ #}
+{% macro image_for_each(original_filename, conversions) %}
+  {% for conversion in conversions %}
+    {% set work_filename = image_filename(
+      original_filename,
+      conversion=conversion,
+    ) %}
+    {% set metadata_json = ginjarator.fs.read_text(work_filename + ".json") %}
+    {% set out_filename = ginjarator.fs.read_text(
+      work_filename + ".cache-buster",
+    ) %}
+    {% if metadata_json is not none and out_filename is not none %}
+      {{ caller(
+        url_path=paths.to_url_path(out_filename),
+        metadata=json.loads(metadata_json),
+      ) }}
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% set favicon = "../private/media/P1230630-raw-crop-square.jpg" %}

@@ -1,0 +1,64 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% import "include/cache_buster.ninja.jinja" as cache_buster %}
+{% import "include/media.jinja" as media %}
+
+{{ cache_buster.rules }}
+
+rule image_convert
+  command = magick $in $args $out
+  description = CONVERT $in ($conversion)
+
+rule image_metadata
+  command = magick -define json:version=1.0 $in json:- | jq '.[0].image' > $out
+  description = METADATA $in
+
+{# Map from source image and output directory to conversions to do. #}
+{% set image_conversions = {} %}
+{% do image_conversions.setdefault(
+  (media.favicon, "output/media"),
+  [],
+).extend(media.image_profiles.favicon) %}
+
+{% for (original_filename, out_dir), conversions in image_conversions.items() %}
+{% for conversion in conversions | unique(case_sensitive=true) %}
+{% set converted_filename = media.image_filename(
+  original_filename,
+  conversion=conversion,
+) %}
+{% set _, converted_basename = converted_filename.rsplit("/", 1) %}
+{% set converted_stem, converted_suffix = converted_basename.rsplit(".", 1) %}
+build $
+    {{ ginjarator.to_ninja(converted_filename) }} $
+    : $
+    image_convert $
+    {{ ginjarator.to_ninja(original_filename) }}
+  args = {{ ginjarator.to_ninja(
+    {
+      "16x16.png": ("-resize", "16x16>"),
+      "32x32.png": ("-resize", "32x32>"),
+      "96x96.png": ("-resize", "96x96>"),
+      "180x180.png": ("-resize", "180x180>"),
+      "300x300.png": ("-resize", "300x300>"),
+      "512x512.png": ("-resize", "512x512>"),
+    }[conversion],
+    escape_shell=true,
+  ) }}
+  conversion = {{ ginjarator.to_ninja(conversion) }}
+build $
+    {{ ginjarator.to_ninja(converted_filename) }}.json $
+    : $
+    image_metadata $
+    {{ ginjarator.to_ninja(converted_filename) }}
+{{ cache_buster.build(
+  to_hash=converted_filename,
+  work_prefix=converted_filename + ".cache-buster",
+  prefix=out_dir + "/" + converted_stem + "-",
+  suffix="." + converted_suffix,
+) }}
+{% endfor %}
+{% endfor %}
