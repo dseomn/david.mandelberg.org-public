@@ -28,6 +28,6 @@ build work/css/main.css: minify work/css/postcss.css
 {{ cache_buster.build(
   to_hash="work/css/main.css",
   work_prefix="work/css/main.css.cache-buster",
-  prefix="output/css/main",
+  prefix="output/css/main-",
   suffix=".css",
 ) }}
