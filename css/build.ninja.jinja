@@ -15,7 +15,7 @@ rule lessc
   description = LESSC $in
 
 rule postcss
-  command = postcss $in --config css --output $out
+  command = postcss $in --config css > $out
   description = POSTCSS $in
 
 rule minify
