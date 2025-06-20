@@ -15,3 +15,7 @@ pytest
 
 ninja
 ninja -t cleandead
+
+htmlproofer \
+  --check-favicon \
+  output
