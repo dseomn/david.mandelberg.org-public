@@ -70,7 +70,7 @@
                 ) %}
                   {% if nav_url_path == url_path %}
                     {% do ginjarator.py.assert_(nav_title == title) %}
-                    <li>{{ nav_title | e }}</li>
+                    <li aria-current="page">{{ nav_title | e }}</li>
                   {% else %}
                     <li>
                       <a href="{{ nav_url_path | e }}">{{ nav_title | e }}</a>
