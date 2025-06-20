@@ -26,6 +26,7 @@
 {% endmacro %}
 
 {% macro _post_fragment(
+  link,
   published,
   title,
   author,
@@ -33,7 +34,13 @@
 ) %}
   <article class="article">
     <header class="article-header">
-      <h1 class="article-header-title">{{ title | e }}</h1>
+      <h1 class="article-header-title">
+        {% if link is none %}
+          {{ title | e }}
+        {% else %}
+          <a rel="bookmark" href="{{ link | e }}">{{ title | e }}</a>
+        {% endif %}
+      </h1>
       <p class="article-header-metadata">
         Posted on
         <time>{{ published.isoformat(sep=" ", timespec="seconds") | e }}</time>
@@ -52,10 +59,12 @@
 ) %}
   {% set published = datetime.datetime.fromisoformat(published) %}
   {% set url_path = published.strftime("/%Y/%m/%d/") + slug + "/" %}
+  {% set work_path = published.strftime("work/posts/%Y-%m-%d-") + slug %}
   {% set contents = caller() %}
   {% call base_html.write(url_path=url_path, title=title) %}
     {{ headings.article(
       _post_fragment(
+        link=none,
         published=published,
         title=title,
         author=author,
@@ -63,4 +72,17 @@
       ),
     ) }}
   {% endcall %}
+  {% do ginjarator.fs.write_text(
+    work_path + "/include-fragment.html",
+    headings.article(
+      _post_fragment(
+        link=url_path,
+        published=published,
+        title=title,
+        author=author,
+        contents=contents,
+      ),
+      offset=1,
+    ),
+  ) %}
 {% endmacro %}
