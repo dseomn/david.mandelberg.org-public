@@ -25,16 +25,15 @@
 
 {% macro write(
   url_path,
-  title
+  title,
+  site_title_is_h1=false
 ) %}
   {% set contents -%}
     <!doctype html>
     <html dir="ltr" lang="en-US">
       <head>
         <meta charset="utf-8">
-        <title>
-          {{- (title, site_title) | reject("none") | join(" — ") | e -}}
-        </title>
+        <title>{{ title | e }} — {{ site_title | e }}</title>
         <meta name="viewport" content="width=device-width">
         {% set main_css = ginjarator.fs.read_text(
           "work/css/main.css.cache-buster"
@@ -58,18 +57,15 @@
       <body>
         <header class="site-header">
           <div class="site-header-inner">
-            {% if url_path == "/" %}
-              {% do ginjarator.py.assert_(title is none) %}
+            {% if site_title_is_h1 %}
               <h1 class="h1 site-header-title">{{ site_title | e }}</h1>
             {% else %}
-              {% do ginjarator.py.assert_(title is not none) %}
-              <p class="h1 site-header-title">
-                <a href="/">{{ site_title | e }}</a>
-              </p>
+              <p class="h1 site-header-title">{{ site_title | e }}</p>
             {% endif %}
             <nav>
               <ul class="site-header-nav-list">
                 {% for nav_url_path, nav_title in (
+                  ("/", "Blog"),
                   ("/about/", "About"),
                 ) %}
                   {% if nav_url_path == url_path %}
