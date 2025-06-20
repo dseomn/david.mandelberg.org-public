@@ -74,7 +74,7 @@ def test_article() -> None:
             "<!doctype html><body><h6>foo</h6></body>",
             r"does not have a heading class",
         ),
-        ('<h1 class="h1 h2">foo</h1>', r"has multiple heading classs"),
+        ('<h1 class="h1 h2">foo</h1>', r"has multiple heading classes"),
     ),
 )
 def test_lint_error(html: str, error_regex: str) -> None:

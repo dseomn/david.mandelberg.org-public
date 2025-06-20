@@ -24,5 +24,5 @@ def lint(html: str, /) -> None:
             raise ValueError(f"{element.tag} does not have a heading class.")
         elif len(heading_classes) > 1:
             raise ValueError(
-                f"{element.tag} has multiple heading classs: {heading_classes}"
+                f"{element.tag} has multiple heading classes: {heading_classes}"
             )
