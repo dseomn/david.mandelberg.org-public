@@ -24,5 +24,16 @@ ninja_templates = [
 ]
 templates = [
   "posts/2024-06-01-placeholder/index.html.jinja",
+  "posts/2024-07-01-placeholder/index.html.jinja",
+  "posts/2024-08-01-placeholder/index.html.jinja",
+  "posts/2024-09-01-placeholder/index.html.jinja",
+  "posts/2024-10-01-placeholder/index.html.jinja",
+  "posts/2024-11-01-placeholder/index.html.jinja",
+  "posts/2024-12-01-placeholder/index.html.jinja",
+  "posts/2025-01-01-placeholder/index.html.jinja",
+  "posts/2025-02-01-placeholder/index.html.jinja",
+  "posts/2025-03-01-placeholder/index.html.jinja",
+  "posts/2025-04-01-placeholder/index.html.jinja",
+  "posts/2025-05-01-placeholder/index.html.jinja",
   "standalone/about/index.html.jinja",
 ]
