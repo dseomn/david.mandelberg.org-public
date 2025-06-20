@@ -35,5 +35,6 @@ templates = [
   "posts/2025-03-01-placeholder/index.html.jinja",
   "posts/2025-04-01-placeholder/index.html.jinja",
   "posts/2025-05-01-placeholder/index.html.jinja",
+  "posts/lists.html.jinja",
   "standalone/about/index.html.jinja",
 ]

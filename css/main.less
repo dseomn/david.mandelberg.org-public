@@ -19,6 +19,12 @@
   .section-inner();
 }
 
+.pseudo-section() {
+  .section();
+  background: unset;
+  padding-block: 0;
+}
+
 :root {
   background: color-mix(in srgb, Canvas 95%, CanvasText);
   color-scheme: light dark;
@@ -95,6 +101,32 @@ body {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.list-header {
+  .pseudo-section();
+}
+
+.list-footer {
+  .pseudo-section();
+}
+
+.pagination-list {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination-item {
+  display: flow-root;
+  padding-block: 0.2em;
+}
+
+.pagination-item-page {
+  padding-inline: 0.5em;
 }
 
 .article {
