@@ -7,6 +7,7 @@ source_paths = [
   "css",
   "include",
   "media",
+  "posts",
   "src",
   "standalone",
 ]
@@ -22,5 +23,6 @@ ninja_templates = [
   "media/build.ninja.jinja",
 ]
 templates = [
+  "posts/2024-06-01-placeholder/index.html.jinja",
   "standalone/about/index.html.jinja",
 ]

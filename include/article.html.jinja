@@ -4,6 +4,8 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% set datetime = ginjarator.py.import_("datetime") %}
+
 {% set headings = ginjarator.py.import_("dseomn_website.headings") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
@@ -20,5 +22,45 @@
   {% endset %}
   {% call base_html.write(url_path=url_path, title=title) %}
     {{ headings.article(fragment) }}
+  {% endcall %}
+{% endmacro %}
+
+{% macro _post_fragment(
+  published,
+  title,
+  author,
+  contents
+) %}
+  <article class="article">
+    <header class="article-header">
+      <h1 class="article-header-title">{{ title | e }}</h1>
+      <p class="article-header-metadata">
+        Posted on
+        <time>{{ published.isoformat(sep=" ", timespec="seconds") | e }}</time>
+        by {{ author | e }}.
+      </p>
+    </header>
+    {{ contents }}
+  </article>
+{% endmacro %}
+
+{% macro post(
+  published,
+  slug,
+  title,
+  author="David Mandelberg"
+) %}
+  {% set published = datetime.datetime.fromisoformat(published) %}
+  {% set url_path = published.strftime("/%Y/%m/%d/") + slug + "/" %}
+  {% set contents = caller() %}
+  {% call base_html.write(url_path=url_path, title=title) %}
+    {{ headings.article(
+      _post_fragment(
+        published=published,
+        title=title,
+        author=author,
+        contents=contents,
+      ),
+    ) }}
   {% endcall %}
 {% endmacro %}
