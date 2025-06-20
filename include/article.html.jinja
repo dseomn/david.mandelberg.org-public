@@ -8,21 +8,16 @@
 
 {% import "include/base_html.html.jinja" as base_html %}
 
-{% macro _fragment(
-  title,
-  contents
-) %}
-  <article class="article">
-    <h1>{{ title | e }}</h1>
-    {{ contents }}
-  </article>
-{% endmacro %}
-
 {% macro standalone(
   url_path,
   title
 ) %}
-  {% set fragment = _fragment(title=title, contents=caller()) %}
+  {% set fragment %}
+    <article class="article">
+      <h1>{{ title | e }}</h1>
+      {{ caller() }}
+    </article>
+  {% endset %}
   {% call base_html.write(url_path=url_path, title=title) %}
     {{ headings.article(fragment) }}
   {% endcall %}
