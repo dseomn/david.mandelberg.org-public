@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+url = "https://david.mandelberg.org"
 title = "David Mandelberg"
 author = "David Mandelberg"
 language = "en-US"

@@ -64,6 +64,7 @@
   {% do metadata.setdefault("author", site_metadata.author) %}
   {% do ginjarator.py.assert_(
     metadata.keys() <= {
+      "uuid": none,
       "published": none,
       "title": none,
       "author": none,
