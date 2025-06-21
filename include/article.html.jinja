@@ -107,6 +107,9 @@
   {% for tag in metadata.tags %}
     {% do ginjarator.py.assert_(tag in site_metadata.tags) %}
   {% endfor %}
+  {% do ginjarator.py.assert_(
+    metadata.tags == metadata.tags | sort(case_sensitive=true)
+  ) %}
   {% set source_dir_name = ginjarator.current_template.parent.name %}
   {% set source_dir_date_prefix = metadata.published.strftime("%Y-%m-%d-") %}
   {% do ginjarator.py.assert_(
