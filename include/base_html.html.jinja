@@ -33,7 +33,10 @@
 ) %}
   {% set contents -%}
     <!doctype html>
-    <html dir="ltr" lang="en-US">
+    <html
+        dir="{{ site_metadata.direction | e }}"
+        lang="{{ site_metadata.language | e }}"
+        >
       <head>
         <meta charset="utf-8">
         <title>{{ title | e }} — {{ site_metadata.title | e }}</title>
