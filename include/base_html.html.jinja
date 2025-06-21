@@ -5,13 +5,16 @@
  #}
 
 {% set subprocess = ginjarator.py.import_("subprocess") %}
+{% set tomllib = ginjarator.py.import_("tomllib") %}
 
 {% set headings = ginjarator.py.import_("dseomn_website.headings") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% import "include/media.jinja" as media %}
 
-{% set site_title = "David Mandelberg" %}
+{% set site_metadata = tomllib.loads(
+  ginjarator.fs.read_text("include/site_metadata.toml")
+) %}
 
 {% macro minify(html) %}
   {{- subprocess.run(
@@ -33,7 +36,7 @@
     <html dir="ltr" lang="en-US">
       <head>
         <meta charset="utf-8">
-        <title>{{ title | e }} — {{ site_title | e }}</title>
+        <title>{{ title | e }} — {{ site_metadata.title | e }}</title>
         <meta name="viewport" content="width=device-width">
         {% set main_css = ginjarator.fs.read_text(
           "work/css/main.css.cache-buster"
@@ -58,9 +61,11 @@
         <header class="site-header">
           <div class="site-header-inner">
             {% if site_title_is_h1 %}
-              <h1 class="h1 site-header-title">{{ site_title | e }}</h1>
+              <h1 class="h1 site-header-title">
+                {{ site_metadata.title | e }}
+              </h1>
             {% else %}
-              <p class="h1 site-header-title">{{ site_title | e }}</p>
+              <p class="h1 site-header-title">{{ site_metadata.title | e }}</p>
             {% endif %}
             <nav>
               <ul class="site-header-nav-list">

@@ -10,6 +10,10 @@
 
 {% import "include/base_html.html.jinja" as base_html %}
 
+{% set site_metadata = tomllib.loads(
+  ginjarator.fs.read_text("include/site_metadata.toml")
+) %}
+
 {% macro standalone(
   url_path,
   title
@@ -57,7 +61,7 @@
       ginjarator.current_template.parent / "metadata.toml"
     )
   ) %}
-  {% do metadata.setdefault("author", "David Mandelberg") %}
+  {% do metadata.setdefault("author", site_metadata.author) %}
   {% do ginjarator.py.assert_(
     metadata.keys() <= {
       "published": none,
