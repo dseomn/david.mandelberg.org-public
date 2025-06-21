@@ -99,4 +99,17 @@
       offset=1,
     ),
   ) %}
+  {% call ginjarator.fs.write_text_macro(work_path + "/atom-fragment.xml") %}
+    <entry>
+      <author><name>{{ metadata.author | e }}</name></author>
+      <content type="html">
+        {{- base_html.minify(contents) | e -}}
+      </content>
+      <id>urn:uuid:{{ metadata.uuid | e }}</id>
+      <link href="{{ url_path | e }}" rel="alternate"/>
+      <published>{{ metadata.published.isoformat() | e }}</published>
+      <title>{{ metadata.title | e }}</title>
+      <updated>{{ metadata.published.isoformat() | e }}</updated>
+    </entry>
+  {% endcall %}
 {% endmacro %}
