@@ -94,6 +94,12 @@
   ) %}
   {% set work_path = "work/posts/" + template_path.parent.name %}
   {% do lists.setdefault(("/", "Blog"), []).append((metadata, work_path)) %}
+  {% for tag in metadata.get("tags", []) %}
+    {% do lists
+      .setdefault(("/tag/" + tag + "/", "Tag: " + tag), [])
+      .append((metadata, work_path))
+    %}
+  {% endfor %}
 {% endfor %}
 
 {% for (list_url_path, list_title), list_posts in lists.items() %}
@@ -111,21 +117,27 @@
           type="application/atom+xml"
           >
     {% endset %}
+    {% set show_list_title = list_url_path != "/" %}
     {% call base_html.write(
       url_path=page_url_path(list_url_path, loop.index),
       title=list_title + (
         "" if loop.index == 1 else " (page " + loop.index | string + ")"
       ),
-      site_title_is_h1=true,
+      site_title_is_h1=not show_list_title,
       extra_head=extra_head,
     ) %}
-      {% if not loop.first %}
+      {% if show_list_title or not loop.first %}
         <header class="list-header">
-          {{ pagination_nav(
-            list_url_path=list_url_path,
-            current=loop.index,
-            total=loop.length,
-          ) }}
+          {% if show_list_title %}
+            <h1 class="h1 list-header-title">{{ list_title | e }}</h1>
+          {% endif %}
+          {% if not loop.first %}
+            {{ pagination_nav(
+              list_url_path=list_url_path,
+              current=loop.index,
+              total=loop.length,
+            ) }}
+          {% endif %}
         </header>
       {% endif %}
       {% for _, work_path in page_posts %}

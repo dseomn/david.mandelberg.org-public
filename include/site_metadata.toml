@@ -7,3 +7,10 @@ title = "David Mandelberg"
 author = "David Mandelberg"
 language = "en-US"
 direction = "ltr"
+tags = [
+  "dance",
+  "music",
+  "photos",
+  "technology",
+  "videos",
+]

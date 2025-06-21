@@ -67,6 +67,20 @@
             {{ metadata.author | e }}
           </dd>
         </div>
+        {% if metadata.tags %}
+          <div class="article-header-metadata-item">
+            <dt class="article-header-metadata-key">
+              <span aria-label="tags" role="img">🏷️</span>
+            </dt>
+            <dd class="article-header-metadata-value">
+              {% set tag_joiner = joiner(", ") %}
+              {% for tag in metadata.tags -%}
+                {{- tag_joiner() -}}
+                <a href="/tag/{{ tag | e }}/" rel="tag">{{ tag | e }}</a>
+              {%- endfor %}
+            </dd>
+          </div>
+        {% endif %}
       </dl>
     </header>
     {{ contents }}
@@ -80,14 +94,19 @@
     )
   ) %}
   {% do metadata.setdefault("author", site_metadata.author) %}
+  {% do metadata.setdefault("tags", []) %}
   {% do ginjarator.py.assert_(
     metadata.keys() <= {
       "uuid": none,
       "published": none,
       "title": none,
       "author": none,
+      "tags": none,
     }.keys()
   ) %}
+  {% for tag in metadata.tags %}
+    {% do ginjarator.py.assert_(tag in site_metadata.tags) %}
+  {% endfor %}
   {% set source_dir_name = ginjarator.current_template.parent.name %}
   {% set source_dir_date_prefix = metadata.published.strftime("%Y-%m-%d-") %}
   {% do ginjarator.py.assert_(
@@ -120,6 +139,9 @@
   {% call ginjarator.fs.write_text_macro(work_path + "/atom-fragment.xml") %}
     <entry>
       <author><name>{{ metadata.author | e }}</name></author>
+      {% for tag in metadata.tags %}
+        <category term="{{ tag | e }}"/>
+      {% endfor %}
       <content type="html">
         {{- base_html.minify(contents) | e -}}
       </content>
