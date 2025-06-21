@@ -43,13 +43,31 @@
           <a rel="bookmark" href="{{ link | e }}">{{ metadata.title | e }}</a>
         {% endif %}
       </h1>
-      <p class="article-header-metadata">
-        Posted on
-        <time>
-          {{ metadata.published.isoformat(sep=" ", timespec="seconds") | e }}
-        </time>
-        by {{ metadata.author | e }}.
-      </p>
+      <dl class="article-header-metadata">
+        <div class="article-header-metadata-item">
+          <dt class="article-header-metadata-key">
+            <span aria-label="date" role="img">📅</span>
+          </dt>
+          <dd
+              class="article-header-metadata-value
+                     article-header-metadata-numeric"
+              >
+            <time>
+              {{
+                metadata.published.isoformat(sep=" ", timespec="seconds") | e
+              }}
+            </time>
+          </dd>
+        </div>
+        <div class="article-header-metadata-item">
+          <dt class="article-header-metadata-key">
+            <span aria-label="author" role="img">👤</span>
+          </dt>
+          <dd  class="article-header-metadata-value">
+            {{ metadata.author | e }}
+          </dd>
+        </div>
+      </dl>
     </header>
     {{ contents }}
   </article>

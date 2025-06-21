@@ -142,5 +142,25 @@ body {
 }
 
 .article-header-metadata {
-  margin-block: 0;
+  display: flex;
+  flex-flow: wrap;
+  gap: 0 1em;
+  margin: 0;
+}
+
+.article-header-metadata-item {
+  display: flex;
+}
+
+.article-header-metadata-key::after {
+  content: " ";
+  white-space: pre;
+}
+
+.article-header-metadata-value {
+  margin: 0;
+}
+
+.article-header-metadata-numeric {
+  font-variant-numeric: tabular-nums;
 }
