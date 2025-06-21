@@ -36,7 +36,7 @@
               href="{{ page_url_path(list_url_path, current - 1) | e }}"
               rel="prev"
               >
-            ⎗
+            <span aria-label="previous page" role="img">⎗</span>
           </a>
         </li>
       {% endif %}
@@ -72,7 +72,7 @@
               href="{{ page_url_path(list_url_path, current + 1) | e }}"
               rel="next"
               >
-            ⎘
+            <span aria-label="next page" role="img">⎘</span>
           </a>
         </li>
       {% endif %}
