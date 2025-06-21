@@ -19,7 +19,25 @@ def _headings(parsed: Any) -> None:
             )
 
 
+def _ids(parsed: Any) -> None:
+    # Blog posts can be embedded in lists with other posts. To prevent ID
+    # collisions, make sure that every ID in a blog post has the blog post's own
+    # ID as a prefix.
+    for article in parsed.cssselect("article[id]"):
+        article_id = article.get("id")
+        for descendant in article.cssselect("[id]"):
+            descendant_id = descendant.get("id")
+            if descendant is not article and not descendant_id.startswith(
+                f"{article_id}-"
+            ):
+                raise ValueError(
+                    f"{descendant_id!r} is descendant of {article_id!r}, but "
+                    "its id does not start with that."
+                )
+
+
 def html(document_or_fragment: str, /) -> None:
     """Raises an exception if the html has issues."""
     parsed = lxml.html.fromstring(document_or_fragment)
     _headings(parsed)
+    _ids(parsed)

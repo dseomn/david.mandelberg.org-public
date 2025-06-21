@@ -41,6 +41,10 @@ from dseomn_website import lint
             r"does not have a heading class",
         ),
         ('<h1 class="h1 h2">foo</h1>', r"has multiple heading classes"),
+        (
+            '<div><article id="foo"><div><p id="bar"></div></article></div>',
+            r"its id does not start with",
+        ),
     ),
 )
 def test_html_error(html: str, error_regex: str) -> None:
@@ -48,5 +52,22 @@ def test_html_error(html: str, error_regex: str) -> None:
         lint.html(html)
 
 
-def test_html() -> None:
-    lint.html('<h2 class="h1">foo</h2>')
+@pytest.mark.parametrize(
+    "html",
+    (
+        '<h2 class="h1">foo</h2>',
+        '<div><article id="foo"><div><p id="foo-bar"></div></article></div>',
+        '<div><article><div><p id="bar"></div></article></div>',
+        "".join(
+            (
+                '<article id="foo">',
+                '<article id="foo-bar">',
+                '<p id="foo-bar-quux">',
+                "</article>",
+                "</article>",
+            )
+        ),
+    ),
+)
+def test_html(html: str) -> None:
+    lint.html(html)
