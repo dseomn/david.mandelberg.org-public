@@ -7,7 +7,7 @@
 {% set subprocess = ginjarator.py.import_("subprocess") %}
 {% set tomllib = ginjarator.py.import_("tomllib") %}
 
-{% set headings = ginjarator.py.import_("dseomn_website.headings") %}
+{% set lint = ginjarator.py.import_("dseomn_website.lint") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% import "include/media.jinja" as media %}
@@ -124,6 +124,6 @@
   {% endset %}
 
   {% set minified = minify(contents) %}
-  {% do headings.lint(minified) %}
+  {% do lint.html(minified) %}
   {% do ginjarator.fs.write_text(paths.from_url_path(url_path), minified) %}
 {% endmacro %}

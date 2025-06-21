@@ -26,17 +26,3 @@ def article(
             element.tag = f"h{heading_level + offset}"
             element.classes.add(f"h{heading_level}")
     return lxml.html.tostring(parsed, encoding="unicode")
-
-
-def lint(html: str, /) -> None:
-    """Raises an exception if the html has issues with its headings."""
-    parsed = lxml.html.fromstring(html)
-    levels = {f"h{n}" for n in range(1, 7)}
-    for element in parsed.cssselect(",".join(levels)):
-        heading_classes = set(element.classes) & levels
-        if not heading_classes:
-            raise ValueError(f"{element.tag} does not have a heading class.")
-        elif len(heading_classes) > 1:
-            raise ValueError(
-                f"{element.tag} has multiple heading classes: {heading_classes}"
-            )
