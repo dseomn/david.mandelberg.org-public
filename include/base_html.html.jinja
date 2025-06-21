@@ -29,7 +29,8 @@
 {% macro write(
   url_path,
   title,
-  site_title_is_h1=false
+  site_title_is_h1=false,
+  extra_head=''
 ) %}
   {% set contents -%}
     <!doctype html>
@@ -59,6 +60,7 @@
               sizes="{{ geometry.width }}x{{ geometry.height }}"
               >
         {% endcall %}
+        {{ extra_head }}
       </head>
       <body>
         <header class="site-header">

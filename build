@@ -18,4 +18,5 @@ ninja -t cleandead
 
 htmlproofer \
   --check-favicon \
+  --url-swap '/feed/\Z:/feed/index.xml' \
   output

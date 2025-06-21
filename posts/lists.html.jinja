@@ -97,17 +97,27 @@
 {% endfor %}
 
 {% for (list_url_path, list_title), list_posts in lists.items() %}
+  {% set feed_url_path = list_url_path + "feed/" %}
+
   {% for page_posts in (
     list_posts |
     sort(reverse=true, attribute="0.published") |
     batch(posts_per_page)
   ) %}
+    {% set extra_head %}
+      <link
+          href="{{ feed_url_path | e }}"
+          rel="alternate"
+          type="application/atom+xml"
+          >
+    {% endset %}
     {% call base_html.write(
       url_path=page_url_path(list_url_path, loop.index),
       title=list_title + (
         "" if loop.index == 1 else " (page " + loop.index | string + ")"
       ),
       site_title_is_h1=true,
+      extra_head=extra_head,
     ) %}
       {% if not loop.first %}
         <header class="list-header">
@@ -137,7 +147,6 @@
     list_posts |
     sort(reverse=true, attribute="0.published")
   )[:posts_per_feed] %}
-  {% set feed_url_path = list_url_path + "feed/" %}
   {% set feed -%}
     <?xml version="1.0" encoding="utf-8"?>
     <feed
