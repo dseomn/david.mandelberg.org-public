@@ -103,6 +103,20 @@ body {
   padding: 0;
 }
 
+.site-footer {
+  .pseudo-section();
+  columns: 15em auto;
+  margin-block-start: (.pseudo-section()[margin-block] + 1em);
+}
+
+.site-footer-list {
+  margin: 0;
+}
+
+.site-footer-list-item {
+  break-inside: avoid-column;
+}
+
 .list-header {
   .pseudo-section();
   display: flex;

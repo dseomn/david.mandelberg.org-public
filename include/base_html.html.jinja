@@ -16,6 +16,10 @@
   ginjarator.fs.read_text("include/site_metadata.toml")
 ) %}
 
+{% set _standalone_pages = (
+  ("/about/", "About"),
+) %}
+
 {% macro minify(html) %}
   {{- subprocess.run(
     ("minify", "--type=html"),
@@ -74,10 +78,9 @@
             {% endif %}
             <nav>
               <ul class="site-header-nav-list">
-                {% for nav_url_path, nav_title in (
-                  ("/", "Blog"),
-                  ("/about/", "About"),
-                ) %}
+                {% for nav_url_path, nav_title
+                  in (("/", "Blog"),) + _standalone_pages
+                %}
                   {% if nav_url_path == url_path %}
                     {% do ginjarator.py.assert_(nav_title == title) %}
                     <li aria-current="page">{{ nav_title | e }}</li>
@@ -94,6 +97,28 @@
         <main>
           {{ caller() }}
         </main>
+        <footer class="site-footer">
+          <ul class="site-footer-list">
+            <li class="site-footer-list-item">
+              <a href="/">Blog</a> (<a href="/feed/">feed</a>)
+              <ul>
+                {% for tag in site_metadata.tags %}
+                  <li>
+                    <a href="/tag/{{ tag | e }}/">{{ tag | e }}</a>
+                    (<a href="/tag/{{ tag | e }}/feed/">feed</a>)
+                  </li>
+                {% endfor %}
+              </ul>
+            </li>
+            {% for standalone_url_path, standalone_title in _standalone_pages %}
+              <li class="site-footer-list-item">
+                <a href="{{ standalone_url_path | e }}">
+                  {{ standalone_title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </footer>
       </body>
     </html>
   {% endset %}
