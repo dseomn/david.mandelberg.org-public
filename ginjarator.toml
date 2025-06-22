@@ -23,6 +23,7 @@ ninja_templates = [
   "media/build.ninja.jinja",
 ]
 templates = [
+  "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",
   "posts/2024-08-01-placeholder/index.html.jinja",
