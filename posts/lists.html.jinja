@@ -26,7 +26,7 @@
   {%- endif -%}
 {% endmacro %}
 
-{% macro pagination_nav(list_url_path, current, total) %}
+{% macro pagination_nav(list_url_path, current, total, link_by_year) %}
   <nav>
     <ol class="pagination-list">
       {% if current > 1 %}
@@ -77,6 +77,25 @@
         </li>
       {% endif %}
     </ol>
+    {% if link_by_year | length > 1 %}
+      <ol class="pagination-list">
+        {% for year, link in link_by_year | dictsort(reverse=true) %}
+          {% if not loop.first and loop.previtem[0] != year + 1 %}
+            <li>
+              <span class="pagination-item pagination-item-ellipsis">…</span>
+            </li>
+          {% endif %}
+          <li>
+            <a
+                class="pagination-item pagination-item-jump"
+                href="{{ link | e }}"
+                >
+              <time>{{ year | e }}</time>
+            </a>
+          </li>
+        {% endfor %}
+      </ol>
+    {% endif %}
   </nav>
 {% endmacro %}
 
@@ -107,12 +126,27 @@
 
 {% for (list_url_path, list_title), list_posts in lists.items() %}
   {% set feed_url_path = list_url_path + "feed/" %}
-
-  {% for page_posts in (
+  {% set posts_by_page = (
     list_posts |
     sort(reverse=true, attribute="0.published") |
-    batch(posts_per_page)
+    batch(posts_per_page) |
+    list
   ) %}
+
+  {# Map from year to top-most post from that year. #}
+  {% set link_by_year = {} %}
+  {% for page_posts in posts_by_page %}
+    {% set page_loop = loop %}
+    {% for metadata, work_path in page_posts %}
+      {% set _, post_id = work_path.rsplit("/", 1) %}
+      {% do link_by_year.setdefault(
+        metadata.published.year,
+        page_url_path(list_url_path, page_loop.index) + "#" + post_id,
+      ) %}
+    {% endfor %}
+  {% endfor %}
+
+  {% for page_posts in posts_by_page %}
     {% set extra_head %}
       <link
           href="{{ feed_url_path | e }}"
@@ -139,6 +173,7 @@
               list_url_path=list_url_path,
               current=loop.index,
               total=loop.length,
+              link_by_year={},
             ) }}
           {% endif %}
         </header>
@@ -152,6 +187,7 @@
             list_url_path=list_url_path,
             current=loop.index,
             total=loop.length,
+            link_by_year=link_by_year,
           ) }}
         </footer>
       {% endif %}
