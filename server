@@ -1,9 +1,31 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -euxo pipefail
+# See
+# https://web.archive.org/web/20231208050359/https://bz.apache.org/bugzilla/show_bug.cgi?id=50669
+# for why this is so complicated. process_group=0 seems to prevent SIGWINCH.
 
-/usr/sbin/apache2 -D FOREGROUND -f "$PWD/apache2.conf"
+import pathlib
+import subprocess
+import sys
+
+if __name__ == "__main__":
+    process = subprocess.Popen(
+        (
+            "/usr/sbin/apache2",
+            "-D",
+            "FOREGROUND",
+            "-f",
+            f"{pathlib.Path.cwd()}/apache2.conf",
+        ),
+        process_group=0,
+    )
+    try:
+        process.wait()
+    except KeyboardInterrupt:
+        process.terminate()
+        process.wait()
+    sys.exit(process.returncode)
