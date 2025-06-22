@@ -6,6 +6,10 @@ from collections.abc import Collection
 import pathlib
 
 OUTPUT = pathlib.PurePath("output")
+DIR_INDEXES = (
+    "index.html",
+    "index.xml",
+)
 
 
 def from_url_path(
@@ -14,6 +18,11 @@ def from_url_path(
     dir_index: str = "index.html",
 ) -> pathlib.PurePath:
     """Returns an fs path from a url path."""
+    if dir_index not in DIR_INDEXES:
+        raise ValueError(
+            f"Invalid dir_index {dir_index!r}, allowed values are: "
+            f"{DIR_INDEXES}"
+        )
     if not url_path.startswith("/"):
         raise NotImplementedError("Relative url paths are not supported.")
     elif url_path == "/":
@@ -25,17 +34,13 @@ def from_url_path(
         return OUTPUT / relative
 
 
-def to_url_path(
-    path: pathlib.PurePath | str,
-    *,
-    dir_indexes: Collection[str] = ("index.html",),
-) -> str:
+def to_url_path(path: pathlib.PurePath | str) -> str:
     """Returns a url path from an fs path."""
     path = pathlib.PurePath(path)
     if not path.is_relative_to(OUTPUT):
         raise ValueError(f"{str(path)!r} is not in {str(OUTPUT)!r}")
     relative = path.relative_to(OUTPUT)
-    if relative.name in dir_indexes:
+    if relative.name in DIR_INDEXES:
         if len(relative.parts) == 1:
             return "/"
         else:

@@ -9,9 +9,21 @@ import pytest
 from dseomn_website import paths
 
 
-def test_from_url_path_error() -> None:
-    with pytest.raises(NotImplementedError, match="Relative url paths"):
-        paths.from_url_path("foo")
+@pytest.mark.parametrize(
+    "url_path,dir_index,error_class,error_regex",
+    (
+        ("/", "not-an-index", ValueError, r"Invalid dir_index"),
+        ("foo", "index.html", NotImplementedError, r"Relative url paths"),
+    ),
+)
+def test_from_url_path_error(
+    url_path: str,
+    dir_index: str,
+    error_class: type[Exception],
+    error_regex: str,
+) -> None:
+    with pytest.raises(error_class, match=error_regex):
+        paths.from_url_path(url_path, dir_index=dir_index)
 
 
 @pytest.mark.parametrize(
