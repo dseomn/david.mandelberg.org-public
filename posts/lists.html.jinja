@@ -58,7 +58,7 @@
 {% endmacro %}
 
 {% macro pagination_nav(list_url_path, current, total, link_by_year) %}
-  <nav>
+  <nav class="pagination-nav">
     <ol class="pagination-list">
       {{ pagination_prev_next(
         list_url_path=list_url_path,
