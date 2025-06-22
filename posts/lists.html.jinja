@@ -85,6 +85,7 @@
  # (url path, list title) and each post in the list is (metadata, work path)
  #}
 {% set lists = {} %}
+{% set post_uuids = [] %}
 {% for template_path in ginjarator.fs.read_config().templates
   if template_path.is_relative_to("posts")
   and (template_path | string) != "posts/lists.html.jinja"
@@ -92,6 +93,8 @@
   {% set metadata = tomllib.loads(
     ginjarator.fs.read_text(template_path.parent / "metadata.toml")
   ) %}
+  {% do ginjarator.py.assert_(metadata.uuid not in post_uuids) %}
+  {% do post_uuids.append(metadata.uuid) %}
   {% set work_path = "work/posts/" + template_path.parent.name %}
   {% do lists.setdefault(("/", "Blog"), []).append((metadata, work_path)) %}
   {% for tag in metadata.get("tags", []) %}
