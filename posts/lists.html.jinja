@@ -26,20 +26,49 @@
   {%- endif -%}
 {% endmacro %}
 
+{% macro pagination_prev_next(
+  list_url_path,
+  target,
+  total,
+  box_class,
+  rel,
+  label,
+  text
+) %}
+  {% set contents %}
+    <span aria-label="{{ label | e }}" role="img">{{ text | e }}</span>
+  {% endset %}
+  {% if 1 <= target <= total %}
+    <li class="{{ box_class | e}}">
+      <a
+          class="pagination-item pagination-item-page"
+          href="{{ page_url_path(list_url_path, target) | e }}"
+          rel="{{ rel | e }}"
+          >
+        {{ contents }}
+      </a>
+    </li>
+  {% else %}
+    <li class="{{ box_class | e}} pagination-item-box-hidden">
+      <span class="pagination-item pagination-item-page">
+        {{ contents }}
+      </span>
+    </li>
+  {% endif %}
+{% endmacro %}
+
 {% macro pagination_nav(list_url_path, current, total, link_by_year) %}
   <nav>
     <ol class="pagination-list">
-      {% if current > 1 %}
-        <li>
-          <a
-              class="pagination-item pagination-item-page"
-              href="{{ page_url_path(list_url_path, current - 1) | e }}"
-              rel="prev"
-              >
-            <span aria-label="previous page" role="img">←</span>
-          </a>
-        </li>
-      {% endif %}
+      {{ pagination_prev_next(
+        list_url_path=list_url_path,
+        target=current - 1,
+        total=total,
+        box_class="pagination-item-box-prev",
+        rel="prev",
+        label="previous page",
+        text="←",
+      ) }}
       {% for page in pagination.nav(current=current, total=total) %}
         {% if page is none %}
           <li>
@@ -65,17 +94,15 @@
           </li>
         {% endif %}
       {% endfor %}
-      {% if current < total %}
-        <li>
-          <a
-              class="pagination-item pagination-item-page"
-              href="{{ page_url_path(list_url_path, current + 1) | e }}"
-              rel="next"
-              >
-            <span aria-label="next page" role="img">→</span>
-          </a>
-        </li>
-      {% endif %}
+      {{ pagination_prev_next(
+        list_url_path=list_url_path,
+        target=current + 1,
+        total=total,
+        box_class="pagination-item-box-next",
+        rel="next",
+        label="next page",
+        text="→",
+      ) }}
     </ol>
     {% if link_by_year | length > 1 %}
       <ol class="pagination-list">
