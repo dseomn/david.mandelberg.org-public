@@ -5,6 +5,7 @@
 source_paths = [
   "../private/media",
   "css",
+  "htaccess.jinja",
   "include",
   "media",
   "posts",
@@ -23,6 +24,7 @@ ninja_templates = [
   "media/build.ninja.jinja",
 ]
 templates = [
+  "htaccess.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",
