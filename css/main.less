@@ -25,6 +25,12 @@
   padding-block: 0;
 }
 
+.pseudo-section-before-site-footer() {
+  .pseudo-section();
+  border-block-end: thin solid;
+  padding-block-end: 1em;
+}
+
 :root {
   background: color-mix(in srgb, Canvas 95%, CanvasText);
   color-scheme: light dark;
@@ -129,9 +135,7 @@ body {
 }
 
 .list-footer {
-  .pseudo-section();
-  border-block-end: thin solid;
-  padding-block-end: 1em;
+  .pseudo-section-before-site-footer();
 }
 
 .pagination-nav {
