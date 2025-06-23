@@ -29,4 +29,10 @@ RewriteRule \
   "^((?:.*/)?)(?:{{ dir_index_regexes | join("|") }})$" \
   "$1" \
   [last,nosubreq,redirect=permanent]
+
+{% for template_path in ginjarator.fs.read_config().templates
+  if template_path.is_relative_to("errors")
+%}
+ErrorDocument {{ template_path.parent.name }} /{{ template_path.parent }}/
+{% endfor %}
 {% endcall %}

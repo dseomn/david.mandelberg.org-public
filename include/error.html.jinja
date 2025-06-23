@@ -1,0 +1,26 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% set http = ginjarator.py.import_("http") %}
+
+{% import "include/base_html.html.jinja" as base_html %}
+
+{% macro page() %}
+  {% set status = http.HTTPStatus(
+    ginjarator.current_template.parent.name | int
+  ) %}
+  {% set title = status.value | string + " " + status.phrase %}
+  {% set contents = caller() %}
+  {% call base_html.write(
+    url_path="/" + ginjarator.current_template.parent | string + "/",
+    title=title,
+  ) %}
+    <div class="site-error">
+      <h1 class="h1">{{ title | e }}</h1>
+      {{ contents }}
+    </div>
+  {% endcall %}
+{% endmacro %}

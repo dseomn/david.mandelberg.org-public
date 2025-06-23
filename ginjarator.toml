@@ -5,6 +5,7 @@
 source_paths = [
   "../private/media",
   "css",
+  "errors",
   "htaccess.jinja",
   "include",
   "media",
