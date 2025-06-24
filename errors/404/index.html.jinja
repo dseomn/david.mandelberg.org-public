@@ -5,6 +5,7 @@
  #}
 
 {% import "include/error.html.jinja" as error %}
+{% import "include/media.jinja" as media %}
 
 {% call error.page() %}
   <p>
@@ -12,5 +13,13 @@
     instead though. Does this help?
   </p>
 
-  <p>TODO: dseomn - Add image.</p>
+  {{ media.image_html(
+    "../private/errors/404/P1250746-raw-unsharp.jpg",
+    "main",
+    alt=(
+      "Vuvuzela held by a plastic truss, with a balloon over the "
+      "mouthpiece. Coming out of the other end of the balloon is a tube. The "
+      "other end of that tube is duct taped to a pink plastic box."
+    ),
+  ) }}
 {% endcall %}

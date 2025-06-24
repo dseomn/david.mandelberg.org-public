@@ -23,6 +23,17 @@ rule image_metadata
   (media.favicon, "output/media"),
   [],
 ).extend(media.image_profiles.favicon) %}
+{% for source, out_dir, profile in (
+  (
+    "../private/errors/404/P1250746-raw-unsharp.jpg",
+    "output/errors/404",
+    "main",
+  ),
+) %}
+  {% do image_conversions.setdefault((source, out_dir), []).extend(
+    media.image_profiles[profile][media.image_profile_type(source)]
+  ) %}
+{% endfor %}
 
 {% for (original_filename, out_dir), conversions in image_conversions.items() %}
 {% for conversion in conversions | unique(case_sensitive=true) %}
