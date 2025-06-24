@@ -5,12 +5,27 @@
  #}
 
 {% import "include/cache_buster.ninja.jinja" as cache_buster %}
+{% import "include/layout.jinja" as layout %}
 
 {{ cache_buster.rules }}
 
+{% set lessc = ginjarator.to_ninja(
+  [
+    "lessc",
+    (
+      "--global-var=main-column-max-inline-size=" +
+      layout.main_column_max_inline_size
+    ),
+    (
+      "--global-var=main-column-padding-inline=" +
+      layout.main_column_padding_inline
+    ),
+  ],
+  escape_shell=true,
+) %}
 rule lessc
   # TODO: https://github.com/less/less.js/issues/2925 - Run lessc once.
-  command = lessc --depends $in $out > $out.d && lessc $in $out
+  command = {{ lessc }} --depends $in $out > $out.d && {{ lessc }} $in $out
   depfile = $out.d
   description = LESSC $in
 
