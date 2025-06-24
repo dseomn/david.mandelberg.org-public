@@ -18,6 +18,8 @@ ninja -t cleandead
 # TODO: https://github.com/ninja-build/ninja/issues/2617 - Delete this.
 find output work -depth -type d -empty -print -delete
 
+# TODO: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=849473 - Validate
+# html.
 htmlproofer \
   --check-favicon \
   --check-opengraph \
