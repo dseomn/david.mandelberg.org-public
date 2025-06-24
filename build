@@ -11,7 +11,7 @@ reuse lint
 black --check --diff .
 isort --check --diff .
 mypy
-pytest
+pytest -m 'not output'
 
 ninja
 ninja -t cleandead
@@ -22,3 +22,4 @@ htmlproofer \
   --check-favicon \
   --url-swap '/feed/\Z:/feed/index.xml' \
   output
+pytest -m output --no-cov

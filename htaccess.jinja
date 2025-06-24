@@ -30,6 +30,14 @@ RewriteRule \
   "$1" \
   [last,nosubreq,redirect=permanent]
 
+AddType image/jpeg .jpg
+AddType image/png .png
+AddType text/css .css
+AddType text/html .html
+<If "%{REQUEST_FILENAME} -strmatch '*/feed/index.xml'">
+  ForceType application/atom+xml
+</If>
+
 {% for template_path in ginjarator.fs.read_config().templates
   if template_path.is_relative_to("errors")
 %}

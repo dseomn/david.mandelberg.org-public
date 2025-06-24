@@ -36,3 +36,6 @@ addopts = """\
   --cov-branch \
   --cov-report=term-missing \
   """
+markers = [
+  "output: tests on the final output",
+]
