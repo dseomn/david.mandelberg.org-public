@@ -37,6 +37,7 @@ AddType text/html .html
 <If "%{REQUEST_FILENAME} -strmatch '*/feed/index.xml'">
   ForceType application/atom+xml
 </If>
+AddCharset utf-8 .css .html
 
 {% for template_path in ginjarator.fs.read_config().templates
   if template_path.is_relative_to("errors")

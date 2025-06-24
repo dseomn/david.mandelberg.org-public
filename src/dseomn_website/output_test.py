@@ -2,8 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from email import headerregistry
 import http
 import pathlib
+from typing import cast
 
 import pytest
 import requests
@@ -24,7 +26,21 @@ pytestmark = pytest.mark.output
     ),
 )
 def test_all(url_path: str) -> None:
+    header_registry = headerregistry.HeaderRegistry()
+
     response = requests.get(_BASE + url_path)
 
     assert response.status_code == http.HTTPStatus.OK
+
     assert "content-type" in response.headers
+    content_type = cast(
+        headerregistry.ContentTypeHeader,
+        header_registry(
+            "content-type",
+            response.headers["content-type"],
+        ),
+    )
+    if content_type.maintype == "text":
+        assert content_type.params["charset"] == "utf-8"
+    else:
+        assert "charset" not in content_type.params
