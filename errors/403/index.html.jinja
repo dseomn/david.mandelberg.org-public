@@ -1,0 +1,24 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% set tomllib = ginjarator.py.import_("tomllib") %}
+
+{% import "include/error.html.jinja" as error %}
+
+{% set site_metadata = tomllib.loads(
+  ginjarator.fs.read_text("include/site_metadata.toml")
+) %}
+
+{% call error.page() %}
+  <p>
+    Huh, that’s strange. If you’re trying to look at the <code>.htaccess</code>
+    file or similar, maybe check out
+    <a href="https://github.com/dseomn/david.mandelberg.org-public">this
+    website’s source code</a> instead? Or
+    <a href="mailto:{{ site_metadata.email | e }}">email me</a> if you think
+    this is a mistake.
+  </p>
+{% endcall %}

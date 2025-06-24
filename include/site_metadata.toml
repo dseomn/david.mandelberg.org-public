@@ -5,6 +5,7 @@
 url = "https://david.mandelberg.org"
 title = "David Mandelberg"
 author = "David Mandelberg"
+email = "david@mandelberg.org"
 language = "en-US"
 direction = "ltr"
 tags = [

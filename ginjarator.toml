@@ -25,6 +25,7 @@ ninja_templates = [
   "media/build.ninja.jinja",
 ]
 templates = [
+  "errors/403/index.html.jinja",
   "errors/404/index.html.jinja",
   "htaccess.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
