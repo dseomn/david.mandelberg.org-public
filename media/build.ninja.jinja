@@ -44,7 +44,10 @@ build $
       "96x96.png": ("-resize", "96x96>"),
       "180x180.png": ("-resize", "180x180>"),
       "300x300.png": ("-resize", "300x300>"),
+      "480x480q90.jpg": ("-resize", "480x480>", "-quality", "90"),
       "512x512.png": ("-resize", "512x512>"),
+      "960x960q90.jpg": ("-resize", "960x960>", "-quality", "90"),
+      "1920x1920q90.jpg": ("-resize", "1920x1920>", "-quality", "90"),
     }[conversion],
     escape_shell=true,
   ) }}
