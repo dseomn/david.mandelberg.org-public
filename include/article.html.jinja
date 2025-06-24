@@ -16,7 +16,8 @@
 
 {% macro standalone(
   url_path,
-  title
+  title,
+  extra_head=""
 ) %}
   {% set fragment %}
     <article class="article">
@@ -24,7 +25,11 @@
       {{ caller() }}
     </article>
   {% endset %}
-  {% call base_html.write(url_path=url_path, title=title) %}
+  {% call base_html.write(
+    url_path=url_path,
+    title=title,
+    extra_head=extra_head,
+  ) %}
     {{ headings.article(fragment) }}
   {% endcall %}
 {% endmacro %}
@@ -119,8 +124,22 @@
   {% set slug = source_dir_name.removeprefix(source_dir_date_prefix) %}
   {% set url_path = metadata.published.strftime("/%Y/%m/%d/") + slug + "/" %}
   {% set work_path = "work/posts/" + source_dir_name %}
+  {% set extra_head %}
+    <meta
+        property="article:published_time"
+        content="{{ metadata.published.isoformat() | e }}"
+        >
+    {% for tag in metadata.tags %}
+      <meta property="article:tag" content="{{ tag | e }}">
+    {% endfor %}
+    <meta property="og:type" content="article">
+  {% endset %}
   {% set contents = caller() %}
-  {% call base_html.write(url_path=url_path, title=metadata.title) %}
+  {% call base_html.write(
+    url_path=url_path,
+    title=metadata.title,
+    extra_head=extra_head,
+  ) %}
     {{ headings.article(
       _post_fragment(
         id=source_dir_name,

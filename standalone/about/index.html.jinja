@@ -6,9 +6,17 @@
 
 {% import "include/article.html.jinja" as article %}
 
+{% set extra_head %}
+  <meta property="og:type" content="profile">
+  <meta property="profile:first_name" content="David">
+  <meta property="profile:last_name" content="Mandelberg">
+  <meta property="profile:username" content="dseomn">
+{% endset %}
+
 {% call article.standalone(
   url_path="/about/",
   title="About",
+  extra_head=extra_head,
 ) %}
   <p>TODO: dseomn - Write something here.</p>
 {% endcall %}

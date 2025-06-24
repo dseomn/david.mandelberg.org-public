@@ -46,6 +46,16 @@
         <meta charset="utf-8">
         <title>{{ title | e }} — {{ site_metadata.title | e }}</title>
         <meta name="viewport" content="width=device-width">
+        <meta
+            property="og:locale"
+            content="{{ site_metadata.language.replace("-", "_") | e }}"
+            >
+        <meta property="og:site_name" content="{{ site_metadata.title | e }}">
+        <meta property="og:title" content="{{ title | e }}">
+        <meta
+            property="og:url"
+            content="{{ site_metadata.url | e }}{{ url_path | e }}"
+            >
         {% set main_css = ginjarator.fs.read_text(
           "work/css/main.css.cache-buster"
         ) %}
