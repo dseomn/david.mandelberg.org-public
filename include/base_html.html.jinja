@@ -108,7 +108,7 @@
             <li class="site-footer-list-item">
               <a href="/">Blog</a> (<a href="/feed/">feed</a>)
               <ul>
-                {% for tag in metadata.SITE.tags | sort(case_sensitive=true) %}
+                {% for tag in metadata.SITE.tags %}
                   <li>
                     <a href="/tag/{{ tag | e }}/">{{ tag | e }}</a>
                     (<a href="/tag/{{ tag | e }}/feed/">feed</a>)
