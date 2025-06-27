@@ -15,15 +15,8 @@
 {% set posts_per_page = 10 %}
 {% set posts_per_feed = 20 %}
 
-{% macro page_url_path(list_url_path, page_number) %}
-  {{- list_url_path -}}
-  {%- if page_number != 1 -%}
-    page/{{ page_number }}/
-  {%- endif -%}
-{% endmacro %}
-
 {% macro pagination_prev_next(
-  list_url_path,
+  list_metadata,
   target,
   total,
   box_class,
@@ -38,7 +31,7 @@
     <li class="{{ box_class | e}}">
       <a
           class="pagination-item pagination-item-page"
-          href="{{ page_url_path(list_url_path, target) | e }}"
+          href="{{ list_metadata.page(target).url_path | e }}"
           rel="{{ rel | e }}"
           >
         {{ contents }}
@@ -53,11 +46,11 @@
   {% endif %}
 {% endmacro %}
 
-{% macro pagination_nav(list_url_path, current, total, link_by_year) %}
+{% macro pagination_nav(list_metadata, current, total, link_by_year) %}
   <nav class="pagination-nav">
     <ol class="pagination-list">
       {{ pagination_prev_next(
-        list_url_path=list_url_path,
+        list_metadata=list_metadata,
         target=current - 1,
         total=total,
         box_class="pagination-item-box-prev",
@@ -83,7 +76,7 @@
           <li>
             <a
                 class="pagination-item pagination-item-page"
-                href="{{ page_url_path(list_url_path, page) | e }}"
+                href="{{ list_metadata.page(page).url_path | e }}"
                 >
               {{ page }}
             </a>
@@ -91,7 +84,7 @@
         {% endif %}
       {% endfor %}
       {{ pagination_prev_next(
-        list_url_path=list_url_path,
+        list_metadata=list_metadata,
         target=current + 1,
         total=total,
         box_class="pagination-item-box-next",
@@ -122,10 +115,7 @@
   </nav>
 {% endmacro %}
 
-{#
- # Map from info about a blog post list to the list of post metadata in it. The
- # info is (url path, list title).
- #}
+{# Map from list metadata to the list of post metadata in it. #}
 {% set lists = {} %}
 {% set post_uuids = [] %}
 {% for template_path in ginjarator.fs.read_config().templates
@@ -135,17 +125,15 @@
   {% set post_metadata = metadata.Post.load(template_path) %}
   {% do ginjarator.py.assert_(post_metadata.uuid not in post_uuids) %}
   {% do post_uuids.append(post_metadata.uuid) %}
-  {% do lists.setdefault(("/", "Blog"), []).append(post_metadata) %}
+  {% do lists.setdefault(metadata.BLOG_MAIN_LIST, []).append(post_metadata) %}
   {% for tag in post_metadata.tags %}
-    {% do lists
-      .setdefault(("/tag/" + tag + "/", "Tag: " + tag), [])
-      .append(post_metadata)
-    %}
+    {% do lists.setdefault(metadata.BLOG_TAG_LISTS[tag], []).append(
+      post_metadata
+    ) %}
   {% endfor %}
 {% endfor %}
 
-{% for (list_url_path, list_title), list_posts in lists.items() %}
-  {% set feed_url_path = list_url_path + "feed/" %}
+{% for list_metadata, list_posts in lists.items() %}
   {% set posts_by_page = (
     list_posts |
     sort(reverse=true, attribute="published") |
@@ -160,7 +148,7 @@
     {% for post_metadata in page_posts %}
       {% do link_by_year.setdefault(
         post_metadata.published.year,
-        page_url_path(list_url_path, page_loop.index) + "#" + post_metadata.id,
+        list_metadata.page(page_loop.index).url_path + "#" + post_metadata.id,
       ) %}
     {% endfor %}
   {% endfor %}
@@ -168,30 +156,25 @@
   {% for page_posts in posts_by_page %}
     {% set extra_head %}
       <link
-          href="{{ feed_url_path | e }}"
+          href="{{ list_metadata.feed_url_path | e }}"
           rel="alternate"
           type="application/atom+xml"
           >
     {% endset %}
-    {% set show_list_title = list_url_path != "/" %}
+    {% set show_list_title = list_metadata != metadata.BLOG_MAIN_LIST %}
     {% call base_html.write(
-      page_metadata=metadata.Page(
-        url_path=page_url_path(list_url_path, loop.index),
-        title=list_title + (
-          "" if loop.index == 1 else " (page " + loop.index | string + ")"
-        ),
-      ),
+      page_metadata=list_metadata.page(loop.index),
       site_title_is_h1=not show_list_title,
       extra_head=extra_head,
     ) %}
       {% if show_list_title or not loop.first %}
         <header class="list-header">
           {% if show_list_title %}
-            <h1 class="h1 list-header-title">{{ list_title | e }}</h1>
+            <h1 class="h1 list-header-title">{{ list_metadata.title | e }}</h1>
           {% endif %}
           {% if not loop.first %}
             {{ pagination_nav(
-              list_url_path=list_url_path,
+              list_metadata=list_metadata,
               current=loop.index,
               total=loop.length,
               link_by_year={},
@@ -205,7 +188,7 @@
       {% if loop.length > 1 %}
         <footer class="list-footer">
           {{ pagination_nav(
-            list_url_path=list_url_path,
+            list_metadata=list_metadata,
             current=loop.index,
             total=loop.length,
             link_by_year=link_by_year,
@@ -227,10 +210,12 @@
         xmlns="http://www.w3.org/2005/Atom"
         >
       <author><name>{{ metadata.SITE.author | e }}</name></author>
-      <id>{{ metadata.SITE.url | e }}{{ list_url_path | e }}</id>
-      <link href="{{ list_url_path | e }}" rel="alternate"/>
-      <link href="{{ feed_url_path | e }}" rel="self"/>
-      <title>{{ list_title | e }} — {{ metadata.SITE.title | e }}</title>
+      <id>{{ list_metadata.url | e }}</id>
+      <link href="{{ list_metadata.url_path | e }}" rel="alternate"/>
+      <link href="{{ list_metadata.feed_url_path | e }}" rel="self"/>
+      <title>
+        {{- list_metadata.title | e }} — {{ metadata.SITE.title | e -}}
+      </title>
       <updated>{{ (feed_posts | first).published.isoformat() | e }}</updated>
       {% for post_metadata in feed_posts %}
         {{ ginjarator.fs.read_text(post_metadata.atom_fragment_path) }}
@@ -245,7 +230,7 @@
     text=true,
   ).stdout %}
   {% do ginjarator.fs.write_text(
-    paths.from_url_path(feed_url_path, dir_index="index.xml"),
+    paths.from_url_path(list_metadata.feed_url_path, dir_index="index.xml"),
     feed_minified,
   ) %}
 {% endfor %}

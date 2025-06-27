@@ -110,3 +110,35 @@ class Post(Page):
     @property
     def atom_fragment_path(self) -> ginjarator.paths.Filesystem:
         return self.work_path / "atom-fragment.xml"
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class PostList(Page):
+    def page(self, page_number: int) -> Page:
+        if page_number == 1:
+            return Page(
+                url_path=self.url_path,
+                title=self.title,
+            )
+        else:
+            return Page(
+                url_path=f"{self.url_path}page/{page_number}/",
+                title=f"{self.title} (page {page_number})",
+            )
+
+    @property
+    def feed_url_path(self) -> str:
+        return f"{self.url_path}feed/"
+
+
+BLOG_MAIN_LIST = PostList(
+    url_path="/",
+    title="Blog",
+)
+BLOG_TAG_LISTS = {
+    tag: PostList(
+        url_path=f"/tag/{tag}/",
+        title=f"Tag: {tag}",
+    )
+    for tag in SITE.tags
+}

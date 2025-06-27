@@ -187,3 +187,23 @@ def test_post_load(
     assert post_metadata.atom_fragment_path == ginjarator.paths.Filesystem(
         "work/posts/2025-06-27-foo/atom-fragment.xml"
     )
+
+
+@pytest.mark.parametrize(
+    "page_number,expected",
+    (
+        (1, metadata.Page(url_path="/", title="Blog")),
+        (2, metadata.Page(url_path="/page/2/", title="Blog (page 2)")),
+    ),
+)
+def test_post_list_page(page_number: int, expected: metadata.Page) -> None:
+    assert (
+        metadata.PostList(url_path="/", title="Blog").page(page_number)
+        == expected
+    )
+
+
+def test_post_list_properties() -> None:
+    post_list = metadata.PostList(url_path="/", title="Blog")
+
+    assert post_list.feed_url_path == "/feed/"
