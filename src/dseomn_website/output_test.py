@@ -7,6 +7,7 @@ import http
 import pathlib
 from typing import cast
 
+import ginjarator
 import pytest
 import requests
 
@@ -20,7 +21,7 @@ pytestmark = pytest.mark.output
 @pytest.mark.parametrize(
     "url_path",
     sorted(
-        paths.to_url_path(path)
+        paths.to_url_path(ginjarator.paths.Filesystem(path))
         for path in pathlib.Path(paths.OUTPUT).glob("**/*")
         if path.is_file() and path != paths.OUTPUT / ".htaccess"
     ),

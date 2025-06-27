@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import pathlib
-
+import ginjarator
 import pytest
 
 from dseomn_website import paths
@@ -35,7 +34,9 @@ def test_from_url_path_error(
     ),
 )
 def test_from_url_path(url_path: str, expected: str) -> None:
-    assert paths.from_url_path(url_path) == pathlib.PurePath(expected)
+    assert paths.from_url_path(url_path) == ginjarator.paths.Filesystem(
+        expected
+    )
 
 
 def test_to_url_path_error() -> None:
