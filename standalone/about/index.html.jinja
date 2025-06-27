@@ -15,12 +15,6 @@
   <meta property="profile:username" content="dseomn">
 {% endset %}
 
-{% call article.standalone(
-  page_metadata=metadata.Page(
-    url_path="/about/",
-    title="About",
-  ),
-  extra_head=extra_head,
-) %}
+{% call article.standalone(extra_head=extra_head) %}
   <p>TODO: dseomn - Write something here.</p>
 {% endcall %}

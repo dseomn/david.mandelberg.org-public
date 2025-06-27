@@ -55,6 +55,14 @@ class Page:
         return f"{self.title} — {SITE.title}"
 
 
+STANDALONE_PAGES = {
+    ginjarator.paths.Filesystem("standalone/about/index.html.jinja"): Page(
+        url_path="/about/",
+        title="About",
+    ),
+}
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Post(Page):
     id: str

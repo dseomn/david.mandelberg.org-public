@@ -10,9 +10,11 @@
 {% import "include/base_html.html.jinja" as base_html %}
 
 {% macro standalone(
-  page_metadata,
   extra_head=""
 ) %}
+  {% set page_metadata = (
+    metadata.STANDALONE_PAGES[ginjarator.current_template]
+  ) %}
   {% set fragment %}
     <article class="article">
       <h1>{{ page_metadata.title | e }}</h1>
