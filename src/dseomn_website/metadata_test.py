@@ -23,6 +23,13 @@ def test_page_url() -> None:
     )
 
 
+def test_page_full_title() -> None:
+    assert (
+        metadata.Page(url_path="/foo/", title="Foo").full_title
+        == "Foo — David Mandelberg"
+    )
+
+
 @pytest.mark.parametrize(
     "contents,error_regex",
     (

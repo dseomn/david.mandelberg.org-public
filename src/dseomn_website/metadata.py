@@ -50,6 +50,10 @@ class Page:
     def url(self) -> str:
         return SITE.url + self.url_path
 
+    @property
+    def full_title(self) -> str:
+        return f"{self.title} — {SITE.title}"
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Post(Page):
