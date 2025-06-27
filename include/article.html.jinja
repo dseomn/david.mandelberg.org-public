@@ -28,12 +28,11 @@
 {% endmacro %}
 
 {% macro _post_fragment(
-  id,
   post_metadata,
   link,
   contents
 ) %}
-  <article class="article" id="{{ id | e }}">
+  <article class="article" id="{{ post_metadata.id | e }}">
     <header class="article-header">
       <h1 class="article-header-title">
         {% if link is none %}
@@ -110,7 +109,6 @@
   ) %}
     {{ headings.article(
       _post_fragment(
-        id=source_dir_name,
         post_metadata=post_metadata,
         link=none,
         contents=contents,
@@ -121,7 +119,6 @@
     work_path + "/include-fragment.html",
     headings.article(
       _post_fragment(
-        id=source_dir_name,
         post_metadata=post_metadata,
         link=post_metadata.url_path,
         contents=contents,

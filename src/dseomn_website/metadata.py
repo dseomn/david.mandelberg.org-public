@@ -51,6 +51,7 @@ class Page:
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Post(Page):
+    id: str
     uuid: str
     published: datetime.datetime
     author: str
@@ -89,6 +90,7 @@ class Post(Page):
         return cls(
             url_path=f"/{published.strftime("%Y/%m/%d")}/{slug}/",
             title=raw["title"],
+            id=source_dir_name,
             uuid=raw["uuid"],
             published=published,
             author=raw.get("author", SITE.author),
