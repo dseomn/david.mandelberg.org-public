@@ -154,3 +154,8 @@ BLOG_TAG_LISTS = {
     )
     for tag in SITE.tags
 }
+
+MAIN_NAV = (
+    BLOG_MAIN_LIST,
+    *STANDALONE_PAGES.values(),
+)

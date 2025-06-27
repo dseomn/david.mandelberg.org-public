@@ -12,10 +12,6 @@
 
 {% import "include/media.jinja" as media %}
 
-{% set _standalone_pages = (
-  ("/about/", "About"),
-) %}
-
 {% macro minify(html) %}
   {{- subprocess.run(
     ("minify", "--type=html"),
@@ -24,6 +20,11 @@
     check=true,
     text=true,
   ).stdout -}}
+{% endmacro %}
+
+{% macro blog_list_link(list_metadata, link_text) %}
+  <a href="{{ list_metadata.url_path | e }}">{{ link_text | e }}</a>
+  (<a href="{{ list_metadata.feed_url_path | e }}">feed</a>)
 {% endmacro %}
 
 {% macro write(
@@ -80,17 +81,14 @@
             {% endif %}
             <nav>
               <ul class="site-header-nav-list">
-                {% for nav_url_path, nav_title
-                  in (("/", "Blog"),) + _standalone_pages
-                %}
-                  {% if nav_url_path == page_metadata.url_path %}
-                    {% do ginjarator.py.assert_(
-                      nav_title == page_metadata.title,
-                    ) %}
-                    <li aria-current="page">{{ nav_title | e }}</li>
+                {% for nav_metadata in metadata.MAIN_NAV %}
+                  {% if nav_metadata.url_path == page_metadata.url_path %}
+                    <li aria-current="page">{{ nav_metadata.title | e }}</li>
                   {% else %}
                     <li>
-                      <a href="{{ nav_url_path | e }}">{{ nav_title | e }}</a>
+                      <a href="{{ nav_metadata.url_path | e }}">
+                        {{ nav_metadata.title | e }}
+                      </a>
                     </li>
                   {% endif %}
                 {% endfor %}
@@ -104,20 +102,20 @@
         <footer class="site-footer">
           <ul class="site-footer-list">
             <li class="site-footer-list-item">
-              <a href="/">Blog</a> (<a href="/feed/">feed</a>)
+              {{ blog_list_link(
+                metadata.BLOG_MAIN_LIST,
+                link_text=metadata.BLOG_MAIN_LIST.title,
+              ) }}
               <ul>
-                {% for tag in metadata.SITE.tags %}
-                  <li>
-                    <a href="/tag/{{ tag | e }}/">{{ tag | e }}</a>
-                    (<a href="/tag/{{ tag | e }}/feed/">feed</a>)
-                  </li>
+                {% for tag, list_metadata in metadata.BLOG_TAG_LISTS.items() %}
+                  <li>{{ blog_list_link(list_metadata, link_text=tag) }}</li>
                 {% endfor %}
               </ul>
             </li>
-            {% for standalone_url_path, standalone_title in _standalone_pages %}
+            {% for standalone_metadata in metadata.STANDALONE_PAGES.values() %}
               <li class="site-footer-list-item">
-                <a href="{{ standalone_url_path | e }}">
-                  {{ standalone_title }}
+                <a href="{{ standalone_metadata.url_path | e }}">
+                  {{ standalone_metadata.title | e }}
                 </a>
               </li>
             {% endfor %}
