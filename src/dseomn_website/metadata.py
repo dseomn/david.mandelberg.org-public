@@ -5,7 +5,6 @@
 from collections.abc import Sequence
 import dataclasses
 import datetime
-import pathlib
 import tomllib
 from typing import Self
 
@@ -55,7 +54,7 @@ class Post:
             raise ValueError(f"{self.tags} is not sorted and unique.")
 
     @classmethod
-    def load(cls, template: pathlib.PurePath) -> Self:
+    def load(cls, template: ginjarator.paths.Filesystem) -> Self:
         raw = tomllib.loads(
             ginjarator.api().fs.read_text(
                 str(template.parent / "metadata.toml"),
