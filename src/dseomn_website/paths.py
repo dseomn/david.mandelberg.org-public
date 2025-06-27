@@ -7,6 +7,7 @@ from collections.abc import Collection
 import ginjarator
 
 OUTPUT = ginjarator.paths.Filesystem("output")
+WORK = ginjarator.paths.Filesystem("work")
 DIR_INDEXES = (
     "index.html",
     "index.xml",

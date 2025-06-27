@@ -175,4 +175,15 @@ def test_post_load(
         current_template="posts/2025-06-27-foo/index.html.jinja",
         root_path=tmp_path,
     ):
-        assert metadata.Post.load(ginjarator.api().current_template) == expected
+        post_metadata = metadata.Post.load(ginjarator.api().current_template)
+
+    assert post_metadata == expected
+    assert post_metadata.work_path == ginjarator.paths.Filesystem(
+        "work/posts/2025-06-27-foo"
+    )
+    assert post_metadata.include_fragment_path == ginjarator.paths.Filesystem(
+        "work/posts/2025-06-27-foo/include-fragment.html"
+    )
+    assert post_metadata.atom_fragment_path == ginjarator.paths.Filesystem(
+        "work/posts/2025-06-27-foo/atom-fragment.xml"
+    )

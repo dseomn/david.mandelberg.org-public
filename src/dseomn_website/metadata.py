@@ -10,6 +10,8 @@ from typing import Self
 
 import ginjarator
 
+from dseomn_website import paths
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Site:
@@ -96,3 +98,15 @@ class Post(Page):
             author=raw.get("author", SITE.author),
             tags=tuple(raw.get("tags", [])),
         )
+
+    @property
+    def work_path(self) -> ginjarator.paths.Filesystem:
+        return paths.WORK / "posts" / self.id
+
+    @property
+    def include_fragment_path(self) -> ginjarator.paths.Filesystem:
+        return self.work_path / "include-fragment.html"
+
+    @property
+    def atom_fragment_path(self) -> ginjarator.paths.Filesystem:
+        return self.work_path / "atom-fragment.xml"

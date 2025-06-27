@@ -123,8 +123,8 @@
 {% endmacro %}
 
 {#
- # Map from info about a blog post list to the list of posts in it. The info is
- # (url path, list title) and each post in the list is (metadata, work path)
+ # Map from info about a blog post list to the list of post metadata in it. The
+ # info is (url path, list title).
  #}
 {% set lists = {} %}
 {% set post_uuids = [] %}
@@ -135,14 +135,11 @@
   {% set post_metadata = metadata.Post.load(template_path) %}
   {% do ginjarator.py.assert_(post_metadata.uuid not in post_uuids) %}
   {% do post_uuids.append(post_metadata.uuid) %}
-  {% set work_path = "work/posts/" + template_path.parent.name %}
-  {% do lists.setdefault(("/", "Blog"), []).append(
-    (post_metadata, work_path)
-  ) %}
+  {% do lists.setdefault(("/", "Blog"), []).append(post_metadata) %}
   {% for tag in post_metadata.tags %}
     {% do lists
       .setdefault(("/tag/" + tag + "/", "Tag: " + tag), [])
-      .append((post_metadata, work_path))
+      .append(post_metadata)
     %}
   {% endfor %}
 {% endfor %}
@@ -151,7 +148,7 @@
   {% set feed_url_path = list_url_path + "feed/" %}
   {% set posts_by_page = (
     list_posts |
-    sort(reverse=true, attribute="0.published") |
+    sort(reverse=true, attribute="published") |
     batch(posts_per_page) |
     list
   ) %}
@@ -160,7 +157,7 @@
   {% set link_by_year = {} %}
   {% for page_posts in posts_by_page %}
     {% set page_loop = loop %}
-    {% for post_metadata, _ in page_posts %}
+    {% for post_metadata in page_posts %}
       {% do link_by_year.setdefault(
         post_metadata.published.year,
         page_url_path(list_url_path, page_loop.index) + "#" + post_metadata.id,
@@ -202,8 +199,8 @@
           {% endif %}
         </header>
       {% endif %}
-      {% for _, work_path in page_posts %}
-        {{ ginjarator.fs.read_text(work_path + "/include-fragment.html") }}
+      {% for post_metadata in page_posts %}
+        {{ ginjarator.fs.read_text(post_metadata.include_fragment_path) }}
       {% endfor %}
       {% if loop.length > 1 %}
         <footer class="list-footer">
@@ -220,7 +217,7 @@
 
   {% set feed_posts = (
     list_posts |
-    sort(reverse=true, attribute="0.published")
+    sort(reverse=true, attribute="published")
   )[:posts_per_feed] %}
   {% set feed -%}
     <?xml version="1.0" encoding="utf-8"?>
@@ -234,9 +231,9 @@
       <link href="{{ list_url_path | e }}" rel="alternate"/>
       <link href="{{ feed_url_path | e }}" rel="self"/>
       <title>{{ list_title | e }} — {{ metadata.SITE.title | e }}</title>
-      <updated>{{ (feed_posts | first)[0].published.isoformat() | e }}</updated>
-      {% for _, work_path in feed_posts %}
-        {{ ginjarator.fs.read_text(work_path + "/atom-fragment.xml") }}
+      <updated>{{ (feed_posts | first).published.isoformat() | e }}</updated>
+      {% for post_metadata in feed_posts %}
+        {{ ginjarator.fs.read_text(post_metadata.atom_fragment_path) }}
       {% endfor %}
     </feed>
   {% endset %}

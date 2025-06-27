@@ -90,8 +90,6 @@
 
 {% macro post() %}
   {% set post_metadata = metadata.Post.load(ginjarator.current_template) %}
-  {% set source_dir_name = ginjarator.current_template.parent.name %}
-  {% set work_path = "work/posts/" + source_dir_name %}
   {% set extra_head %}
     <meta
         property="article:published_time"
@@ -116,7 +114,7 @@
     ) }}
   {% endcall %}
   {% do ginjarator.fs.write_text(
-    work_path + "/include-fragment.html",
+    post_metadata.include_fragment_path,
     headings.article(
       _post_fragment(
         post_metadata=post_metadata,
@@ -126,7 +124,7 @@
       offset=1,
     ),
   ) %}
-  {% call ginjarator.fs.write_text_macro(work_path + "/atom-fragment.xml") %}
+  {% call ginjarator.fs.write_text_macro(post_metadata.atom_fragment_path) %}
     <entry>
       <author><name>{{ post_metadata.author | e }}</name></author>
       {% for tag in post_metadata.tags %}
