@@ -5,16 +5,12 @@
  #}
 
 {% set subprocess = ginjarator.py.import_("subprocess") %}
-{% set tomllib = ginjarator.py.import_("tomllib") %}
 
 {% set lint = ginjarator.py.import_("dseomn_website.lint") %}
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% import "include/media.jinja" as media %}
-
-{% set site_metadata = tomllib.loads(
-  ginjarator.fs.read_text("include/site_metadata.toml")
-) %}
 
 {% set _standalone_pages = (
   ("/about/", "About"),
@@ -39,22 +35,22 @@
   {% set contents -%}
     <!doctype html>
     <html
-        dir="{{ site_metadata.direction | e }}"
-        lang="{{ site_metadata.language | e }}"
+        dir="{{ metadata.SITE.direction | e }}"
+        lang="{{ metadata.SITE.language | e }}"
         >
       <head>
         <meta charset="utf-8">
-        <title>{{ title | e }} — {{ site_metadata.title | e }}</title>
+        <title>{{ title | e }} — {{ metadata.SITE.title | e }}</title>
         <meta name="viewport" content="width=device-width">
         <meta
             property="og:locale"
-            content="{{ site_metadata.language.replace("-", "_") | e }}"
+            content="{{ metadata.SITE.language.replace("-", "_") | e }}"
             >
-        <meta property="og:site_name" content="{{ site_metadata.title | e }}">
+        <meta property="og:site_name" content="{{ metadata.SITE.title | e }}">
         <meta property="og:title" content="{{ title | e }}">
         <meta
             property="og:url"
-            content="{{ site_metadata.url | e }}{{ url_path | e }}"
+            content="{{ metadata.SITE.url | e }}{{ url_path | e }}"
             >
         {% set main_css = ginjarator.fs.read_text(
           "work/css/main.css.cache-buster"
@@ -62,15 +58,15 @@
         {% if main_css is not none %}
           <link rel="stylesheet" href="{{ paths.to_url_path(main_css) | e }}">
         {% endif %}
-        {% call(url_path, metadata) media.image_for_each(
+        {% call(url_path, image_metadata) media.image_for_each(
           media.favicon,
           conversions=media.image_profiles.favicon,
         ) %}
-          {% set geometry = metadata.geometry %}
+          {% set geometry = image_metadata.geometry %}
           <link
               rel="icon"
               href="{{ url_path | e }}"
-              type="{{ metadata.mimeType | e }}"
+              type="{{ image_metadata.mimeType | e }}"
               sizes="{{ geometry.width }}x{{ geometry.height }}"
               >
         {% endcall %}
@@ -81,10 +77,10 @@
           <div class="site-header-inner">
             {% if site_title_is_h1 %}
               <h1 class="h1 site-header-title">
-                {{ site_metadata.title | e }}
+                {{ metadata.SITE.title | e }}
               </h1>
             {% else %}
-              <p class="h1 site-header-title">{{ site_metadata.title | e }}</p>
+              <p class="h1 site-header-title">{{ metadata.SITE.title | e }}</p>
             {% endif %}
             <nav>
               <ul class="site-header-nav-list">
@@ -112,7 +108,7 @@
             <li class="site-footer-list-item">
               <a href="/">Blog</a> (<a href="/feed/">feed</a>)
               <ul>
-                {% for tag in site_metadata.tags | sort(case_sensitive=true) %}
+                {% for tag in metadata.SITE.tags | sort(case_sensitive=true) %}
                   <li>
                     <a href="/tag/{{ tag | e }}/">{{ tag | e }}</a>
                     (<a href="/tag/{{ tag | e }}/feed/">feed</a>)

@@ -4,15 +4,10 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
-{% set tomllib = ginjarator.py.import_("tomllib") %}
-
 {% set headings = ginjarator.py.import_("dseomn_website.headings") %}
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
-
-{% set site_metadata = tomllib.loads(
-  ginjarator.fs.read_text("include/site_metadata.toml")
-) %}
 
 {% macro standalone(
   url_path,
@@ -36,7 +31,7 @@
 
 {% macro _post_fragment(
   id,
-  metadata,
+  post_metadata,
   link,
   contents
 ) %}
@@ -44,9 +39,11 @@
     <header class="article-header">
       <h1 class="article-header-title">
         {% if link is none %}
-          {{ metadata.title | e }}
+          {{ post_metadata.title | e }}
         {% else %}
-          <a rel="bookmark" href="{{ link | e }}">{{ metadata.title | e }}</a>
+          <a rel="bookmark" href="{{ link | e }}">
+            {{ post_metadata.title | e }}
+          </a>
         {% endif %}
       </h1>
       <dl class="article-header-metadata">
@@ -60,7 +57,8 @@
               >
             <time>
               {{
-                metadata.published.isoformat(sep=" ", timespec="seconds") | e
+                post_metadata.published.isoformat(sep=" ", timespec="seconds") |
+                e
               }}
             </time>
           </dd>
@@ -70,17 +68,17 @@
             <span aria-label="author" role="img">👤</span>
           </dt>
           <dd  class="article-header-metadata-value">
-            {{ metadata.author | e }}
+            {{ post_metadata.author | e }}
           </dd>
         </div>
-        {% if metadata.tags %}
+        {% if post_metadata.tags %}
           <div class="article-header-metadata-item">
             <dt class="article-header-metadata-key">
               <span aria-label="tags" role="img">🏷️</span>
             </dt>
             <dd class="article-header-metadata-value">
               {% set tag_joiner = joiner(", ") %}
-              {% for tag in metadata.tags -%}
+              {% for tag in post_metadata.tags -%}
                 {{- tag_joiner() -}}
                 <a href="/tag/{{ tag | e }}/" rel="tag">{{ tag | e }}</a>
               {%- endfor %}
@@ -94,42 +92,25 @@
 {% endmacro %}
 
 {% macro post() %}
-  {% set metadata = tomllib.loads(
-    ginjarator.fs.read_text(
-      ginjarator.current_template.parent / "metadata.toml"
-    )
-  ) %}
-  {% do metadata.setdefault("author", site_metadata.author) %}
-  {% do metadata.setdefault("tags", []) %}
-  {% do ginjarator.py.assert_(
-    metadata.keys() <= {
-      "uuid": none,
-      "published": none,
-      "title": none,
-      "author": none,
-      "tags": none,
-    }.keys()
-  ) %}
-  {% for tag in metadata.tags %}
-    {% do ginjarator.py.assert_(tag in site_metadata.tags) %}
-  {% endfor %}
-  {% do ginjarator.py.assert_(
-    metadata.tags == metadata.tags | sort(case_sensitive=true)
-  ) %}
+  {% set post_metadata = metadata.Post.load(ginjarator.current_template) %}
   {% set source_dir_name = ginjarator.current_template.parent.name %}
-  {% set source_dir_date_prefix = metadata.published.strftime("%Y-%m-%d-") %}
+  {% set source_dir_date_prefix = post_metadata.published.strftime(
+    "%Y-%m-%d-"
+  ) %}
   {% do ginjarator.py.assert_(
     source_dir_name.startswith(source_dir_date_prefix)
   ) %}
   {% set slug = source_dir_name.removeprefix(source_dir_date_prefix) %}
-  {% set url_path = metadata.published.strftime("/%Y/%m/%d/") + slug + "/" %}
+  {% set url_path = (
+    post_metadata.published.strftime("/%Y/%m/%d/") + slug + "/"
+  ) %}
   {% set work_path = "work/posts/" + source_dir_name %}
   {% set extra_head %}
     <meta
         property="article:published_time"
-        content="{{ metadata.published.isoformat() | e }}"
+        content="{{ post_metadata.published.isoformat() | e }}"
         >
-    {% for tag in metadata.tags %}
+    {% for tag in post_metadata.tags %}
       <meta property="article:tag" content="{{ tag | e }}">
     {% endfor %}
     <meta property="og:type" content="article">
@@ -137,13 +118,13 @@
   {% set contents = caller() %}
   {% call base_html.write(
     url_path=url_path,
-    title=metadata.title,
+    title=post_metadata.title,
     extra_head=extra_head,
   ) %}
     {{ headings.article(
       _post_fragment(
         id=source_dir_name,
-        metadata=metadata,
+        post_metadata=post_metadata,
         link=none,
         contents=contents,
       ),
@@ -154,7 +135,7 @@
     headings.article(
       _post_fragment(
         id=source_dir_name,
-        metadata=metadata,
+        post_metadata=post_metadata,
         link=url_path,
         contents=contents,
       ),
@@ -163,18 +144,18 @@
   ) %}
   {% call ginjarator.fs.write_text_macro(work_path + "/atom-fragment.xml") %}
     <entry>
-      <author><name>{{ metadata.author | e }}</name></author>
-      {% for tag in metadata.tags %}
+      <author><name>{{ post_metadata.author | e }}</name></author>
+      {% for tag in post_metadata.tags %}
         <category term="{{ tag | e }}"/>
       {% endfor %}
       <content type="html">
         {{- base_html.minify(contents) | e -}}
       </content>
-      <id>urn:uuid:{{ metadata.uuid | e }}</id>
+      <id>urn:uuid:{{ post_metadata.uuid | e }}</id>
       <link href="{{ url_path | e }}" rel="alternate"/>
-      <published>{{ metadata.published.isoformat() | e }}</published>
-      <title>{{ metadata.title | e }}</title>
-      <updated>{{ metadata.published.isoformat() | e }}</updated>
+      <published>{{ post_metadata.published.isoformat() | e }}</published>
+      <title>{{ post_metadata.title | e }}</title>
+      <updated>{{ post_metadata.published.isoformat() | e }}</updated>
     </entry>
   {% endcall %}
 {% endmacro %}

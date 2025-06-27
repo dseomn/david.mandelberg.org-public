@@ -5,16 +5,12 @@
  #}
 
 {% set subprocess = ginjarator.py.import_("subprocess") %}
-{% set tomllib = ginjarator.py.import_("tomllib") %}
 
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set pagination = ginjarator.py.import_("dseomn_website.pagination") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
-
-{% set site_metadata = tomllib.loads(
-  ginjarator.fs.read_text("include/site_metadata.toml")
-) %}
 
 {% set posts_per_page = 10 %}
 {% set posts_per_feed = 20 %}
@@ -136,17 +132,17 @@
   if template_path.is_relative_to("posts")
   and (template_path | string) != "posts/lists.html.jinja"
 %}
-  {% set metadata = tomllib.loads(
-    ginjarator.fs.read_text(template_path.parent / "metadata.toml")
-  ) %}
-  {% do ginjarator.py.assert_(metadata.uuid not in post_uuids) %}
-  {% do post_uuids.append(metadata.uuid) %}
+  {% set post_metadata = metadata.Post.load(template_path) %}
+  {% do ginjarator.py.assert_(post_metadata.uuid not in post_uuids) %}
+  {% do post_uuids.append(post_metadata.uuid) %}
   {% set work_path = "work/posts/" + template_path.parent.name %}
-  {% do lists.setdefault(("/", "Blog"), []).append((metadata, work_path)) %}
-  {% for tag in metadata.get("tags", []) %}
+  {% do lists.setdefault(("/", "Blog"), []).append(
+    (post_metadata, work_path)
+  ) %}
+  {% for tag in post_metadata.tags %}
     {% do lists
       .setdefault(("/tag/" + tag + "/", "Tag: " + tag), [])
-      .append((metadata, work_path))
+      .append((post_metadata, work_path))
     %}
   {% endfor %}
 {% endfor %}
@@ -164,10 +160,10 @@
   {% set link_by_year = {} %}
   {% for page_posts in posts_by_page %}
     {% set page_loop = loop %}
-    {% for metadata, work_path in page_posts %}
+    {% for post_metadata, work_path in page_posts %}
       {% set _, post_id = work_path.rsplit("/", 1) %}
       {% do link_by_year.setdefault(
-        metadata.published.year,
+        post_metadata.published.year,
         page_url_path(list_url_path, page_loop.index) + "#" + post_id,
       ) %}
     {% endfor %}
@@ -228,15 +224,15 @@
   {% set feed -%}
     <?xml version="1.0" encoding="utf-8"?>
     <feed
-        xml:base="{{ site_metadata.url | e }}"
-        xml:lang="{{ site_metadata.language | e }}"
+        xml:base="{{ metadata.SITE.url | e }}"
+        xml:lang="{{ metadata.SITE.language | e }}"
         xmlns="http://www.w3.org/2005/Atom"
         >
-      <author><name>{{ site_metadata.author | e }}</name></author>
-      <id>{{ site_metadata.url | e }}{{ list_url_path | e }}</id>
+      <author><name>{{ metadata.SITE.author | e }}</name></author>
+      <id>{{ metadata.SITE.url | e }}{{ list_url_path | e }}</id>
       <link href="{{ list_url_path | e }}" rel="alternate"/>
       <link href="{{ feed_url_path | e }}" rel="self"/>
-      <title>{{ list_title | e }} — {{ site_metadata.title | e }}</title>
+      <title>{{ list_title | e }} — {{ metadata.SITE.title | e }}</title>
       <updated>{{ (feed_posts | first)[0].published.isoformat() | e }}</updated>
       {% for _, work_path in feed_posts %}
         {{ ginjarator.fs.read_text(work_path + "/atom-fragment.xml") }}

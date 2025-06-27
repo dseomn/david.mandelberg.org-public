@@ -89,7 +89,7 @@
     {% if metadata_json is not none and out_filename is not none %}
       {{ caller(
         url_path=paths.to_url_path(out_filename),
-        metadata=json.loads(metadata_json),
+        image_metadata=json.loads(metadata_json),
       ) }}
     {% endif %}
   {% endfor %}
@@ -97,11 +97,11 @@
 
 {% macro image_html(original_filename, profile, class="") -%}
   {%- set images = [] -%}
-  {%- call(url_path, metadata) image_for_each(
+  {%- call(url_path, image_metadata) image_for_each(
     original_filename,
     conversions=image_profiles[profile][image_profile_type(original_filename)],
   ) -%}
-    {%- do images.append(dict(url_path=url_path, metadata=metadata)) -%}
+    {%- do images.append(dict(url_path=url_path, metadata=image_metadata)) -%}
   {%- endcall -%}
   {%- if images -%}
     <img
