@@ -160,11 +160,10 @@
   {% set link_by_year = {} %}
   {% for page_posts in posts_by_page %}
     {% set page_loop = loop %}
-    {% for post_metadata, work_path in page_posts %}
-      {% set _, post_id = work_path.rsplit("/", 1) %}
+    {% for post_metadata, _ in page_posts %}
       {% do link_by_year.setdefault(
         post_metadata.published.year,
-        page_url_path(list_url_path, page_loop.index) + "#" + post_id,
+        page_url_path(list_url_path, page_loop.index) + "#" + post_metadata.id,
       ) %}
     {% endfor %}
   {% endfor %}
