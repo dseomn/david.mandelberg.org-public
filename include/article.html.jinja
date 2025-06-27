@@ -10,19 +10,17 @@
 {% import "include/base_html.html.jinja" as base_html %}
 
 {% macro standalone(
-  url_path,
-  title,
+  page_metadata,
   extra_head=""
 ) %}
   {% set fragment %}
     <article class="article">
-      <h1>{{ title | e }}</h1>
+      <h1>{{ page_metadata.title | e }}</h1>
       {{ caller() }}
     </article>
   {% endset %}
   {% call base_html.write(
-    url_path=url_path,
-    title=title,
+    page_metadata=page_metadata,
     extra_head=extra_head,
   ) %}
     {{ headings.article(fragment) }}
@@ -94,16 +92,6 @@
 {% macro post() %}
   {% set post_metadata = metadata.Post.load(ginjarator.current_template) %}
   {% set source_dir_name = ginjarator.current_template.parent.name %}
-  {% set source_dir_date_prefix = post_metadata.published.strftime(
-    "%Y-%m-%d-"
-  ) %}
-  {% do ginjarator.py.assert_(
-    source_dir_name.startswith(source_dir_date_prefix)
-  ) %}
-  {% set slug = source_dir_name.removeprefix(source_dir_date_prefix) %}
-  {% set url_path = (
-    post_metadata.published.strftime("/%Y/%m/%d/") + slug + "/"
-  ) %}
   {% set work_path = "work/posts/" + source_dir_name %}
   {% set extra_head %}
     <meta
@@ -117,8 +105,7 @@
   {% endset %}
   {% set contents = caller() %}
   {% call base_html.write(
-    url_path=url_path,
-    title=post_metadata.title,
+    page_metadata=post_metadata,
     extra_head=extra_head,
   ) %}
     {{ headings.article(
@@ -136,7 +123,7 @@
       _post_fragment(
         id=source_dir_name,
         post_metadata=post_metadata,
-        link=url_path,
+        link=post_metadata.url_path,
         contents=contents,
       ),
       offset=1,
@@ -152,7 +139,7 @@
         {{- base_html.minify(contents) | e -}}
       </content>
       <id>urn:uuid:{{ post_metadata.uuid | e }}</id>
-      <link href="{{ url_path | e }}" rel="alternate"/>
+      <link href="{{ post_metadata.url_path | e }}" rel="alternate"/>
       <published>{{ post_metadata.published.isoformat() | e }}</published>
       <title>{{ post_metadata.title | e }}</title>
       <updated>{{ post_metadata.published.isoformat() | e }}</updated>

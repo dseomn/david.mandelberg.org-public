@@ -4,6 +4,8 @@
  # SPDX-License-Identifier: LicenseRef-NONE
  #}
 
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
+
 {% import "include/article.html.jinja" as article %}
 
 {% set extra_head %}
@@ -14,8 +16,10 @@
 {% endset %}
 
 {% call article.standalone(
-  url_path="/about/",
-  title="About",
+  page_metadata=metadata.Page(
+    url_path="/about/",
+    title="About",
+  ),
   extra_head=extra_head,
 ) %}
   <p>TODO: dseomn - Write something here.</p>

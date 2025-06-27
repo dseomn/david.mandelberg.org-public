@@ -6,20 +6,22 @@
 
 {% set http = ginjarator.py.import_("http") %}
 
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
+
 {% import "include/base_html.html.jinja" as base_html %}
 
 {% macro page() %}
   {% set status = http.HTTPStatus(
     ginjarator.current_template.parent.name | int
   ) %}
-  {% set title = status.value | string + " " + status.phrase %}
-  {% set contents = caller() %}
-  {% call base_html.write(
+  {% set page_metadata = metadata.Page(
     url_path="/" + ginjarator.current_template.parent | string + "/",
-    title=title,
+    title=status.value | string + " " + status.phrase,
   ) %}
+  {% set contents = caller() %}
+  {% call base_html.write(page_metadata=page_metadata) %}
     <div class="site-error">
-      <h1 class="h1">{{ title | e }}</h1>
+      <h1 class="h1">{{ page_metadata.title | e }}</h1>
       {{ contents }}
     </div>
   {% endcall %}

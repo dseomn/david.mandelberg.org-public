@@ -179,9 +179,11 @@
     {% endset %}
     {% set show_list_title = list_url_path != "/" %}
     {% call base_html.write(
-      url_path=page_url_path(list_url_path, loop.index),
-      title=list_title + (
-        "" if loop.index == 1 else " (page " + loop.index | string + ")"
+      page_metadata=metadata.Page(
+        url_path=page_url_path(list_url_path, loop.index),
+        title=list_title + (
+          "" if loop.index == 1 else " (page " + loop.index | string + ")"
+        ),
       ),
       site_title_is_h1=not show_list_title,
       extra_head=extra_head,

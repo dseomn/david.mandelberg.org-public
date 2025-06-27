@@ -40,10 +40,19 @@ SITE = Site(
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Post:
+class Page:
+    url_path: str
+    title: str
+
+    @property
+    def url(self) -> str:
+        return SITE.url + self.url_path
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class Post(Page):
     uuid: str
     published: datetime.datetime
-    title: str
     author: str
     tags: Sequence[str]
 
@@ -69,10 +78,19 @@ class Post:
             "tags",
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
+        published = raw["published"]
+        source_dir_name = template.parent.name
+        source_dir_date_prefix = published.strftime("%Y-%m-%d-")
+        if not source_dir_name.startswith(source_dir_date_prefix):
+            raise ValueError(
+                f"{template}'s published date and directory name don't match."
+            )
+        slug = source_dir_name.removeprefix(source_dir_date_prefix)
         return cls(
-            uuid=raw["uuid"],
-            published=raw["published"],
+            url_path=f"/{published.strftime("%Y/%m/%d")}/{slug}/",
             title=raw["title"],
+            uuid=raw["uuid"],
+            published=published,
             author=raw.get("author", SITE.author),
             tags=tuple(raw.get("tags", [])),
         )

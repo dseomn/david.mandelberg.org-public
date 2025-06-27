@@ -27,8 +27,7 @@
 {% endmacro %}
 
 {% macro write(
-  url_path,
-  title,
+  page_metadata,
   site_title_is_h1=false,
   extra_head=''
 ) %}
@@ -40,18 +39,17 @@
         >
       <head>
         <meta charset="utf-8">
-        <title>{{ title | e }} — {{ metadata.SITE.title | e }}</title>
+        <title>
+          {{ page_metadata.title | e }} — {{ metadata.SITE.title | e }}
+        </title>
         <meta name="viewport" content="width=device-width">
         <meta
             property="og:locale"
             content="{{ metadata.SITE.language.replace("-", "_") | e }}"
             >
         <meta property="og:site_name" content="{{ metadata.SITE.title | e }}">
-        <meta property="og:title" content="{{ title | e }}">
-        <meta
-            property="og:url"
-            content="{{ metadata.SITE.url | e }}{{ url_path | e }}"
-            >
+        <meta property="og:title" content="{{ page_metadata.title | e }}">
+        <meta property="og:url" content="{{ page_metadata.url | e }}">
         {% set main_css = ginjarator.fs.read_text(
           "work/css/main.css.cache-buster"
         ) %}
@@ -87,8 +85,10 @@
                 {% for nav_url_path, nav_title
                   in (("/", "Blog"),) + _standalone_pages
                 %}
-                  {% if nav_url_path == url_path %}
-                    {% do ginjarator.py.assert_(nav_title == title) %}
+                  {% if nav_url_path == page_metadata.url_path %}
+                    {% do ginjarator.py.assert_(
+                      nav_title == page_metadata.title,
+                    ) %}
                     <li aria-current="page">{{ nav_title | e }}</li>
                   {% else %}
                     <li>
@@ -131,5 +131,8 @@
 
   {% set minified = minify(contents) %}
   {% do lint.html(minified) %}
-  {% do ginjarator.fs.write_text(paths.from_url_path(url_path), minified) %}
+  {% do ginjarator.fs.write_text(
+    paths.from_url_path(page_metadata.url_path),
+    minified,
+  ) %}
 {% endmacro %}
