@@ -66,9 +66,7 @@
 {% endmacro %}
 
 {% macro image_filename(original_filename, conversion) -%}
-  {%- set without_private = original_filename.removeprefix("../private/") -%}
-  {%- set without_suffix, _ = without_private.rsplit(".", 1) -%}
-  work/{{ without_suffix }}-{{ conversion }}
+  {{ paths.work(original_filename).with_suffix("") }}-{{ conversion }}
 {%- endmacro %}
 
 {#

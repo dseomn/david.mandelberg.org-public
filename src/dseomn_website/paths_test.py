@@ -9,6 +9,17 @@ from dseomn_website import paths
 
 
 @pytest.mark.parametrize(
+    "source,expected",
+    (
+        ("standalone/about", "work/standalone/about"),
+        ("../private/standalone/about", "work/standalone/about"),
+    ),
+)
+def test_work(source: str, expected: str) -> None:
+    assert paths.work(source) == ginjarator.paths.Filesystem(expected)
+
+
+@pytest.mark.parametrize(
     "url_path,dir_index,error_class,error_regex",
     (
         ("/", "not-an-index", ValueError, r"Invalid dir_index"),

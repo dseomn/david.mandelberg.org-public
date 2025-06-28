@@ -6,12 +6,25 @@ from collections.abc import Collection
 
 import ginjarator
 
+PRIVATE = ginjarator.paths.Filesystem("../private")
 OUTPUT = ginjarator.paths.Filesystem("output")
 WORK = ginjarator.paths.Filesystem("work")
 DIR_INDEXES = (
     "index.html",
     "index.xml",
 )
+
+
+def work(
+    source: ginjarator.paths.Filesystem | str,
+) -> ginjarator.paths.Filesystem:
+    """Returns a path in WORK for the given source path."""
+    source_path = ginjarator.paths.Filesystem(source)
+    if source_path.is_relative_to(PRIVATE):
+        relative = source_path.relative_to(PRIVATE)
+    else:
+        relative = source_path
+    return WORK / relative
 
 
 def from_url_path(
