@@ -4,8 +4,9 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% set layout = ginjarator.py.import_("dseomn_website.layout") %}
+
 {% import "include/cache_buster.ninja.jinja" as cache_buster %}
-{% import "include/layout.jinja" as layout %}
 
 {{ cache_buster.rules }}
 
@@ -14,11 +15,11 @@
     "lessc",
     (
       "--global-var=main-column-max-inline-size=" +
-      layout.main_column_max_inline_size
+      layout.MAIN_COLUMN_MAX_INLINE_SIZE
     ),
     (
       "--global-var=main-column-padding-inline=" +
-      layout.main_column_padding_inline
+      layout.MAIN_COLUMN_PADDING_INLINE
     ),
   ],
   escape_shell=true,

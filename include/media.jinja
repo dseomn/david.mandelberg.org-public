@@ -6,9 +6,8 @@
 
 {% set json = ginjarator.py.import_("json") %}
 
+{% set layout = ginjarator.py.import_("dseomn_website.layout") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
-
-{% import "include/layout.jinja" as layout %}
 
 {#
  # Map from image use case to the conversions that should be done to the image.
@@ -46,13 +45,13 @@
   "main": ", ".join(
     (
       (
-        "(width <= calc(" + layout.main_column_max_inline_size + " - 2 * " +
-        layout.main_column_padding_inline + ")) calc(100vw - 2 * " +
-        layout.main_column_padding_inline + ")"
+        "(width <= calc(" + layout.MAIN_COLUMN_MAX_INLINE_SIZE + " - 2 * " +
+        layout.MAIN_COLUMN_PADDING_INLINE + ")) calc(100vw - 2 * " +
+        layout.MAIN_COLUMN_PADDING_INLINE + ")"
       ),
       (
-        "calc(" + layout.main_column_max_inline_size + " - 2 * " +
-        layout.main_column_padding_inline + ")"
+        "calc(" + layout.MAIN_COLUMN_MAX_INLINE_SIZE + " - 2 * " +
+        layout.MAIN_COLUMN_PADDING_INLINE + ")"
       ),
     )
   ),
