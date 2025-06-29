@@ -98,7 +98,7 @@ class ImageOutput:
         raw = ginjarator.api().fs.read_text(self.metadata_path)
         if raw is None:
             return None
-        return json.loads(raw)
+        return json.loads(raw)[0]["image"]
 
 
 class ImageProfile(abc.ABC):

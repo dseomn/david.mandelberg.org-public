@@ -55,7 +55,7 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
         "output/media/foo-16x16-some-hash.png"
     )
     (tmp_path / "work/media/foo-16x16.png.json").write_text(
-        json.dumps(dict(kumquat=42))
+        json.dumps([dict(image=dict(kumquat=42))])
     )
 
     with ginjarator.testing.api_for_render(
