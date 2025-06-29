@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import abc
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Collection, Sequence
 import dataclasses
 import functools
 import json
@@ -75,6 +75,14 @@ class ImageOutput:
         )
 
     @functools.cached_property
+    def cache_buster_prefix(self) -> str:
+        return str(paths.ASSETS / f"{self.work_path.stem}-")
+
+    @functools.cached_property
+    def cache_buster_suffix(self) -> str:
+        return self.work_path.suffix
+
+    @functools.cached_property
     def url_path(self) -> str | None:
         output_path = ginjarator.api().fs.read_text(self.cache_buster_path)
         if output_path is None:
@@ -91,21 +99,6 @@ class ImageOutput:
         if raw is None:
             return None
         return json.loads(raw)
-
-
-@dataclasses.dataclass(frozen=True, kw_only=True)
-class ImageOutputConfig(ImageOutput):
-    """Config data needed to build an ImageOutput."""
-
-    output_dir: ginjarator.paths.Filesystem
-
-    @property
-    def cache_buster_prefix(self) -> str:
-        return str(self.output_dir / f"{self.work_path.stem}-")
-
-    @property
-    def cache_buster_suffix(self) -> str:
-        return self.work_path.suffix
 
 
 class ImageProfile(abc.ABC):
@@ -233,33 +226,17 @@ FAVICON = ginjarator.paths.Filesystem(
 )
 
 
-def all_image_output_configs() -> Iterable[ImageOutputConfig]:
-    output_dir_by_source = dict[
-        ginjarator.paths.Filesystem, ginjarator.paths.Filesystem
-    ]()
+def all_image_outputs() -> Collection[ImageOutput]:
     outputs = set[ImageOutput]()
-    for source, output_dir, profile_name in (
-        (FAVICON, ginjarator.paths.Filesystem("output/media"), "favicon"),
+    for source, profile_name in (
+        (FAVICON, "favicon"),
         # TODO: dseomn - Get this from a toml file.
         (
             ginjarator.paths.Filesystem(
                 "../private/errors/404/P1250746-raw-unsharp.jpg"
             ),
-            ginjarator.paths.Filesystem("output/errors/404"),
             "main",
         ),
     ):
-        output_dir_by_source.setdefault(source, output_dir)
-        if output_dir_by_source[source] != output_dir:
-            # TODO: dseomn - Test this.
-            raise ValueError(f"{str(source)!r} has multiple output dirs.")
-        for output in IMAGE_PROFILES[profile_name].outputs(source):
-            if output in outputs:
-                # TODO: dseomn - Test this.
-                continue
-            outputs.add(output)
-            yield ImageOutputConfig(
-                source=output.source,
-                conversion=output.conversion,
-                output_dir=output_dir,
-            )
+        outputs.update(IMAGE_PROFILES[profile_name].outputs(source))
+    return outputs

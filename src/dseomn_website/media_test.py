@@ -29,6 +29,11 @@ def test_image_output_scan() -> None:
         assert image_output.cache_buster_path == ginjarator.paths.Filesystem(
             "work/media/P1230630-raw-crop-square-16x16.png.cache-buster"
         )
+        assert (
+            image_output.cache_buster_prefix
+            == "output/assets/P1230630-raw-crop-square-16x16-"
+        )
+        assert image_output.cache_buster_suffix == ".png"
         assert image_output.url_path is None
         assert image_output.metadata_path == ginjarator.paths.Filesystem(
             "work/media/P1230630-raw-crop-square-16x16.png.json"
@@ -67,17 +72,6 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
 
         assert image_output.url_path == "/media/foo-16x16-some-hash.png"
         assert image_output.metadata == dict(kumquat=42)
-
-
-def test_image_output_config() -> None:
-    config = media.ImageOutputConfig(
-        source=ginjarator.paths.Filesystem("media/foo.jpg"),
-        conversion=media.ImageConversion.png(max_width=16, max_height=16),
-        output_dir=ginjarator.paths.Filesystem("output/media"),
-    )
-
-    assert config.cache_buster_prefix == "output/media/foo-16x16-"
-    assert config.cache_buster_suffix == ".png"
 
 
 def test_favicon_profile_outputs() -> None:
@@ -150,10 +144,7 @@ def test_normal_image_profile_responsive_sizes() -> None:
     )
 
 
-def test_all_image_output_configs() -> None:
-    # TODO: dseomn - For now this is just a smoke test because
-    # all_image_output_configs() uses hardcoded inputs. Once it gets its configs
-    # from the filesystem, this should test more of the logic.
+def test_all_image_outputs() -> None:
     assert media.FAVICON in tuple(
-        config.source for config in media.all_image_output_configs()
+        output.source for output in media.all_image_outputs()
     )

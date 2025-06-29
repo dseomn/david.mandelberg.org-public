@@ -18,26 +18,26 @@ rule image_metadata
   command = magick -define json:version=1.0 $in json:- | jq '.[0].image' > $out
   description = METADATA $in
 
-{% for output_config in media.all_image_output_configs() %}
+{% for image_output in media.all_image_outputs() %}
 build $
-    {{ ginjarator.to_ninja(output_config.work_path) }} $
+    {{ ginjarator.to_ninja(image_output.work_path) }} $
     : $
     image_convert $
-    {{ ginjarator.to_ninja(output_config.source) }}
+    {{ ginjarator.to_ninja(image_output.source) }}
   args = {{ ginjarator.to_ninja(
-    output_config.conversion.magick_args,
+    image_output.conversion.magick_args,
     escape_shell=true,
   ) }}
-  conversion = {{ ginjarator.to_ninja(output_config.conversion.suffix) }}
+  conversion = {{ ginjarator.to_ninja(image_output.conversion.suffix) }}
 build $
-    {{ ginjarator.to_ninja(output_config.metadata_path) }} $
+    {{ ginjarator.to_ninja(image_output.metadata_path) }} $
     : $
     image_metadata $
-    {{ ginjarator.to_ninja(output_config.work_path) }}
+    {{ ginjarator.to_ninja(image_output.work_path) }}
 {{ cache_buster.build(
-  to_hash=output_config.work_path,
-  work_prefix=output_config.cache_buster_path,
-  prefix=output_config.cache_buster_prefix,
-  suffix=output_config.cache_buster_suffix,
+  to_hash=image_output.work_path,
+  work_prefix=image_output.cache_buster_path,
+  prefix=image_output.cache_buster_prefix,
+  suffix=image_output.cache_buster_suffix,
 ) }}
 {% endfor %}
