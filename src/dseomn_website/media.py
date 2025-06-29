@@ -2,14 +2,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from collections.abc import Sequence
+import abc
+from collections.abc import Collection, Sequence
 import dataclasses
 import functools
 import json
-from typing import Any, Self
+from typing import Any, override, Self
 
 import ginjarator
 
+from dseomn_website import layout
 from dseomn_website import paths
 
 
@@ -104,3 +106,128 @@ class ImageOutputConfig(ImageOutput):
     @property
     def cache_buster_suffix(self) -> str:
         return self.work_path.suffix
+
+
+class ImageProfile(abc.ABC):
+    """A use case for an image."""
+
+    @abc.abstractmethod
+    def outputs(
+        self,
+        source: ginjarator.paths.Filesystem | str,
+    ) -> Collection[ImageOutput]:
+        """Returns the source image's outputs."""
+
+    def primary_output(
+        self,
+        source: ginjarator.paths.Filesystem | str,
+    ) -> ImageOutput:
+        """Returns the primary/default output."""
+        raise NotImplementedError()
+
+    def responsive_sizes(self) -> str:
+        """Returns the img.sizes attribute."""
+        raise NotImplementedError()
+
+
+class FaviconProfile(ImageProfile):
+    @override
+    def outputs(
+        self,
+        source: ginjarator.paths.Filesystem | str,
+    ) -> Collection[ImageOutput]:
+        # https://blog.hubspot.com/website/what-is-a-favicon#size
+        return tuple(
+            ImageOutput(
+                source=ginjarator.paths.Filesystem(source),
+                conversion=ImageConversion.png(max_width=size, max_height=size),
+            )
+            for size in (16, 32, 96, 180, 300, 512)
+        )
+
+
+class NormalImageProfile(ImageProfile):
+    def __init__(
+        self,
+        *,
+        lossy_conversions: Sequence[ImageConversion],
+        container_max_inline_size: str,
+        container_padding_inline: str,
+    ) -> None:
+        """Initializer.
+
+        Args:
+            lossy_conversions: Conversions to use for lossy sources. First item
+                is the primary one.
+            container_max_inline_size: The image's container's max-inline-size.
+            container_padding_inline: The image's container's padding-inline.
+        """
+        self._lossy_conversions = lossy_conversions
+        self._container_max_inline_size = container_max_inline_size
+        self._container_padding_inline = container_padding_inline
+
+    def _conversions(
+        self,
+        source: ginjarator.paths.Filesystem,
+    ) -> Sequence[ImageConversion]:
+        if source.name.endswith((".jpg",)):
+            return self._lossy_conversions
+        else:
+            raise NotImplementedError(f"{source.name=}")
+
+    @override
+    def outputs(
+        self,
+        source: ginjarator.paths.Filesystem | str,
+    ) -> Collection[ImageOutput]:
+        source_path = ginjarator.paths.Filesystem(source)
+        return tuple(
+            ImageOutput(source=source_path, conversion=conversion)
+            for conversion in self._conversions(source_path)
+        )
+
+    @override
+    def primary_output(
+        self,
+        source: ginjarator.paths.Filesystem | str,
+    ) -> ImageOutput:
+        source_path = ginjarator.paths.Filesystem(source)
+        return ImageOutput(
+            source=source_path,
+            conversion=self._conversions(source_path)[0],
+        )
+
+    @override
+    def responsive_sizes(self) -> str:
+        max_inline_size = (
+            f"calc({self._container_max_inline_size} - 2 * "
+            f"{self._container_padding_inline})"
+        )
+        return ", ".join(
+            (
+                (
+                    f"(width <= {max_inline_size}) "
+                    f"calc(100vw - 2 * {self._container_padding_inline})"
+                ),
+                max_inline_size,
+            )
+        )
+
+
+IMAGE_PROFILES = {
+    "favicon": FaviconProfile(),
+    # Images that take the full width of an article.
+    "main": NormalImageProfile(
+        lossy_conversions=(
+            ImageConversion.jpeg(max_width=960, max_height=960, quality=90),
+            ImageConversion.jpeg(max_width=480, max_height=480, quality=90),
+            ImageConversion.jpeg(max_width=1920, max_height=1920, quality=90),
+        ),
+        container_max_inline_size=layout.MAIN_COLUMN_MAX_INLINE_SIZE,
+        container_padding_inline=layout.MAIN_COLUMN_PADDING_INLINE,
+    ),
+}
+
+FAVICON = ginjarator.paths.Filesystem(
+    "../private/media/P1230630-raw-crop-square.jpg"
+)

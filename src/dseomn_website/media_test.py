@@ -2,12 +2,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import collections
 import json
 import pathlib
 import textwrap
 
 import ginjarator
 import ginjarator.testing
+import pytest
 
 from dseomn_website import media
 
@@ -76,3 +78,73 @@ def test_image_output_config() -> None:
 
     assert config.cache_buster_prefix == "output/media/foo-16x16-"
     assert config.cache_buster_suffix == ".png"
+
+
+def test_favicon_profile_outputs() -> None:
+    assert media.ImageOutput(
+        source=ginjarator.paths.Filesystem("foo"),
+        conversion=media.ImageConversion.png(max_width=16, max_height=16),
+    ) in media.FaviconProfile().outputs("foo")
+
+
+def test_favicon_profile_primary_output() -> None:
+    with pytest.raises(NotImplementedError):
+        media.FaviconProfile().primary_output("foo")
+
+
+def test_favicon_profile_responsive_sizes() -> None:
+    with pytest.raises(NotImplementedError):
+        media.FaviconProfile().responsive_sizes()
+
+
+def test_normal_image_profile_outputs() -> None:
+    primary_conversion = media.ImageConversion.jpeg(
+        max_width=960, max_height=960, quality=90
+    )
+    other_conversion = media.ImageConversion.jpeg(
+        max_width=480, max_height=480, quality=90
+    )
+    profile = media.NormalImageProfile(
+        lossy_conversions=(primary_conversion, other_conversion),
+        container_max_inline_size="",
+        container_padding_inline="",
+    )
+    source = ginjarator.paths.Filesystem("foo.jpg")
+
+    assert collections.Counter(profile.outputs(source)) == collections.Counter(
+        (
+            media.ImageOutput(source=source, conversion=primary_conversion),
+            media.ImageOutput(source=source, conversion=other_conversion),
+        )
+    )
+    assert profile.primary_output(source) == media.ImageOutput(
+        source=source,
+        conversion=primary_conversion,
+    )
+
+
+def test_normal_image_profile_outputs_unknown_extension() -> None:
+    profile = media.NormalImageProfile(
+        lossy_conversions=(),
+        container_max_inline_size="",
+        container_padding_inline="",
+    )
+    source = ginjarator.paths.Filesystem("foo.txt")
+
+    with pytest.raises(NotImplementedError):
+        profile.outputs(source)
+    with pytest.raises(NotImplementedError):
+        profile.primary_output(source)
+
+
+def test_normal_image_profile_responsive_sizes() -> None:
+    profile = media.NormalImageProfile(
+        lossy_conversions=(),
+        container_max_inline_size="60em",
+        container_padding_inline="1em",
+    )
+
+    assert profile.responsive_sizes() == (
+        "(width <= calc(60em - 2 * 1em)) calc(100vw - 2 * 1em), "
+        "calc(60em - 2 * 1em)"
+    )
