@@ -11,14 +11,16 @@
 {{ cache_buster.rules }}
 
 rule image_convert
-  command = magick -define json:version=1.0 $in $args -write $out $metadata
+  command = magick $in $args $out
   description = CONVERT $in ($conversion)
+
+rule image_metadata
+  command = magick -define json:version=1.0 $in $out
+  description = METADATA $in
 
 {% for image_output in media.all_image_outputs() %}
 build $
     {{ ginjarator.to_ninja(image_output.work_path) }} $
-    | $
-    {{ ginjarator.to_ninja(image_output.metadata_path) }} $
     : $
     image_convert $
     {{ ginjarator.to_ninja(image_output.source) }}
@@ -26,11 +28,12 @@ build $
     image_output.conversion.magick_args,
     escape_shell=true,
   ) }}
-  metadata = {{ ginjarator.to_ninja(
-    image_output.metadata_path,
-    escape_shell=true,
-  ) }}
   conversion = {{ ginjarator.to_ninja(image_output.conversion.suffix) }}
+build $
+    {{ ginjarator.to_ninja(image_output.metadata_path) }} $
+    : $
+    image_metadata $
+    {{ ginjarator.to_ninja(image_output.work_path) }}
 {{ cache_buster.build(
   to_hash=image_output.work_path,
   work_prefix=image_output.cache_buster_path,
