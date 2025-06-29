@@ -5,13 +5,42 @@
 import collections
 import json
 import pathlib
+import subprocess
 import textwrap
+import time
 
 import ginjarator
 import ginjarator.testing
 import pytest
 
 from dseomn_website import media
+
+
+@pytest.mark.parametrize(
+    "conversion",
+    (
+        media.ImageConversion.jpeg(max_width=16, max_height=16, quality=90),
+        media.ImageConversion.png(max_width=16, max_height=16),
+    ),
+)
+def test_image_conversion_deterministic(
+    conversion: media.ImageConversion,
+    tmp_path: pathlib.Path,
+) -> None:
+    output_1 = tmp_path / f"1-{conversion.suffix}"
+    output_2 = tmp_path / f"2-{conversion.suffix}"
+
+    subprocess.run(
+        ("magick", str(media.FAVICON), *conversion.magick_args, str(output_1)),
+        check=True,
+    )
+    time.sleep(1.01)  # Catch changes to second-resolution timestamps.
+    subprocess.run(
+        ("magick", str(media.FAVICON), *conversion.magick_args, str(output_2)),
+        check=True,
+    )
+
+    assert output_1.read_bytes() == output_2.read_bytes()
 
 
 def test_image_output_scan() -> None:

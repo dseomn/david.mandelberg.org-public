@@ -48,6 +48,8 @@ class ImageConversion:
         return cls(
             suffix=f"{max_width}x{max_height}.png",
             magick_args=(
+                "-define",
+                "png:exclude-chunk=date,tIME",
                 "-resize",
                 f"{max_width}x{max_height}>",
             ),

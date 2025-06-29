@@ -35,6 +35,8 @@ addopts = """\
   --cov=. \
   --cov-branch \
   --cov-report=term-missing \
+  --numprocesses=auto \
+  --dist=worksteal \
   """
 markers = [
   "output: tests on the final output",
