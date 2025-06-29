@@ -7,10 +7,9 @@
 {% set subprocess = ginjarator.py.import_("subprocess") %}
 
 {% set lint = ginjarator.py.import_("dseomn_website.lint") %}
+{% set media = ginjarator.py.import_("dseomn_website.media") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
-
-{% import "include/media.jinja" as media %}
 
 {% macro minify(html) %}
   {{- subprocess.run(
@@ -55,18 +54,17 @@
         {% if main_css is not none %}
           <link rel="stylesheet" href="{{ paths.to_url_path(main_css) | e }}">
         {% endif %}
-        {% call(url_path, image_metadata) media.image_for_each(
-          media.favicon,
-          conversions=media.image_profiles.favicon,
-        ) %}
-          {% set geometry = image_metadata.geometry %}
+        {% for favicon_output in media.IMAGE_PROFILES.favicon.outputs(
+          media.FAVICON
+        ) if none not in (favicon_output.url_path, favicon_output.metadata) %}
+          {% set geometry = favicon_output.metadata.geometry %}
           <link
               rel="icon"
-              href="{{ url_path | e }}"
-              type="{{ image_metadata.mimeType | e }}"
+              href="{{ favicon_output.url_path | e }}"
+              type="{{ favicon_output.metadata.mimeType | e }}"
               sizes="{{ geometry.width }}x{{ geometry.height }}"
               >
-        {% endcall %}
+        {% endfor %}
         {{ extra_head }}
       </head>
       <body>

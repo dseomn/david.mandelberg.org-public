@@ -1,0 +1,35 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% set media = ginjarator.py.import_("dseomn_website.media") %}
+
+{% macro image(source, profile_name, class="") -%}
+  {%- set profile = media.IMAGE_PROFILES[profile_name] -%}
+  {%- set primary_output = profile.primary_output(source) -%}
+  {%- set outputs = profile.outputs(source) -%}
+  <img
+      sizes="{{ profile.responsive_sizes() | e }}"
+      {% if none not in (primary_output.url_path, primary_output.metadata) %}
+        src="{{ primary_output.url_path | e }}"
+        height="{{ primary_output.metadata.geometry.height | e }}"
+        width="{{ primary_output.metadata.geometry.width | e }}"
+      {% endif %}
+      srcset="
+        {%- set srcset_joiner = joiner(", ") -%}
+        {%- for output in outputs if none not in (
+          output.url_path,
+          output.metadata,
+        ) -%}
+          {{- srcset_joiner() -}}
+          {{ output.url_path | e }} {{ output.metadata.geometry.width | e }}w
+        {%- endfor -%}
+      "
+      class="image-{{ profile_name | e }} {{ class | e }}"
+      {% for attribute, value in kwargs.items() %}
+        {{ attribute }}="{{ value | e }}"
+      {% endfor %}
+      >
+{%- endmacro %}

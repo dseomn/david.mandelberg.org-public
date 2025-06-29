@@ -4,8 +4,9 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% set media = ginjarator.py.import_("dseomn_website.media") %}
+
 {% import "include/cache_buster.ninja.jinja" as cache_buster %}
-{% import "include/media.jinja" as media %}
 
 {{ cache_buster.rules }}
 
@@ -17,62 +18,26 @@ rule image_metadata
   command = magick -define json:version=1.0 $in json:- | jq '.[0].image' > $out
   description = METADATA $in
 
-{# Map from source image and output directory to conversions to do. #}
-{% set image_conversions = {} %}
-{% do image_conversions.setdefault(
-  (media.favicon, "output/media"),
-  [],
-).extend(media.image_profiles.favicon) %}
-{% for source, out_dir, profile in (
-  (
-    "../private/errors/404/P1250746-raw-unsharp.jpg",
-    "output/errors/404",
-    "main",
-  ),
-) %}
-  {% do image_conversions.setdefault((source, out_dir), []).extend(
-    media.image_profiles[profile][media.image_profile_type(source)]
-  ) %}
-{% endfor %}
-
-{% for (original_filename, out_dir), conversions in image_conversions.items() %}
-{% for conversion in conversions | unique(case_sensitive=true) %}
-{% set converted_filename = media.image_filename(
-  original_filename,
-  conversion=conversion,
-) %}
-{% set _, converted_basename = converted_filename.rsplit("/", 1) %}
-{% set converted_stem, converted_suffix = converted_basename.rsplit(".", 1) %}
+{% for output_config in media.all_image_output_configs() %}
 build $
-    {{ ginjarator.to_ninja(converted_filename) }} $
+    {{ ginjarator.to_ninja(output_config.work_path) }} $
     : $
     image_convert $
-    {{ ginjarator.to_ninja(original_filename) }}
+    {{ ginjarator.to_ninja(output_config.source) }}
   args = {{ ginjarator.to_ninja(
-    {
-      "16x16.png": ("-resize", "16x16>"),
-      "32x32.png": ("-resize", "32x32>"),
-      "96x96.png": ("-resize", "96x96>"),
-      "180x180.png": ("-resize", "180x180>"),
-      "300x300.png": ("-resize", "300x300>"),
-      "480x480q90.jpg": ("-resize", "480x480>", "-quality", "90"),
-      "512x512.png": ("-resize", "512x512>"),
-      "960x960q90.jpg": ("-resize", "960x960>", "-quality", "90"),
-      "1920x1920q90.jpg": ("-resize", "1920x1920>", "-quality", "90"),
-    }[conversion],
+    output_config.conversion.magick_args,
     escape_shell=true,
   ) }}
-  conversion = {{ ginjarator.to_ninja(conversion) }}
+  conversion = {{ ginjarator.to_ninja(output_config.conversion.suffix) }}
 build $
-    {{ ginjarator.to_ninja(converted_filename) }}.json $
+    {{ ginjarator.to_ninja(output_config.metadata_path) }} $
     : $
     image_metadata $
-    {{ ginjarator.to_ninja(converted_filename) }}
+    {{ ginjarator.to_ninja(output_config.work_path) }}
 {{ cache_buster.build(
-  to_hash=converted_filename,
-  work_prefix=converted_filename + ".cache-buster",
-  prefix=out_dir + "/" + converted_stem + "-",
-  suffix="." + converted_suffix,
+  to_hash=output_config.work_path,
+  work_prefix=output_config.cache_buster_path,
+  prefix=output_config.cache_buster_prefix,
+  suffix=output_config.cache_buster_suffix,
 ) }}
-{% endfor %}
 {% endfor %}

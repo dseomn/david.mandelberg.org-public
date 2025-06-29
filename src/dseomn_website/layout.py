@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# When changing these values, also check if the image sizes in
-# include/media.jinja need changing too.
+# When changing these values, also check if the image sizes in media.py need
+# changing too.
 MAIN_COLUMN_MAX_INLINE_SIZE = "60em"
 MAIN_COLUMN_PADDING_INLINE = "1em"
