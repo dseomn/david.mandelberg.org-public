@@ -11,6 +11,7 @@ PRIVATE = ginjarator.paths.Filesystem("../private")
 WORK = ginjarator.paths.Filesystem("work")
 
 OUTPUT = ginjarator.paths.Filesystem("output")
+ASSETS = OUTPUT / "assets"
 DIR_INDEXES = (
     "index.html",
     "index.xml",
