@@ -7,8 +7,10 @@ from collections.abc import Collection
 import ginjarator
 
 PRIVATE = ginjarator.paths.Filesystem("../private")
-OUTPUT = ginjarator.paths.Filesystem("output")
+
 WORK = ginjarator.paths.Filesystem("work")
+
+OUTPUT = ginjarator.paths.Filesystem("output")
 DIR_INDEXES = (
     "index.html",
     "index.xml",
