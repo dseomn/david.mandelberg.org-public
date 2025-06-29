@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import abc
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Iterable, Sequence
 import dataclasses
 import functools
 import json
@@ -231,3 +231,35 @@ IMAGE_PROFILES = {
 FAVICON = ginjarator.paths.Filesystem(
     "../private/media/P1230630-raw-crop-square.jpg"
 )
+
+
+def all_image_output_configs() -> Iterable[ImageOutputConfig]:
+    output_dir_by_source = dict[
+        ginjarator.paths.Filesystem, ginjarator.paths.Filesystem
+    ]()
+    outputs = set[ImageOutput]()
+    for source, output_dir, profile_name in (
+        (FAVICON, ginjarator.paths.Filesystem("output/media"), "favicon"),
+        # TODO: dseomn - Get this from a toml file.
+        (
+            ginjarator.paths.Filesystem(
+                "../private/errors/404/P1250746-raw-unsharp.jpg"
+            ),
+            ginjarator.paths.Filesystem("output/errors/404"),
+            "main",
+        ),
+    ):
+        output_dir_by_source.setdefault(source, output_dir)
+        if output_dir_by_source[source] != output_dir:
+            # TODO: dseomn - Test this.
+            raise ValueError(f"{str(source)!r} has multiple output dirs.")
+        for output in IMAGE_PROFILES[profile_name].outputs(source):
+            if output in outputs:
+                # TODO: dseomn - Test this.
+                continue
+            outputs.add(output)
+            yield ImageOutputConfig(
+                source=output.source,
+                conversion=output.conversion,
+                output_dir=output_dir,
+            )

@@ -148,3 +148,12 @@ def test_normal_image_profile_responsive_sizes() -> None:
         "(width <= calc(60em - 2 * 1em)) calc(100vw - 2 * 1em), "
         "calc(60em - 2 * 1em)"
     )
+
+
+def test_all_image_output_configs() -> None:
+    # TODO: dseomn - For now this is just a smoke test because
+    # all_image_output_configs() uses hardcoded inputs. Once it gets its configs
+    # from the filesystem, this should test more of the logic.
+    assert media.FAVICON in tuple(
+        config.source for config in media.all_image_output_configs()
+    )
