@@ -372,7 +372,9 @@ def test_post_all() -> None:
 
 def test_post_list_page_all() -> None:
     with ginjarator.testing.api_for_scan():
-        assert metadata.PostListPage.all()
+        pages = metadata.PostListPage.all()
+        assert pages
+        assert all(page.posts for page in pages)
 
 
 def test_post_list_main() -> None:
