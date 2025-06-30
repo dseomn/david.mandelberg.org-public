@@ -97,6 +97,9 @@ class Standalone(Page):
 
     @classmethod
     def all(cls) -> Sequence[Self]:
+        # This method is called by all pages for the nav links, so avoid
+        # read_config() to prevent re-rendering all pages when the list of
+        # templates changes. Also, the order is important for the nav links.
         return tuple(
             cls.load(ginjarator.paths.Filesystem(template))
             for template in ("standalone/about/index.html.jinja",)
