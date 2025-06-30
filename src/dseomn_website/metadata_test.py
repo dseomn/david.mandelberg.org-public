@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import datetime
+import http
 import pathlib
 import textwrap
 
@@ -27,6 +28,26 @@ def test_page_full_title() -> None:
     assert (
         metadata.Page(url_path="/foo/", title="Foo").full_title
         == "Foo — David Mandelberg"
+    )
+
+
+def test_error_load() -> None:
+    with ginjarator.testing.api_for_scan():
+        error_metadata = metadata.Error.load(
+            ginjarator.paths.Filesystem("errors/404/index.html.jinja")
+        )
+
+    assert error_metadata.url_path == "/errors/404/"
+    assert error_metadata.title == "404 Not Found"
+    assert error_metadata.status == http.HTTPStatus.NOT_FOUND
+
+
+def test_error_all() -> None:
+    with ginjarator.testing.api_for_scan():
+        actual = metadata.Error.all()
+
+    assert http.HTTPStatus.NOT_FOUND in tuple(
+        error_metadata.status for error_metadata in actual
     )
 
 

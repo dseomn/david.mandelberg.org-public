@@ -6,6 +6,7 @@
 
 {% set re = ginjarator.py.import_("re") %}
 
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% set dir_index_regexes = [] %}
@@ -39,9 +40,7 @@ AddType text/html .html
 </If>
 AddCharset utf-8 .css .html
 
-{% for template_path in ginjarator.fs.read_config().templates
-  if template_path.is_relative_to("errors")
-%}
-ErrorDocument {{ template_path.parent.name }} /{{ template_path.parent }}/
+{% for error_metadata in metadata.Error.all() %}
+ErrorDocument {{ error_metadata.status.value }} {{ error_metadata.url_path }}
 {% endfor %}
 {% endcall %}

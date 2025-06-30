@@ -4,24 +4,16 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
-{% set http = ginjarator.py.import_("http") %}
-
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
 
 {% macro page() %}
-  {% set status = http.HTTPStatus(
-    ginjarator.current_template.parent.name | int
-  ) %}
-  {% set page_metadata = metadata.Page(
-    url_path="/" + ginjarator.current_template.parent | string + "/",
-    title=status.value | string + " " + status.phrase,
-  ) %}
+  {% set error_metadata = metadata.Error.load(ginjarator.current_template) %}
   {% set contents = caller() %}
-  {% call base_html.write(page_metadata=page_metadata) %}
+  {% call base_html.write(page_metadata=error_metadata) %}
     <div class="site-error">
-      <h1 class="h1">{{ page_metadata.title | e }}</h1>
+      <h1 class="h1">{{ error_metadata.title | e }}</h1>
       {{ contents }}
     </div>
   {% endcall %}

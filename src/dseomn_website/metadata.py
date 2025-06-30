@@ -2,9 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 import dataclasses
 import datetime
+import http
 import tomllib
 from typing import Self
 
@@ -53,6 +54,28 @@ class Page:
     @property
     def full_title(self) -> str:
         return f"{self.title} — {SITE.title}"
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class Error(Page):
+    status: http.HTTPStatus
+
+    @classmethod
+    def load(cls, template: ginjarator.paths.Filesystem) -> Self:
+        status = http.HTTPStatus(int(template.parent.name))
+        return cls(
+            url_path=f"/errors/{status.value}/",
+            title=f"{status.value} {status.phrase}",
+            status=status,
+        )
+
+    @classmethod
+    def all(cls) -> Collection[Self]:
+        return tuple(
+            cls.load(template)
+            for template in ginjarator.api().fs.read_config().templates
+            if template.is_relative_to("errors")
+        )
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
