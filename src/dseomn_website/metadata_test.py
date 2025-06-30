@@ -387,22 +387,19 @@ def test_post_list_all() -> None:
         assert all(post_list.posts for post_list in lists)
 
 
-@pytest.mark.parametrize(
-    "page_number,expected",
-    (
-        (1, metadata.Page(url_path="/", title="Blog")),
-        (2, metadata.Page(url_path="/page/2/", title="Blog (page 2)")),
-    ),
-)
-def test_post_list_page(page_number: int, expected: metadata.Page) -> None:
-    assert (
-        metadata.PostList(
-            url_path="/",
-            title="Blog",
-            filter=lambda _: True,
-        ).page(page_number)
-        == expected
-    )
+def test_post_list_pages() -> None:
+    with ginjarator.testing.api_for_scan():
+        pages = metadata.PostList.main().pages
+
+    with pytest.raises(LookupError):
+        pages[0]
+    assert pages[1].url_path == "/"
+    assert pages[1].title == "Blog"
+    assert pages[1].page_number == 1
+    assert pages[2].url_path == "/page/2/"
+    assert pages[2].title == "Blog (page 2)"
+    assert pages[2].page_number == 2
+    assert all(page.posts for page in pages.values())
 
 
 def test_post_list_properties() -> None:

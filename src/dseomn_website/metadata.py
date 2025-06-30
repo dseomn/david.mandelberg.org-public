@@ -3,11 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import collections
-from collections.abc import Callable, Collection, Iterable, Sequence
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 import dataclasses
 import datetime
 import functools
 import http
+import itertools
 import tomllib
 from typing import Self
 
@@ -196,6 +197,15 @@ class Post(Page):
         return self.work_path / "atom-fragment.xml"
 
 
+_POSTS_PER_PAGE = 10
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class PostListPage(Page):
+    page_number: int
+    posts: Sequence[Post]
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class PostList(Page):
     filter: Callable[[Post], bool]
@@ -227,17 +237,32 @@ class PostList(Page):
     def posts(self) -> Sequence[Post]:
         return tuple(post for post in Post.all() if self.filter(post))
 
-    def page(self, page_number: int) -> Page:
+    def _page_url_path(self, page_number: int) -> str:
         if page_number == 1:
-            return Page(
-                url_path=self.url_path,
-                title=self.title,
-            )
+            return self.url_path
         else:
-            return Page(
-                url_path=f"{self.url_path}page/{page_number}/",
-                title=f"{self.title} (page {page_number})",
+            return f"{self.url_path}page/{page_number}/"
+
+    def _page_title(self, page_number: int) -> str:
+        if page_number == 1:
+            return self.title
+        else:
+            return f"{self.title} (page {page_number})"
+
+    @functools.cached_property
+    def pages(self) -> Mapping[int, PostListPage]:
+        return {
+            page_number: PostListPage(
+                url_path=self._page_url_path(page_number),
+                title=self._page_title(page_number),
+                page_number=page_number,
+                posts=page_posts,
             )
+            for page_number, page_posts in enumerate(
+                itertools.batched(self.posts, _POSTS_PER_PAGE),
+                start=1,
+            )
+        }
 
     @property
     def feed_url_path(self) -> str:

@@ -12,7 +12,6 @@
 
 {% import "include/base_html.html.jinja" as base_html %}
 
-{% set posts_per_page = 10 %}
 {% set posts_per_feed = 20 %}
 
 {% macro pagination_prev_next(
@@ -31,7 +30,7 @@
     <li class="{{ box_class | e}}">
       <a
           class="pagination-item pagination-item-page"
-          href="{{ list_metadata.page(target).url_path | e }}"
+          href="{{ list_metadata.pages[target].url_path | e }}"
           rel="{{ rel | e }}"
           >
         {{ contents }}
@@ -76,7 +75,7 @@
           <li>
             <a
                 class="pagination-item pagination-item-page"
-                href="{{ list_metadata.page(page).url_path | e }}"
+                href="{{ list_metadata.pages[page].url_path | e }}"
                 >
               {{ page }}
             </a>
@@ -116,21 +115,18 @@
 {% endmacro %}
 
 {% for list_metadata in metadata.PostList.all() %}
-  {% set posts_by_page = list_metadata.posts | batch(posts_per_page) | list %}
-
   {# Map from year to top-most post from that year. #}
   {% set link_by_year = {} %}
-  {% for page_posts in posts_by_page %}
-    {% set page_loop = loop %}
-    {% for post_metadata in page_posts %}
+  {% for page_metadata in list_metadata.pages.values() %}
+    {% for post_metadata in page_metadata.posts %}
       {% do link_by_year.setdefault(
         post_metadata.published.year,
-        list_metadata.page(page_loop.index).url_path + "#" + post_metadata.id,
+        page_metadata.url_path + "#" + post_metadata.id,
       ) %}
     {% endfor %}
   {% endfor %}
 
-  {% for page_posts in posts_by_page %}
+  {% for page_metadata in list_metadata.pages.values() %}
     {% set extra_head %}
       <link
           href="{{ list_metadata.feed_url_path | e }}"
@@ -140,7 +136,7 @@
     {% endset %}
     {% set show_list_title = list_metadata.url_path != "/" %}
     {% call base_html.write(
-      page_metadata=list_metadata.page(loop.index),
+      page_metadata=page_metadata,
       site_title_is_h1=not show_list_title,
       extra_head=extra_head,
     ) %}
@@ -159,7 +155,7 @@
           {% endif %}
         </header>
       {% endif %}
-      {% for post_metadata in page_posts %}
+      {% for post_metadata in page_metadata.posts %}
         {{ ginjarator.fs.read_text(post_metadata.include_fragment_path) }}
       {% endfor %}
       {% if loop.length > 1 %}
