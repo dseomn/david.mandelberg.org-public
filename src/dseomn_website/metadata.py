@@ -259,7 +259,8 @@ class PostListPage(Page):
     def all(cls) -> Collection[Self]:
         return tuple(
             itertools.chain.from_iterable(
-                post_list.pages.values() for post_list in PostList.all()
+                post_list.page_by_number.values()
+                for post_list in PostList.all()
             )
         )
 
@@ -309,7 +310,7 @@ class PostList(Page):
             return f"{self.title} (page {page_number})"
 
     @functools.cached_property
-    def pages(self) -> Mapping[int, PostListPage]:
+    def page_by_number(self) -> Mapping[int, PostListPage]:
         return {
             page_number: PostListPage(
                 url_path=self._page_url_path(page_number),
@@ -327,7 +328,7 @@ class PostList(Page):
     def link_by_year(self) -> Mapping[int, str]:
         """Links to the most recent post of each year."""
         result = dict[int, str]()
-        for page in self.pages.values():
+        for page in self.page_by_number.values():
             for post in page.posts:
                 result.setdefault(
                     post.published.year,

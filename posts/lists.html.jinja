@@ -28,7 +28,7 @@
     <li class="{{ box_class | e}}">
       <a
           class="pagination-item pagination-item-page"
-          href="{{ list_metadata.pages[target].url_path | e }}"
+          href="{{ list_metadata.page_by_number[target].url_path | e }}"
           rel="{{ rel | e }}"
           >
         {{ contents }}
@@ -73,7 +73,7 @@
           <li>
             <a
                 class="pagination-item pagination-item-page"
-                href="{{ list_metadata.pages[page].url_path | e }}"
+                href="{{ list_metadata.page_by_number[page].url_path | e }}"
                 >
               {{ page }}
             </a>
@@ -113,7 +113,7 @@
 {% endmacro %}
 
 {% for list_metadata in metadata.PostList.all() %}
-  {% for page_metadata in list_metadata.pages.values() %}
+  {% for page_metadata in list_metadata.page_by_number.values() %}
     {% set extra_head %}
       <link
           href="{{ list_metadata.feed_url_path | e }}"

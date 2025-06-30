@@ -450,7 +450,7 @@ def test_post_list_all() -> None:
 
 def test_post_list_pages() -> None:
     with ginjarator.testing.api_for_scan():
-        pages = metadata.PostList.main().pages
+        pages = metadata.PostList.main().page_by_number
 
     with pytest.raises(LookupError):
         pages[0]
