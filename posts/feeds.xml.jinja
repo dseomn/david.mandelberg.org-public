@@ -21,7 +21,7 @@
       <id>{{ list_metadata.url | e }}</id>
       <link href="{{ list_metadata.url_path | e }}" rel="alternate"/>
       <link href="{{ list_metadata.feed_url_path | e }}" rel="self"/>
-      <title>{{ list_metadata.full_title }}</title>
+      <title>{{ list_metadata.full_title | e }}</title>
       <updated>
         {{- (list_metadata.feed_posts[0]).published.isoformat() | e -}}
       </updated>
