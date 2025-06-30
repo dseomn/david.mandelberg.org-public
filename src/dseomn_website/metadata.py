@@ -323,6 +323,18 @@ class PostList(Page):
             )
         }
 
+    @functools.cached_property
+    def link_by_year(self) -> Mapping[int, str]:
+        """Links to the most recent post of each year."""
+        result = dict[int, str]()
+        for page in self.pages.values():
+            for post in page.posts:
+                result.setdefault(
+                    post.published.year,
+                    f"{page.url_path}#{post.id}",
+                )
+        return result
+
     @property
     def feed_url_path(self) -> str:
         return f"{self.url_path}feed/"

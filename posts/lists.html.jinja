@@ -43,7 +43,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro pagination_nav(list_metadata, current, total, link_by_year) %}
+{% macro pagination_nav(list_metadata, current, total, show_link_by_year) %}
   <nav class="pagination-nav">
     <ol class="pagination-list">
       {{ pagination_prev_next(
@@ -90,9 +90,9 @@
         text="→",
       ) }}
     </ol>
-    {% if link_by_year | length > 1 %}
+    {% if show_link_by_year and list_metadata.link_by_year | length > 1 %}
       <ol class="pagination-list">
-        {% for year, link in link_by_year | dictsort(reverse=true) %}
+        {% for year, link in list_metadata.link_by_year.items() %}
           {% if not loop.first and loop.previtem[0] != year + 1 %}
             <li>
               <span class="pagination-item pagination-item-ellipsis">…</span>
@@ -113,17 +113,6 @@
 {% endmacro %}
 
 {% for list_metadata in metadata.PostList.all() %}
-  {# Map from year to top-most post from that year. #}
-  {% set link_by_year = {} %}
-  {% for page_metadata in list_metadata.pages.values() %}
-    {% for post_metadata in page_metadata.posts %}
-      {% do link_by_year.setdefault(
-        post_metadata.published.year,
-        page_metadata.url_path + "#" + post_metadata.id,
-      ) %}
-    {% endfor %}
-  {% endfor %}
-
   {% for page_metadata in list_metadata.pages.values() %}
     {% set extra_head %}
       <link
@@ -148,7 +137,7 @@
               list_metadata=list_metadata,
               current=loop.index,
               total=loop.length,
-              link_by_year={},
+              show_link_by_year=false,
             ) }}
           {% endif %}
         </header>
@@ -162,7 +151,7 @@
             list_metadata=list_metadata,
             current=loop.index,
             total=loop.length,
-            link_by_year=link_by_year,
+            show_link_by_year=true,
           ) }}
         </footer>
       {% endif %}

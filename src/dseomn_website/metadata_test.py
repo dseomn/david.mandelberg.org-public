@@ -463,6 +463,21 @@ def test_post_list_pages() -> None:
     assert all(page.posts for page in pages.values())
 
 
+def test_post_list_link_by_year() -> None:
+    with ginjarator.testing.api_for_scan():
+        post_list = metadata.PostList.main()
+        most_recent_2025 = max(
+            (post for post in post_list.posts if post.published.year == 2025),
+            key=lambda post: post.published,
+        )
+
+        assert post_list.link_by_year[2025].endswith(f"#{most_recent_2025.id}")
+        assert list(post_list.link_by_year) == sorted(
+            post_list.link_by_year,
+            reverse=True,
+        )
+
+
 def test_post_list_feed_url_path() -> None:
     with ginjarator.testing.api_for_scan():
         post_list = metadata.PostList.main()
