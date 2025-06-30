@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import collections
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Callable, Collection, Iterable, Sequence
 import dataclasses
 import datetime
+import functools
 import http
 import tomllib
 from typing import Self
@@ -197,6 +198,35 @@ class Post(Page):
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class PostList(Page):
+    filter: Callable[[Post], bool]
+
+    @classmethod
+    def main(cls) -> Self:
+        return cls(
+            url_path="/",
+            title="Blog",
+            filter=lambda post: True,
+        )
+
+    @classmethod
+    def tag(cls, tag: str) -> Self:
+        return cls(
+            url_path=f"/tag/{tag}/",
+            title=f"Tag: {tag}",
+            filter=lambda post: tag in post.tags,
+        )
+
+    @classmethod
+    def all(cls) -> Collection[Self]:
+        return (
+            cls.main(),
+            *(cls.tag(tag) for tag in SITE.tags),
+        )
+
+    @functools.cached_property
+    def posts(self) -> Sequence[Post]:
+        return tuple(post for post in Post.all() if self.filter(post))
+
     def page(self, page_number: int) -> Page:
         if page_number == 1:
             return Page(
@@ -214,21 +244,8 @@ class PostList(Page):
         return f"{self.url_path}feed/"
 
 
-BLOG_MAIN_LIST = PostList(
-    url_path="/",
-    title="Blog",
-)
-BLOG_TAG_LISTS = {
-    tag: PostList(
-        url_path=f"/tag/{tag}/",
-        title=f"Tag: {tag}",
-    )
-    for tag in SITE.tags
-}
-
-
 def main_nav() -> Sequence[Page]:
     return (
-        BLOG_MAIN_LIST,
+        PostList.main(),
         *Standalone.all(),
     )

@@ -101,12 +101,17 @@
           <ul class="site-footer-list">
             <li class="site-footer-list-item">
               {{ blog_list_link(
-                metadata.BLOG_MAIN_LIST,
-                link_text=metadata.BLOG_MAIN_LIST.title,
+                metadata.PostList.main(),
+                link_text=metadata.PostList.main().title,
               ) }}
               <ul>
-                {% for tag, list_metadata in metadata.BLOG_TAG_LISTS.items() %}
-                  <li>{{ blog_list_link(list_metadata, link_text=tag) }}</li>
+                {% for tag in metadata.SITE.tags %}
+                  <li>
+                    {{ blog_list_link(
+                      metadata.PostList.tag(tag),
+                      link_text=tag,
+                    ) }}
+                  </li>
                 {% endfor %}
               </ul>
             </li>

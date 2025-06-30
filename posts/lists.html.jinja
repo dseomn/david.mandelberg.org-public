@@ -115,19 +115,8 @@
   </nav>
 {% endmacro %}
 
-{# Map from list metadata to the list of post metadata in it. #}
-{% set lists = {} %}
-{% for post_metadata in metadata.Post.all() %}
-  {% do lists.setdefault(metadata.BLOG_MAIN_LIST, []).append(post_metadata) %}
-  {% for tag in post_metadata.tags %}
-    {% do lists.setdefault(metadata.BLOG_TAG_LISTS[tag], []).append(
-      post_metadata
-    ) %}
-  {% endfor %}
-{% endfor %}
-
-{% for list_metadata, list_posts in lists.items() %}
-  {% set posts_by_page = list_posts | batch(posts_per_page) | list %}
+{% for list_metadata in metadata.PostList.all() %}
+  {% set posts_by_page = list_metadata.posts | batch(posts_per_page) | list %}
 
   {# Map from year to top-most post from that year. #}
   {% set link_by_year = {} %}
@@ -149,7 +138,7 @@
           type="application/atom+xml"
           >
     {% endset %}
-    {% set show_list_title = list_metadata != metadata.BLOG_MAIN_LIST %}
+    {% set show_list_title = list_metadata.url_path != "/" %}
     {% call base_html.write(
       page_metadata=list_metadata.page(loop.index),
       site_title_is_h1=not show_list_title,
@@ -186,7 +175,7 @@
     {% endcall %}
   {% endfor %}
 
-  {% set feed_posts = list_posts[:posts_per_feed] %}
+  {% set feed_posts = list_metadata.posts[:posts_per_feed] %}
   {% set feed -%}
     <?xml version="1.0" encoding="utf-8"?>
     <feed

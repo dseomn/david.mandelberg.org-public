@@ -365,6 +365,28 @@ def test_post_all() -> None:
     assert actual[0].published > actual[1].published
 
 
+def test_post_list_main() -> None:
+    with ginjarator.testing.api_for_scan():
+        assert tuple(metadata.PostList.main().posts) == tuple(
+            metadata.Post.all()
+        )
+
+
+def test_post_list_tag() -> None:
+    with ginjarator.testing.api_for_scan():
+        posts = metadata.PostList.tag("dance").posts
+
+    assert posts
+    assert all("dance" in post.tags for post in posts)
+
+
+def test_post_list_all() -> None:
+    with ginjarator.testing.api_for_scan():
+        lists = metadata.PostList.all()
+        assert lists
+        assert all(post_list.posts for post_list in lists)
+
+
 @pytest.mark.parametrize(
     "page_number,expected",
     (
@@ -374,13 +396,21 @@ def test_post_all() -> None:
 )
 def test_post_list_page(page_number: int, expected: metadata.Page) -> None:
     assert (
-        metadata.PostList(url_path="/", title="Blog").page(page_number)
+        metadata.PostList(
+            url_path="/",
+            title="Blog",
+            filter=lambda _: True,
+        ).page(page_number)
         == expected
     )
 
 
 def test_post_list_properties() -> None:
-    post_list = metadata.PostList(url_path="/", title="Blog")
+    post_list = metadata.PostList(
+        url_path="/",
+        title="Blog",
+        filter=lambda _: True,
+    )
 
     assert post_list.feed_url_path == "/feed/"
 
