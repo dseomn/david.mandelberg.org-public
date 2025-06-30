@@ -290,6 +290,13 @@ def test_post_load(
     )
 
 
+def test_post_all() -> None:
+    with ginjarator.testing.api_for_scan():
+        actual = metadata.Post.all()
+
+    assert actual[0].published > actual[1].published
+
+
 @pytest.mark.parametrize(
     "page_number,expected",
     (

@@ -154,6 +154,19 @@ class Post(Page):
             tags=tuple(raw.get("tags", [])),
         )
 
+    @classmethod
+    def all(cls) -> Sequence[Self]:
+        return sorted(
+            (
+                cls.load(template)
+                for template in ginjarator.api().fs.read_config().templates
+                if template.is_relative_to("posts")
+                and template.parent != ginjarator.paths.Filesystem("posts")
+            ),
+            key=lambda post_metadata: post_metadata.published,
+            reverse=True,
+        )
+
     @property
     def work_path(self) -> ginjarator.paths.Filesystem:
         return paths.WORK / "posts" / self.id

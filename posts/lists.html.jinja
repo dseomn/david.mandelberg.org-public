@@ -118,11 +118,7 @@
 {# Map from list metadata to the list of post metadata in it. #}
 {% set lists = {} %}
 {% set post_uuids = [] %}
-{% for template_path in ginjarator.fs.read_config().templates
-  if template_path.is_relative_to("posts")
-  and (template_path | string) != "posts/lists.html.jinja"
-%}
-  {% set post_metadata = metadata.Post.load(template_path) %}
+{% for post_metadata in metadata.Post.all() %}
   {% do ginjarator.py.assert_(post_metadata.uuid not in post_uuids) %}
   {% do post_uuids.append(post_metadata.uuid) %}
   {% do lists.setdefault(metadata.BLOG_MAIN_LIST, []).append(post_metadata) %}
@@ -134,12 +130,7 @@
 {% endfor %}
 
 {% for list_metadata, list_posts in lists.items() %}
-  {% set posts_by_page = (
-    list_posts |
-    sort(reverse=true, attribute="published") |
-    batch(posts_per_page) |
-    list
-  ) %}
+  {% set posts_by_page = list_posts | batch(posts_per_page) | list %}
 
   {# Map from year to top-most post from that year. #}
   {% set link_by_year = {} %}
@@ -198,10 +189,7 @@
     {% endcall %}
   {% endfor %}
 
-  {% set feed_posts = (
-    list_posts |
-    sort(reverse=true, attribute="published")
-  )[:posts_per_feed] %}
+  {% set feed_posts = list_posts[:posts_per_feed] %}
   {% set feed -%}
     <?xml version="1.0" encoding="utf-8"?>
     <feed
