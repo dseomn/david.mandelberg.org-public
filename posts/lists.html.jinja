@@ -12,8 +12,6 @@
 
 {% import "include/base_html.html.jinja" as base_html %}
 
-{% set posts_per_feed = 20 %}
-
 {% macro pagination_prev_next(
   list_metadata,
   target,
@@ -171,7 +169,6 @@
     {% endcall %}
   {% endfor %}
 
-  {% set feed_posts = list_metadata.posts[:posts_per_feed] %}
   {% set feed -%}
     <?xml version="1.0" encoding="utf-8"?>
     <feed
@@ -184,8 +181,10 @@
       <link href="{{ list_metadata.url_path | e }}" rel="alternate"/>
       <link href="{{ list_metadata.feed_url_path | e }}" rel="self"/>
       <title>{{ list_metadata.full_title }}</title>
-      <updated>{{ (feed_posts | first).published.isoformat() | e }}</updated>
-      {% for post_metadata in feed_posts %}
+      <updated>
+        {{- (list_metadata.feed_posts[0]).published.isoformat() | e -}}
+      </updated>
+      {% for post_metadata in list_metadata.feed_posts %}
         {{ ginjarator.fs.read_text(post_metadata.atom_fragment_path) }}
       {% endfor %}
     </feed>

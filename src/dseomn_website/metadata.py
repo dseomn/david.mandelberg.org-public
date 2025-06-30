@@ -198,6 +198,7 @@ class Post(Page):
 
 
 _POSTS_PER_PAGE = 10
+_POSTS_PER_FEED = 20
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -267,6 +268,10 @@ class PostList(Page):
     @property
     def feed_url_path(self) -> str:
         return f"{self.url_path}feed/"
+
+    @functools.cached_property
+    def feed_posts(self) -> Sequence[Post]:
+        return self.posts[:_POSTS_PER_FEED]
 
 
 def main_nav() -> Sequence[Page]:

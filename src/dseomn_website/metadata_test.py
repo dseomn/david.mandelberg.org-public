@@ -385,6 +385,7 @@ def test_post_list_all() -> None:
         lists = metadata.PostList.all()
         assert lists
         assert all(post_list.posts for post_list in lists)
+        assert all(post_list.feed_posts for post_list in lists)
 
 
 def test_post_list_pages() -> None:
@@ -402,12 +403,9 @@ def test_post_list_pages() -> None:
     assert all(page.posts for page in pages.values())
 
 
-def test_post_list_properties() -> None:
-    post_list = metadata.PostList(
-        url_path="/",
-        title="Blog",
-        filter=lambda _: True,
-    )
+def test_post_list_feed_url_path() -> None:
+    with ginjarator.testing.api_for_scan():
+        post_list = metadata.PostList.main()
 
     assert post_list.feed_url_path == "/feed/"
 
