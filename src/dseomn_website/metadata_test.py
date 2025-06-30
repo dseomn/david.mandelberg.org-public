@@ -17,6 +17,11 @@ def test_site() -> None:
     assert list(metadata.SITE.tags) == sorted(set(metadata.SITE.tags))
 
 
+def test_page_all() -> None:
+    with ginjarator.testing.api_for_scan():
+        assert metadata.Page.all()
+
+
 def test_page_url() -> None:
     assert (
         metadata.Page(url_path="/foo/", title="Foo").url
@@ -363,6 +368,11 @@ def test_post_all() -> None:
         actual = metadata.Post.all()
 
     assert actual[0].published > actual[1].published
+
+
+def test_post_list_page_all() -> None:
+    with ginjarator.testing.api_for_scan():
+        assert metadata.PostListPage.all()
 
 
 def test_post_list_main() -> None:

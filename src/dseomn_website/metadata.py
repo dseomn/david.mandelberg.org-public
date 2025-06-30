@@ -10,7 +10,7 @@ import functools
 import http
 import itertools
 import tomllib
-from typing import Self
+from typing import final, override, Self
 
 import ginjarator
 
@@ -55,6 +55,14 @@ class Page:
     url_path: str
     title: str
 
+    @classmethod
+    def all(cls) -> Collection[Self]:
+        return tuple(
+            itertools.chain.from_iterable(
+                subclass.all() for subclass in cls.__subclasses__()
+            )
+        )
+
     @property
     def url(self) -> str:
         return SITE.url + self.url_path
@@ -77,6 +85,7 @@ class Error(Page):
             status=status,
         )
 
+    @override
     @classmethod
     def all(cls) -> Collection[Self]:
         return tuple(
@@ -103,6 +112,7 @@ class Standalone(Page):
             title=raw["title"],
         )
 
+    @override
     @classmethod
     def all(cls) -> Sequence[Self]:
         # This method is called by all pages for the nav links, so avoid
@@ -162,6 +172,7 @@ class Post(Page):
             tags=tuple(raw.get("tags", [])),
         )
 
+    @override
     @classmethod
     def all(cls) -> Sequence[Self]:
         posts = sorted(
@@ -201,10 +212,20 @@ _POSTS_PER_PAGE = 10
 _POSTS_PER_FEED = 20
 
 
+@final
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class PostListPage(Page):
     page_number: int
     posts: Sequence[Post]
+
+    @override
+    @classmethod
+    def all(cls) -> Collection[Self]:
+        return tuple(
+            itertools.chain.from_iterable(
+                post_list.pages.values() for post_list in PostList.all()
+            )
+        )
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -227,6 +248,7 @@ class PostList(Page):
             filter=lambda post: tag in post.tags,
         )
 
+    @override
     @classmethod
     def all(cls) -> Collection[Self]:
         return (
