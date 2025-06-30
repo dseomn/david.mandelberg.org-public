@@ -4,11 +4,8 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
-{% set subprocess = ginjarator.py.import_("subprocess") %}
-
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set pagination = ginjarator.py.import_("dseomn_website.pagination") %}
-{% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
 
@@ -157,36 +154,4 @@
       {% endif %}
     {% endcall %}
   {% endfor %}
-
-  {% set feed -%}
-    <?xml version="1.0" encoding="utf-8"?>
-    <feed
-        xml:base="{{ metadata.SITE.url | e }}"
-        xml:lang="{{ metadata.SITE.language | e }}"
-        xmlns="http://www.w3.org/2005/Atom"
-        >
-      <author><name>{{ metadata.SITE.author | e }}</name></author>
-      <id>{{ list_metadata.url | e }}</id>
-      <link href="{{ list_metadata.url_path | e }}" rel="alternate"/>
-      <link href="{{ list_metadata.feed_url_path | e }}" rel="self"/>
-      <title>{{ list_metadata.full_title }}</title>
-      <updated>
-        {{- (list_metadata.feed_posts[0]).published.isoformat() | e -}}
-      </updated>
-      {% for post_metadata in list_metadata.feed_posts %}
-        {{ ginjarator.fs.read_text(post_metadata.atom_fragment_path) }}
-      {% endfor %}
-    </feed>
-  {% endset %}
-  {% set feed_minified = subprocess.run(
-    ("minify", "--type=xml"),
-    input=feed,
-    stdout=subprocess.PIPE,
-    check=true,
-    text=true,
-  ).stdout %}
-  {% do ginjarator.fs.write_text(
-    paths.from_url_path(list_metadata.feed_url_path, dir_index="index.xml"),
-    feed_minified,
-  ) %}
 {% endfor %}
