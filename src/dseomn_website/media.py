@@ -194,18 +194,10 @@ class NormalImageProfile(ImageProfile):
 
     @override
     def responsive_sizes(self) -> str:
-        max_inline_size = (
-            f"calc({self._container_max_inline_size} - 2 * "
-            f"{self._container_padding_inline})"
-        )
-        return ", ".join(
-            (
-                (
-                    f"(width <= {max_inline_size}) "
-                    f"calc(100vw - 2 * {self._container_padding_inline})"
-                ),
-                max_inline_size,
-            )
+        container_inline_size = f"min(100vi, {self._container_max_inline_size})"
+        return (
+            f"calc({container_inline_size} - "
+            f"2 * {self._container_padding_inline})"
         )
 
 

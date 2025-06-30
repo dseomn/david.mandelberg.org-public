@@ -167,10 +167,7 @@ def test_normal_image_profile_responsive_sizes() -> None:
         container_padding_inline="1em",
     )
 
-    assert profile.responsive_sizes() == (
-        "(width <= calc(60em - 2 * 1em)) calc(100vw - 2 * 1em), "
-        "calc(60em - 2 * 1em)"
-    )
+    assert profile.responsive_sizes() == "calc(min(100vi, 60em) - 2 * 1em)"
 
 
 def test_all_image_outputs() -> None:
