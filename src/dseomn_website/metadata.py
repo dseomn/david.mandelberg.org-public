@@ -134,7 +134,7 @@ class Standalone(Page):
     def load(cls, template: ginjarator.paths.Filesystem) -> Self:
         raw = tomllib.loads(
             ginjarator.api().fs.read_text(
-                str(template.parent / "metadata.toml"),
+                template.parent / "metadata.toml",
                 defer_ok=False,
             )
         )
@@ -176,7 +176,7 @@ class Post(Page):
     def load(cls, template: ginjarator.paths.Filesystem) -> Self:
         raw = tomllib.loads(
             ginjarator.api().fs.read_text(
-                str(template.parent / "metadata.toml"),
+                template.parent / "metadata.toml",
                 defer_ok=False,
             )
         )
