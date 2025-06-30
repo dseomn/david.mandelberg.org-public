@@ -17,6 +17,27 @@ def test_site() -> None:
     assert list(metadata.SITE.tags) == sorted(set(metadata.SITE.tags))
 
 
+def test_media_parse_error() -> None:
+    with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
+        metadata.Media.parse(dict(invalid_key_kumquat=42))
+
+
+def test_media_parse() -> None:
+    assert metadata.Media.parse(
+        dict(
+            images=dict(
+                figure=["foo.png"],
+                main=["foo.png", "bar.jpg"],
+            ),
+        ),
+    ) == metadata.Media(
+        profile_names_by_image={
+            ginjarator.paths.Filesystem("foo.png"): {"figure", "main"},
+            ginjarator.paths.Filesystem("bar.jpg"): {"main"},
+        },
+    )
+
+
 def test_page_all() -> None:
     with ginjarator.testing.api_for_scan():
         assert metadata.Page.all()
@@ -34,6 +55,32 @@ def test_page_full_title() -> None:
         metadata.Page(url_path="/foo/", title="Foo").full_title
         == "Foo — David Mandelberg"
     )
+
+
+def test_error_load_error(tmp_path: pathlib.Path) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["errors"]
+            templates = ["errors/404/index.html.jinja"]
+            """
+        )
+    )
+    (tmp_path / "errors/404").mkdir(parents=True)
+    (tmp_path / "errors/404/index.html.jinja").write_text("")
+    (tmp_path / "errors/404/metadata.toml").write_text(
+        textwrap.dedent(
+            """\
+            invalid_key_kumquat = "bar"
+            """
+        )
+    )
+
+    with ginjarator.testing.api_for_scan(root_path=tmp_path):
+        with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
+            metadata.Error.load(
+                ginjarator.paths.Filesystem("errors/404/index.html.jinja")
+            )
 
 
 def test_error_load() -> None:
@@ -117,16 +164,17 @@ def test_standalone_load(tmp_path: pathlib.Path) -> None:
 
 def test_standalone_all() -> None:
     with ginjarator.testing.api_for_scan():
-        expected = {
+        expected = tuple(
             metadata.Standalone.load(template)
             for template in ginjarator.api().fs.read_config().templates
             if template.is_relative_to("standalone")
-        }
+        )
 
         actual = metadata.Standalone.all()
 
-    assert metadata.Standalone(url_path="/about/", title="About") in actual
-    assert set(actual) == expected
+    assert {standalone.url_path for standalone in actual} == {
+        standalone.url_path for standalone in expected
+    }
 
 
 @pytest.mark.parametrize(

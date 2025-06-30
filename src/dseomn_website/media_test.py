@@ -171,6 +171,10 @@ def test_normal_image_profile_responsive_sizes() -> None:
 
 
 def test_all_image_outputs() -> None:
-    assert media.FAVICON in tuple(
-        output.source for output in media.all_image_outputs()
-    )
+    with ginjarator.testing.api_for_scan():
+        assert {output.source for output in media.all_image_outputs()} >= {
+            media.FAVICON,
+            ginjarator.paths.Filesystem(
+                "../private/errors/404/P1250746-raw-unsharp.jpg"
+            ),
+        }

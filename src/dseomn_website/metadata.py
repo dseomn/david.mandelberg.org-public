@@ -10,7 +10,7 @@ import functools
 import http
 import itertools
 import tomllib
-from typing import final, override, Self
+from typing import Any, final, override, Self
 
 import ginjarator
 
@@ -51,9 +51,33 @@ SITE = Site(
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
+class Media:
+    profile_names_by_image: Mapping[
+        ginjarator.paths.Filesystem, Collection[str]
+    ]
+
+    @classmethod
+    def parse(cls, raw: Any) -> Self:
+        if unexpected_keys := raw.keys() - {"images"}:
+            raise ValueError(f"Unexpected keys: {unexpected_keys}")
+        profile_names_by_image = collections.defaultdict[
+            ginjarator.paths.Filesystem, set[str]
+        ](set)
+        for profile_name, sources in raw.get("images", {}).items():
+            for source in sources:
+                profile_names_by_image[ginjarator.paths.Filesystem(source)].add(
+                    profile_name
+                )
+        return cls(
+            profile_names_by_image=profile_names_by_image,
+        )
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class Page:
     url_path: str
     title: str
+    media: Media = Media.parse({})
 
     @classmethod
     def all(cls) -> Collection[Self]:
@@ -78,10 +102,19 @@ class Error(Page):
 
     @classmethod
     def load(cls, template: ginjarator.paths.Filesystem) -> Self:
+        raw = tomllib.loads(
+            ginjarator.api().fs.read_text(
+                template.parent / "metadata.toml",
+                defer_ok=False,
+            )
+        )
+        if unexpected_keys := raw.keys() - {"media"}:
+            raise ValueError(f"Unexpected keys: {unexpected_keys}")
         status = http.HTTPStatus(int(template.parent.name))
         return cls(
             url_path=f"/errors/{status.value}/",
             title=f"{status.value} {status.phrase}",
+            media=Media.parse(raw.get("media", {})),
             status=status,
         )
 
@@ -105,11 +138,12 @@ class Standalone(Page):
                 defer_ok=False,
             )
         )
-        if unexpected_keys := raw.keys() - {"title"}:
+        if unexpected_keys := raw.keys() - {"title", "media"}:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         return cls(
             url_path=f"/{template.relative_to("standalone").parent}/",
             title=raw["title"],
+            media=Media.parse(raw.get("media", {})),
         )
 
     @override
@@ -152,6 +186,7 @@ class Post(Page):
             "title",
             "author",
             "tags",
+            "media",
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         published = raw["published"]
@@ -165,6 +200,7 @@ class Post(Page):
         return cls(
             url_path=f"/{published.strftime("%Y/%m/%d")}/{slug}/",
             title=raw["title"],
+            media=Media.parse(raw.get("media", {})),
             id=source_dir_name,
             uuid=raw["uuid"],
             published=published,

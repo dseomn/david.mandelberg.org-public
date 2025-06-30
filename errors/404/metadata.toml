@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+[media.images]
+main = [
+  "../private/errors/404/P1250746-raw-unsharp.jpg",
+]

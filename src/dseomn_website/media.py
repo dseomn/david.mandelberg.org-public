@@ -12,6 +12,7 @@ from typing import Any, override, Self
 import ginjarator
 
 from dseomn_website import layout
+from dseomn_website import metadata
 from dseomn_website import paths
 
 
@@ -222,15 +223,9 @@ FAVICON = ginjarator.paths.Filesystem(
 
 def all_image_outputs() -> Collection[ImageOutput]:
     outputs = set[ImageOutput]()
-    for source, profile_name in (
-        (FAVICON, "favicon"),
-        # TODO: dseomn - Get this from a toml file.
-        (
-            ginjarator.paths.Filesystem(
-                "../private/errors/404/P1250746-raw-unsharp.jpg"
-            ),
-            "main",
-        ),
-    ):
-        outputs.update(IMAGE_PROFILES[profile_name].outputs(source))
+    outputs.update(IMAGE_PROFILES["favicon"].outputs(FAVICON))
+    for page in metadata.Page.all():
+        for source, profile_names in page.media.profile_names_by_image.items():
+            for profile_name in profile_names:
+                outputs.update(IMAGE_PROFILES[profile_name].outputs(source))
     return outputs
