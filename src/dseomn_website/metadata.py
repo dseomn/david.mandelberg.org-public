@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from collections.abc import Collection, Sequence
+import collections
+from collections.abc import Collection, Iterable, Sequence
 import dataclasses
 import datetime
 import http
@@ -12,6 +13,11 @@ from typing import Self
 import ginjarator
 
 from dseomn_website import paths
+
+
+def _duplicates[T](iterable: Iterable[T]) -> Collection[T]:
+    counter = collections.Counter(iterable)
+    return tuple(item for item, count in counter.items() if count > 1)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -156,7 +162,7 @@ class Post(Page):
 
     @classmethod
     def all(cls) -> Sequence[Self]:
-        return sorted(
+        posts = sorted(
             (
                 cls.load(template)
                 for template in ginjarator.api().fs.read_config().templates
@@ -166,6 +172,15 @@ class Post(Page):
             key=lambda post_metadata: post_metadata.published,
             reverse=True,
         )
+        if uuid_duplicates := _duplicates(post.uuid for post in posts):
+            raise ValueError(f"Duplicate uuids: {uuid_duplicates}")
+        if published_duplicates := _duplicates(
+            post.published for post in posts
+        ):
+            raise ValueError(
+                f"Duplicate published dates: {published_duplicates}"
+            )
+        return posts
 
     @property
     def work_path(self) -> ginjarator.paths.Filesystem:

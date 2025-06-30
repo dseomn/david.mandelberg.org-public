@@ -117,10 +117,7 @@
 
 {# Map from list metadata to the list of post metadata in it. #}
 {% set lists = {} %}
-{% set post_uuids = [] %}
 {% for post_metadata in metadata.Post.all() %}
-  {% do ginjarator.py.assert_(post_metadata.uuid not in post_uuids) %}
-  {% do post_uuids.append(post_metadata.uuid) %}
   {% do lists.setdefault(metadata.BLOG_MAIN_LIST, []).append(post_metadata) %}
   {% for tag in post_metadata.tags %}
     {% do lists.setdefault(metadata.BLOG_TAG_LISTS[tag], []).append(
