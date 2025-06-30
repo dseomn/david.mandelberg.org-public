@@ -55,12 +55,29 @@ class Page:
         return f"{self.title} — {SITE.title}"
 
 
-STANDALONE_PAGES = {
-    ginjarator.paths.Filesystem("standalone/about/index.html.jinja"): Page(
-        url_path="/about/",
-        title="About",
-    ),
-}
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class Standalone(Page):
+    @classmethod
+    def load(cls, template: ginjarator.paths.Filesystem) -> Self:
+        raw = tomllib.loads(
+            ginjarator.api().fs.read_text(
+                str(template.parent / "metadata.toml"),
+                defer_ok=False,
+            )
+        )
+        if unexpected_keys := raw.keys() - {"title"}:
+            raise ValueError(f"Unexpected keys: {unexpected_keys}")
+        return cls(
+            url_path=f"/{template.relative_to("standalone").parent}/",
+            title=raw["title"],
+        )
+
+    @classmethod
+    def all(cls) -> Sequence[Self]:
+        return tuple(
+            cls.load(ginjarator.paths.Filesystem(template))
+            for template in ("standalone/about/index.html.jinja",)
+        )
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -155,7 +172,9 @@ BLOG_TAG_LISTS = {
     for tag in SITE.tags
 }
 
-MAIN_NAV = (
-    BLOG_MAIN_LIST,
-    *STANDALONE_PAGES.values(),
-)
+
+def main_nav() -> Sequence[Page]:
+    return (
+        BLOG_MAIN_LIST,
+        *Standalone.all(),
+    )

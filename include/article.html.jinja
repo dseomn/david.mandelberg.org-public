@@ -12,17 +12,17 @@
 {% macro standalone(
   extra_head=""
 ) %}
-  {% set page_metadata = (
-    metadata.STANDALONE_PAGES[ginjarator.current_template]
+  {% set standalone_metadata = metadata.Standalone.load(
+    ginjarator.current_template
   ) %}
   {% set fragment %}
     <article class="article">
-      <h1>{{ page_metadata.title | e }}</h1>
+      <h1>{{ standalone_metadata.title | e }}</h1>
       {{ caller() }}
     </article>
   {% endset %}
   {% call base_html.write(
-    page_metadata=page_metadata,
+    page_metadata=standalone_metadata,
     extra_head=extra_head,
   ) %}
     {{ headings.article(fragment) }}

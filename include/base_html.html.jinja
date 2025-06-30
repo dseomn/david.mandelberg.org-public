@@ -79,7 +79,7 @@
             {% endif %}
             <nav>
               <ul class="site-header-nav-list">
-                {% for nav_metadata in metadata.MAIN_NAV %}
+                {% for nav_metadata in metadata.main_nav() %}
                   {% if nav_metadata.url_path == page_metadata.url_path %}
                     <li aria-current="page">{{ nav_metadata.title | e }}</li>
                   {% else %}
@@ -110,7 +110,7 @@
                 {% endfor %}
               </ul>
             </li>
-            {% for standalone_metadata in metadata.STANDALONE_PAGES.values() %}
+            {% for standalone_metadata in metadata.Standalone.all() %}
               <li class="site-footer-list-item">
                 <a href="{{ standalone_metadata.url_path | e }}">
                   {{ standalone_metadata.title | e }}

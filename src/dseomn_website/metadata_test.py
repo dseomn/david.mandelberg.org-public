@@ -30,6 +30,79 @@ def test_page_full_title() -> None:
     )
 
 
+def test_standalone_load_error(tmp_path: pathlib.Path) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["standalone"]
+            templates = ["standalone/foo/index.html.jinja"]
+            """
+        )
+    )
+    (tmp_path / "standalone/foo").mkdir(parents=True)
+    (tmp_path / "standalone/foo/index.html.jinja").write_text("")
+    (tmp_path / "standalone/foo/metadata.toml").write_text(
+        textwrap.dedent(
+            """\
+            title = "Foo"
+            invalid_key_kumquat = "bar"
+            """
+        )
+    )
+
+    with ginjarator.testing.api_for_scan(
+        current_template="standalone/foo/index.html.jinja",
+        root_path=tmp_path,
+    ):
+        with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
+            metadata.Standalone.load(ginjarator.api().current_template)
+
+
+def test_standalone_load(tmp_path: pathlib.Path) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["standalone"]
+            templates = ["standalone/foo/index.html.jinja"]
+            """
+        )
+    )
+    (tmp_path / "standalone/foo").mkdir(parents=True)
+    (tmp_path / "standalone/foo/index.html.jinja").write_text("")
+    (tmp_path / "standalone/foo/metadata.toml").write_text(
+        textwrap.dedent(
+            """\
+            title = "Foo"
+            """
+        )
+    )
+
+    with ginjarator.testing.api_for_scan(
+        current_template="standalone/foo/index.html.jinja",
+        root_path=tmp_path,
+    ):
+        standalone_metadata = metadata.Standalone.load(
+            ginjarator.api().current_template
+        )
+
+    assert standalone_metadata.url_path == "/foo/"
+    assert standalone_metadata.title == "Foo"
+
+
+def test_standalone_all() -> None:
+    with ginjarator.testing.api_for_scan():
+        expected = {
+            metadata.Standalone.load(template)
+            for template in ginjarator.api().fs.read_config().templates
+            if template.is_relative_to("standalone")
+        }
+
+        actual = metadata.Standalone.all()
+
+    assert metadata.Standalone(url_path="/about/", title="About") in actual
+    assert set(actual) == expected
+
+
 @pytest.mark.parametrize(
     "contents,error_regex",
     (
@@ -214,3 +287,8 @@ def test_post_list_properties() -> None:
     post_list = metadata.PostList(url_path="/", title="Blog")
 
     assert post_list.feed_url_path == "/feed/"
+
+
+def test_main_nav() -> None:
+    with ginjarator.testing.api_for_scan():
+        assert metadata.main_nav()
