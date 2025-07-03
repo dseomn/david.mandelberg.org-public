@@ -355,9 +355,10 @@ def test_post_load(
 
 
 @pytest.mark.parametrize(
-    "metadata_1,metadata_2,error_regex",
+    "source_dir_name_1,metadata_1,source_dir_name_2,metadata_2,error_regex",
     (
         (
+            "2025-06-27-foo",
             textwrap.dedent(
                 """\
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
@@ -365,6 +366,7 @@ def test_post_load(
                 title = "Foo"
                 """
             ),
+            "2025-06-27-bar",
             textwrap.dedent(
                 """\
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
@@ -375,6 +377,7 @@ def test_post_load(
             r"Duplicate uuid",
         ),
         (
+            "2025-06-27-foo",
             textwrap.dedent(
                 """\
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
@@ -382,6 +385,7 @@ def test_post_load(
                 title = "Foo"
                 """
             ),
+            "2025-06-27-bar",
             textwrap.dedent(
                 """\
                 uuid = "f056342d-b090-4266-9e65-de87e37a094e"
@@ -394,28 +398,34 @@ def test_post_load(
     ),
 )
 def test_post_all_duplicate(
+    source_dir_name_1: str,
     metadata_1: str,
+    source_dir_name_2: str,
     metadata_2: str,
     error_regex: str,
     tmp_path: pathlib.Path,
 ) -> None:
     (tmp_path / "ginjarator.toml").write_text(
         textwrap.dedent(
-            """\
+            f"""\
             source_paths = ["posts"]
             templates = [
-                "posts/2025-06-27-foo/index.html.jinja",
-                "posts/2025-06-27-bar/index.html.jinja",
+                "posts/{source_dir_name_1}/index.html.jinja",
+                "posts/{source_dir_name_2}/index.html.jinja",
             ]
             """
         )
     )
-    (tmp_path / "posts/2025-06-27-foo").mkdir(parents=True)
-    (tmp_path / "posts/2025-06-27-foo/index.html.jinja").write_text("")
-    (tmp_path / "posts/2025-06-27-foo/metadata.toml").write_text(metadata_1)
-    (tmp_path / "posts/2025-06-27-bar").mkdir(parents=True)
-    (tmp_path / "posts/2025-06-27-bar/index.html.jinja").write_text("")
-    (tmp_path / "posts/2025-06-27-bar/metadata.toml").write_text(metadata_2)
+    (tmp_path / f"posts/{source_dir_name_1}").mkdir(parents=True)
+    (tmp_path / f"posts/{source_dir_name_1}/index.html.jinja").write_text("")
+    (tmp_path / f"posts/{source_dir_name_1}/metadata.toml").write_text(
+        metadata_1
+    )
+    (tmp_path / f"posts/{source_dir_name_2}").mkdir(parents=True)
+    (tmp_path / f"posts/{source_dir_name_2}/index.html.jinja").write_text("")
+    (tmp_path / f"posts/{source_dir_name_2}/metadata.toml").write_text(
+        metadata_2
+    )
 
     with ginjarator.testing.api_for_scan(root_path=tmp_path):
         with pytest.raises(ValueError, match=error_regex):
