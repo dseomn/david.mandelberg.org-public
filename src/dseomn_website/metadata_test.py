@@ -105,6 +105,7 @@ def test_comment_load_error(
                     "2025-07-03 19:47:37Z"
                 ),
                 author="Someone Else",
+                author_url=None,
                 in_reply_to=None,
                 contents_path=ginjarator.paths.Filesystem(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
@@ -124,6 +125,7 @@ def test_comment_load_error(
                     "2025-07-03 19:56:21Z"
                 ),
                 author="Someone Else",
+                author_url=None,
                 in_reply_to=None,
                 contents_path=ginjarator.paths.Filesystem(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
@@ -135,6 +137,7 @@ def test_comment_load_error(
                 """\
                 published = 2025-07-03 15:47:37-04:00
                 author = "Someone Else"
+                author_url = "https://example.com"
                 in_reply_to = "4e276685-4c4d-4e68-9d87-388363160661"
                 """
             ),
@@ -144,6 +147,7 @@ def test_comment_load_error(
                     "2025-07-03 19:47:37Z"
                 ),
                 author="Someone Else",
+                author_url="https://example.com",
                 in_reply_to=uuid.UUID("4e276685-4c4d-4e68-9d87-388363160661"),
                 contents_path=ginjarator.paths.Filesystem(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
@@ -590,6 +594,7 @@ def test_post_load_error(
                             "2025-07-02 20:15:35Z"
                         ),
                         author="Someone Else",
+                        author_url=None,
                         in_reply_to=None,
                         contents_path=ginjarator.paths.Filesystem(
                             "../private/posts/2025-06-27-foo/comments/"
@@ -602,6 +607,7 @@ def test_post_load_error(
                             "2025-07-03 20:15:35Z"
                         ),
                         author="David Mandelberg",
+                        author_url=None,
                         in_reply_to=uuid.UUID(
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),
@@ -620,6 +626,7 @@ def test_post_load_error(
                             "2025-07-02 20:15:35Z"
                         ),
                         author="Someone Else",
+                        author_url=None,
                         in_reply_to=None,
                         contents_path=ginjarator.paths.Filesystem(
                             "../private/posts/2025-06-27-foo/comments/"
@@ -634,6 +641,7 @@ def test_post_load_error(
                             "2025-07-03 20:15:35Z"
                         ),
                         author="David Mandelberg",
+                        author_url=None,
                         in_reply_to=uuid.UUID(
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),
@@ -652,6 +660,7 @@ def test_post_load_error(
                             "2025-07-02 20:15:35Z"
                         ),
                         author="Someone Else",
+                        author_url=None,
                         in_reply_to=None,
                         contents_path=ginjarator.paths.Filesystem(
                             "../private/posts/2025-06-27-foo/comments/"
@@ -666,6 +675,7 @@ def test_post_load_error(
                             "2025-07-03 20:15:35Z"
                         ),
                         author="David Mandelberg",
+                        author_url=None,
                         in_reply_to=uuid.UUID(
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),

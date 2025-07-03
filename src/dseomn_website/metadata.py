@@ -96,6 +96,7 @@ class Comment:
     uuid: uuid_.UUID
     published: datetime.datetime
     author: str
+    author_url: str | None
     in_reply_to: uuid_.UUID | None
     contents_path: ginjarator.paths.Filesystem
 
@@ -114,6 +115,7 @@ class Comment:
         if unexpected_keys := raw.keys() - {
             "published",
             "author",
+            "author_url",
             "in_reply_to",
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
@@ -121,6 +123,7 @@ class Comment:
             uuid=comment_uuid,
             published=_comment_datetime(raw["published"]),
             author=raw["author"],
+            author_url=raw.get("author_url", None),
             in_reply_to=(
                 uuid.UUID(raw["in_reply_to"]) if "in_reply_to" in raw else None
             ),
