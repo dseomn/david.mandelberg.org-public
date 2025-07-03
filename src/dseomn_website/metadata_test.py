@@ -39,6 +39,123 @@ def test_media_parse() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    "contents,error_regex",
+    (
+        (
+            textwrap.dedent(
+                """\
+                published = 2025-07-03 15:47:37-04:00
+                author = "Someone Else"
+                invalid_key_kumquat = "bar"
+                """
+            ),
+            r"invalid_key_kumquat",
+        ),
+        (
+            textwrap.dedent(
+                """\
+                published = 2025-07-03 15:47:37
+                author = "Someone Else"
+                """
+            ),
+            r"no timezone",
+        ),
+    ),
+)
+def test_comment_load_error(
+    contents: str,
+    error_regex: str,
+    tmp_path: pathlib.Path,
+) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["comments"]
+            """
+        )
+    )
+    (tmp_path / "comments").mkdir()
+    (
+        tmp_path / "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.toml"
+    ).write_text(contents)
+
+    with ginjarator.testing.api_for_scan(root_path=tmp_path):
+        with pytest.raises(ValueError, match=error_regex):
+            metadata.Comment.load(
+                ginjarator.paths.Filesystem("comments"),
+                uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
+            )
+
+
+@pytest.mark.parametrize(
+    "contents,expected",
+    (
+        (
+            textwrap.dedent(
+                """\
+                published = 2025-07-03 15:47:37-04:00
+                author = "Someone Else"
+                """
+            ),
+            metadata.Comment(
+                uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
+                published=datetime.datetime.fromisoformat(
+                    "2025-07-03 19:47:37Z"
+                ),
+                author="Someone Else",
+                contents_path=ginjarator.paths.Filesystem(
+                    "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
+                ),
+            ),
+        ),
+        (
+            textwrap.dedent(
+                """\
+                published = "Thu, 3 Jul 2025 15:56:21 -0400"
+                author = "Someone Else"
+                """
+            ),
+            metadata.Comment(
+                uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
+                published=datetime.datetime.fromisoformat(
+                    "2025-07-03 19:56:21Z"
+                ),
+                author="Someone Else",
+                contents_path=ginjarator.paths.Filesystem(
+                    "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
+                ),
+            ),
+        ),
+    ),
+)
+def test_comment_load(
+    contents: str,
+    expected: metadata.Comment,
+    tmp_path: pathlib.Path,
+) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["comments"]
+            """
+        )
+    )
+    (tmp_path / "comments").mkdir()
+    (
+        tmp_path / "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.toml"
+    ).write_text(contents)
+
+    with ginjarator.testing.api_for_scan(root_path=tmp_path):
+        assert (
+            metadata.Comment.load(
+                ginjarator.paths.Filesystem("comments"),
+                uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
+            )
+            == expected
+        )
+
+
 def test_page_all() -> None:
     with ginjarator.testing.api_for_scan():
         assert metadata.Page.all()

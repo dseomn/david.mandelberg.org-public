@@ -6,6 +6,7 @@ import collections
 from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 import dataclasses
 import datetime
+import email.utils
 import functools
 import http
 import itertools
@@ -17,10 +18,21 @@ import ginjarator
 
 from dseomn_website import paths
 
+uuid_ = uuid  # To access when the name is shadowed.
+
 
 def _require_timezone(value: datetime.datetime) -> None:
     if value.tzinfo is None:
         raise ValueError(f"{value} has no timezone.")
+
+
+def _comment_datetime(value: datetime.datetime | str) -> datetime.datetime:
+    if isinstance(value, datetime.datetime):
+        parsed = value
+    else:
+        parsed = email.utils.parsedate_to_datetime(value)
+    _require_timezone(parsed)
+    return parsed.astimezone(datetime.timezone.utc)
 
 
 def _duplicates[T](iterable: Iterable[T]) -> Collection[T]:
@@ -76,6 +88,38 @@ class Media:
                 )
         return cls(
             profile_names_by_image=profile_names_by_image,
+        )
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class Comment:
+    uuid: uuid.UUID
+    published: datetime.datetime
+    author: str
+    contents_path: ginjarator.paths.Filesystem
+
+    @classmethod
+    def load(
+        cls,
+        parent_path: ginjarator.paths.Filesystem,
+        comment_uuid: uuid_.UUID,
+    ) -> Self:
+        raw = tomllib.loads(
+            ginjarator.api().fs.read_text(
+                parent_path / f"{comment_uuid}.toml",
+                defer_ok=False,
+            )
+        )
+        if unexpected_keys := raw.keys() - {
+            "published",
+            "author",
+        }:
+            raise ValueError(f"Unexpected keys: {unexpected_keys}")
+        return cls(
+            uuid=comment_uuid,
+            published=_comment_datetime(raw["published"]),
+            author=raw["author"],
+            contents_path=parent_path / f"{comment_uuid}.html",
         )
 
 
