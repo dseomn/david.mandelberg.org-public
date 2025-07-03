@@ -18,6 +18,11 @@ import ginjarator
 from dseomn_website import paths
 
 
+def _require_timezone(value: datetime.datetime) -> None:
+    if value.tzinfo is None:
+        raise ValueError(f"{value} has no timezone.")
+
+
 def _duplicates[T](iterable: Iterable[T]) -> Collection[T]:
     counter = collections.Counter(iterable)
     return tuple(item for item, count in counter.items() if count > 1)
@@ -168,6 +173,7 @@ class Post(Page):
     tags: Sequence[str]
 
     def __post_init__(self) -> None:
+        _require_timezone(self.published)
         if unknown_tags := set(self.tags) - set(SITE.tags):
             raise ValueError(f"Unknown tags: {unknown_tags}")
         if list(self.tags) != sorted(set(self.tags)):

@@ -206,6 +206,16 @@ def test_standalone_all() -> None:
             textwrap.dedent(
                 """\
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
+                published = 2025-06-27 14:15:01
+                title = "Foo"
+                """
+            ),
+            r"no timezone",
+        ),
+        (
+            textwrap.dedent(
+                """\
+                uuid = "67ed54bc-e214-4177-9846-2236de449037"
                 published = 2025-06-27 14:15:01-04:00
                 title = "Foo"
                 tags = ["unknown-tag"]
