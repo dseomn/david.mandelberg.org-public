@@ -93,9 +93,10 @@ class Media:
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Comment:
-    uuid: uuid.UUID
+    uuid: uuid_.UUID
     published: datetime.datetime
     author: str
+    in_reply_to: uuid_.UUID | None
     contents_path: ginjarator.paths.Filesystem
 
     @classmethod
@@ -113,12 +114,16 @@ class Comment:
         if unexpected_keys := raw.keys() - {
             "published",
             "author",
+            "in_reply_to",
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         return cls(
             uuid=comment_uuid,
             published=_comment_datetime(raw["published"]),
             author=raw["author"],
+            in_reply_to=(
+                uuid.UUID(raw["in_reply_to"]) if "in_reply_to" in raw else None
+            ),
             contents_path=parent_path / f"{comment_uuid}.html",
         )
 
@@ -215,12 +220,23 @@ def _post_url_path(published: datetime.datetime, slug: str) -> str:
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Post(Page):
     id: str
-    uuid: uuid.UUID
+    uuid: uuid_.UUID
     published: datetime.datetime
     author: str
     tags: Sequence[str]
     url_path_aliases: Collection[str]
     comments: Sequence[Comment]
+
+    def _comment_in_reply_to_is_valid(self, comment: Comment) -> bool:
+        if comment.in_reply_to is None:
+            return True
+        if comment.in_reply_to not in self.comment_by_uuid:
+            return False
+        parent = self.comment_by_uuid[comment.in_reply_to]
+        if comment.published <= parent.published:
+            # In addition to catching mistakes, this also prevents graph cycles.
+            return False
+        return True
 
     def __post_init__(self) -> None:
         if unknown_tags := set(self.tags) - set(SITE.tags):
@@ -232,6 +248,14 @@ class Post(Page):
             key=lambda comment: comment.published,
         ):
             raise ValueError(f"{self.comments} is not sorted.")
+        if invalid_replies := {
+            comment
+            for comment in self.comments
+            if not self._comment_in_reply_to_is_valid(comment)
+        }:
+            raise ValueError(
+                f"{invalid_replies} have invalid in_reply_to fields."
+            )
 
     @classmethod
     def load(cls, template: ginjarator.paths.Filesystem) -> Self:
@@ -323,6 +347,25 @@ class Post(Page):
     @property
     def atom_fragment_path(self) -> ginjarator.paths.Filesystem:
         return self.work_path / "atom-fragment.xml"
+
+    @functools.cached_property
+    def comment_by_uuid(self) -> Mapping[uuid_.UUID, Comment]:
+        return {comment.uuid: comment for comment in self.comments}
+
+    @functools.cached_property
+    def comments_by_parent(
+        self,
+    ) -> Mapping[uuid_.UUID | None, Sequence[Comment]]:
+        result: dict[uuid_.UUID | None, list[Comment]] = {
+            None: [],
+            **{comment.uuid: [] for comment in self.comments},
+        }
+        for comment in self.comments:
+            result[comment.in_reply_to].append(comment)
+        assert collections.Counter(
+            itertools.chain.from_iterable(result.values())
+        ) == collections.Counter(self.comments)
+        return result
 
 
 _POSTS_PER_PAGE = 10

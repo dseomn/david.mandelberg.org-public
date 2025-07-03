@@ -104,6 +104,7 @@ def test_comment_load_error(
                     "2025-07-03 19:47:37Z"
                 ),
                 author="Someone Else",
+                in_reply_to=None,
                 contents_path=ginjarator.paths.Filesystem(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
                 ),
@@ -122,6 +123,27 @@ def test_comment_load_error(
                     "2025-07-03 19:56:21Z"
                 ),
                 author="Someone Else",
+                in_reply_to=None,
+                contents_path=ginjarator.paths.Filesystem(
+                    "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
+                ),
+            ),
+        ),
+        (
+            textwrap.dedent(
+                """\
+                published = 2025-07-03 15:47:37-04:00
+                author = "Someone Else"
+                in_reply_to = "4e276685-4c4d-4e68-9d87-388363160661"
+                """
+            ),
+            metadata.Comment(
+                uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
+                published=datetime.datetime.fromisoformat(
+                    "2025-07-03 19:47:37Z"
+                ),
+                author="Someone Else",
+                in_reply_to=uuid.UUID("4e276685-4c4d-4e68-9d87-388363160661"),
                 contents_path=ginjarator.paths.Filesystem(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
                 ),
@@ -396,6 +418,57 @@ def test_standalone_all() -> None:
             },
             r"not sorted",
         ),
+        (
+            textwrap.dedent(
+                """\
+                uuid = "67ed54bc-e214-4177-9846-2236de449037"
+                published = 2025-06-27 14:15:01-04:00
+                title = "Foo"
+                comments = [
+                    "096aa7f3-827a-4824-91f0-97da7cbd160b",
+                ]
+                """
+            ),
+            {
+                "096aa7f3-827a-4824-91f0-97da7cbd160b": textwrap.dedent(
+                    """\
+                    published = 2025-07-03 16:15:35-04:00
+                    author = "Someone Else"
+                    in_reply_to = "26918b04-49ce-4ce8-aecc-8643b360ce56"
+                    """
+                ),
+            },
+            r"invalid in_reply_to",
+        ),
+        (
+            textwrap.dedent(
+                """\
+                uuid = "67ed54bc-e214-4177-9846-2236de449037"
+                published = 2025-06-27 14:15:01-04:00
+                title = "Foo"
+                comments = [
+                    "096aa7f3-827a-4824-91f0-97da7cbd160b",
+                    "131294af-bba3-4296-a7e8-1f2eb5ca741c",
+                ]
+                """
+            ),
+            {
+                "096aa7f3-827a-4824-91f0-97da7cbd160b": textwrap.dedent(
+                    """\
+                    published = 2025-07-02 16:15:35-04:00
+                    author = "Someone Else"
+                    in_reply_to = "131294af-bba3-4296-a7e8-1f2eb5ca741c"
+                    """
+                ),
+                "131294af-bba3-4296-a7e8-1f2eb5ca741c": textwrap.dedent(
+                    """\
+                    published = 2025-07-03 16:15:35-04:00
+                    author = "Someone Else"
+                    """
+                ),
+            },
+            r"invalid in_reply_to",
+        ),
     ),
 )
 def test_post_load_error(
@@ -434,7 +507,15 @@ def test_post_load_error(
 
 
 @pytest.mark.parametrize(
-    "contents,comments_metadata,expected",
+    ",".join(
+        (
+            "contents",
+            "comments_metadata",
+            "expected",
+            "expected_comment_by_uuid",
+            "expected_comments_by_parent",
+        )
+    ),
     (
         (
             textwrap.dedent(
@@ -458,6 +539,8 @@ def test_post_load_error(
                 url_path_aliases=frozenset(),
                 comments=(),
             ),
+            {},
+            {None: []},
         ),
         (
             textwrap.dedent(
@@ -484,6 +567,7 @@ def test_post_load_error(
                     """\
                     published = 2025-07-03 16:15:35-04:00
                     author = "David Mandelberg"
+                    in_reply_to = "096aa7f3-827a-4824-91f0-97da7cbd160b"
                     """
                 ),
             },
@@ -505,6 +589,7 @@ def test_post_load_error(
                             "2025-07-02 20:15:35Z"
                         ),
                         author="Someone Else",
+                        in_reply_to=None,
                         contents_path=ginjarator.paths.Filesystem(
                             "../private/posts/2025-06-27-foo/comments/"
                             "096aa7f3-827a-4824-91f0-97da7cbd160b.html"
@@ -516,6 +601,9 @@ def test_post_load_error(
                             "2025-07-03 20:15:35Z"
                         ),
                         author="David Mandelberg",
+                        in_reply_to=uuid.UUID(
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
                         contents_path=ginjarator.paths.Filesystem(
                             "../private/posts/2025-06-27-foo/comments/"
                             "131294af-bba3-4296-a7e8-1f2eb5ca741c.html"
@@ -523,6 +611,71 @@ def test_post_load_error(
                     ),
                 ),
             ),
+            {
+                uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"): (
+                    metadata.Comment(
+                        uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
+                        published=datetime.datetime.fromisoformat(
+                            "2025-07-02 20:15:35Z"
+                        ),
+                        author="Someone Else",
+                        in_reply_to=None,
+                        contents_path=ginjarator.paths.Filesystem(
+                            "../private/posts/2025-06-27-foo/comments/"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b.html"
+                        ),
+                    )
+                ),
+                uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"): (
+                    metadata.Comment(
+                        uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
+                        published=datetime.datetime.fromisoformat(
+                            "2025-07-03 20:15:35Z"
+                        ),
+                        author="David Mandelberg",
+                        in_reply_to=uuid.UUID(
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
+                        contents_path=ginjarator.paths.Filesystem(
+                            "../private/posts/2025-06-27-foo/comments/"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c.html"
+                        ),
+                    )
+                ),
+            },
+            {
+                None: [
+                    metadata.Comment(
+                        uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
+                        published=datetime.datetime.fromisoformat(
+                            "2025-07-02 20:15:35Z"
+                        ),
+                        author="Someone Else",
+                        in_reply_to=None,
+                        contents_path=ginjarator.paths.Filesystem(
+                            "../private/posts/2025-06-27-foo/comments/"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b.html"
+                        ),
+                    )
+                ],
+                uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"): [
+                    metadata.Comment(
+                        uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
+                        published=datetime.datetime.fromisoformat(
+                            "2025-07-03 20:15:35Z"
+                        ),
+                        author="David Mandelberg",
+                        in_reply_to=uuid.UUID(
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
+                        contents_path=ginjarator.paths.Filesystem(
+                            "../private/posts/2025-06-27-foo/comments/"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c.html"
+                        ),
+                    ),
+                ],
+                uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"): [],
+            },
         ),
     ),
 )
@@ -530,6 +683,8 @@ def test_post_load(
     contents: str,
     comments_metadata: dict[str, str],
     expected: metadata.Post,
+    expected_comment_by_uuid: dict[uuid.UUID, metadata.Comment],
+    expected_comments_by_parent: dict[uuid.UUID | None, list[metadata.Comment]],
     tmp_path: pathlib.Path,
 ) -> None:
     (tmp_path / "public").mkdir()
@@ -569,6 +724,8 @@ def test_post_load(
     assert post_metadata.atom_fragment_path == ginjarator.paths.Filesystem(
         "work/posts/2025-06-27-foo/atom-fragment.xml"
     )
+    assert post_metadata.comment_by_uuid == expected_comment_by_uuid
+    assert post_metadata.comments_by_parent == expected_comments_by_parent
 
 
 @pytest.mark.parametrize(
