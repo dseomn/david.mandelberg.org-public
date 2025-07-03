@@ -6,6 +6,7 @@ import datetime
 import http
 import pathlib
 import textwrap
+import uuid
 
 import ginjarator.testing
 import pytest
@@ -276,7 +277,7 @@ def test_post_load_error(
                 url_path="/2025/06/27/foo/",
                 title="Foo",
                 id="2025-06-27-foo",
-                uuid="67ed54bc-e214-4177-9846-2236de449037",
+                uuid=uuid.UUID("67ed54bc-e214-4177-9846-2236de449037"),
                 published=datetime.datetime.fromisoformat(
                     "2025-06-27 14:15:01-04:00"
                 ),
@@ -298,7 +299,7 @@ def test_post_load_error(
                 url_path="/2025/06/27/foo/",
                 title="Foo",
                 id="2025-06-27-foo",
-                uuid="67ed54bc-e214-4177-9846-2236de449037",
+                uuid=uuid.UUID("67ed54bc-e214-4177-9846-2236de449037"),
                 published=datetime.datetime.fromisoformat(
                     "2025-06-27 14:15:01-04:00"
                 ),

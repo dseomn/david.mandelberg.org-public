@@ -11,6 +11,7 @@ import http
 import itertools
 import tomllib
 from typing import Any, final, override, Self
+import uuid
 
 import ginjarator
 
@@ -161,7 +162,7 @@ class Standalone(Page):
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Post(Page):
     id: str
-    uuid: str
+    uuid: uuid.UUID
     published: datetime.datetime
     author: str
     tags: Sequence[str]
@@ -202,7 +203,7 @@ class Post(Page):
             title=raw["title"],
             media=Media.parse(raw.get("media", {})),
             id=source_dir_name,
-            uuid=raw["uuid"],
+            uuid=uuid.UUID(raw["uuid"]),
             published=published,
             author=raw.get("author", SITE.author),
             tags=tuple(raw.get("tags", [])),
