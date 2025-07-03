@@ -12,6 +12,7 @@ import ginjarator.testing
 import pytest
 
 from dseomn_website import metadata
+from dseomn_website import paths
 
 
 def test_site() -> None:
@@ -830,6 +831,26 @@ def test_post_all() -> None:
         actual = metadata.Post.all()
 
     assert actual[0].published > actual[1].published
+
+
+def test_post_all_no_unlisted_comments() -> None:
+    with ginjarator.testing.api_for_scan():
+        posts = metadata.Post.all()
+
+    for post in posts:
+        comments_path = pathlib.Path(
+            paths.PRIVATE / "posts" / post.id / "comments"
+        )
+        if comments_path.exists():
+            comments_filenames = {
+                child.name for child in comments_path.iterdir()
+            }
+        else:
+            comments_filenames = set()
+        assert comments_filenames == {
+            *(f"{comment.uuid}.html" for comment in post.comments),
+            *(f"{comment.uuid}.toml" for comment in post.comments),
+        }
 
 
 def test_post_list_page_all() -> None:
