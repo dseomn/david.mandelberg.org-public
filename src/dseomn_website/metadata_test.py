@@ -289,17 +289,18 @@ def test_post_load_error(
                 id="2025-06-27-foo",
                 uuid=uuid.UUID("67ed54bc-e214-4177-9846-2236de449037"),
                 published=datetime.datetime.fromisoformat(
-                    "2025-06-27 14:15:01-04:00"
+                    "2025-06-27 18:15:01-00:00"
                 ),
                 author=metadata.SITE.author,
                 tags=(),
+                url_path_aliases=frozenset(),
             ),
         ),
         (
             textwrap.dedent(
                 """\
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
-                published = 2025-06-27 14:15:01-04:00
+                published = 2025-06-26 22:15:01-04:00
                 title = "Foo"
                 author = "Someone Else"
                 tags = ["dance", "music"]
@@ -311,10 +312,11 @@ def test_post_load_error(
                 id="2025-06-27-foo",
                 uuid=uuid.UUID("67ed54bc-e214-4177-9846-2236de449037"),
                 published=datetime.datetime.fromisoformat(
-                    "2025-06-27 14:15:01-04:00"
+                    "2025-06-27 02:15:01-00:00"
                 ),
                 author="Someone Else",
                 tags=("dance", "music"),
+                url_path_aliases=frozenset(("/2025/06/26/foo/",)),
             ),
         ),
     ),
@@ -358,11 +360,30 @@ def test_post_load(
     "source_dir_name_1,metadata_1,source_dir_name_2,metadata_2,error_regex",
     (
         (
+            "2025-06-26-foo",
+            textwrap.dedent(
+                """\
+                uuid = "67ed54bc-e214-4177-9846-2236de449037"
+                published = 2025-06-26 00:00:00-04:00
+                title = "Foo"
+                """
+            ),
+            "2025-06-27-foo",
+            textwrap.dedent(
+                """\
+                uuid = "f056342d-b090-4266-9e65-de87e37a094e"
+                published = 2025-06-26 23:00:00-04:00
+                title = "Foo"
+                """
+            ),
+            r"Duplicate URL path",
+        ),
+        (
             "2025-06-27-foo",
             textwrap.dedent(
                 """\
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
-                published = 2025-06-27 23:59:59-04:00
+                published = 2025-06-27 23:59:59Z
                 title = "Foo"
                 """
             ),
@@ -370,7 +391,7 @@ def test_post_load(
             textwrap.dedent(
                 """\
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
-                published = 2025-06-27 00:00:00-04:00
+                published = 2025-06-27 00:00:00Z
                 title = "Bar"
                 """
             ),
@@ -381,7 +402,7 @@ def test_post_load(
             textwrap.dedent(
                 """\
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
-                published = 2025-06-27 00:00:00-04:00
+                published = 2025-06-27 12:00:00-04:00
                 title = "Foo"
                 """
             ),
@@ -389,7 +410,7 @@ def test_post_load(
             textwrap.dedent(
                 """\
                 uuid = "f056342d-b090-4266-9e65-de87e37a094e"
-                published = 2025-06-27 00:00:00-04:00
+                published = 2025-06-27 16:00:00Z
                 title = "Bar"
                 """
             ),

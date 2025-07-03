@@ -31,6 +31,12 @@ RewriteRule \
   "$1" \
   [last,nosubreq,redirect=permanent]
 
+{%- for post in metadata.Post.all() %}
+{%- for url_path_alias in post.url_path_aliases %}
+Redirect permanent "{{ url_path_alias }}" "{{ post.url_path }}"
+{%- endfor %}
+{%- endfor %}
+
 AddType image/jpeg .jpg
 AddType image/png .png
 AddType text/css .css

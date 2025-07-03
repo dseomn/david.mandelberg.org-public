@@ -164,6 +164,10 @@ class Standalone(Page):
         )
 
 
+def _post_url_path(published: datetime.datetime, slug: str) -> str:
+    return f"/{published.strftime("%Y/%m/%d")}/{slug}/"
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Post(Page):
     id: str
@@ -171,9 +175,9 @@ class Post(Page):
     published: datetime.datetime
     author: str
     tags: Sequence[str]
+    url_path_aliases: Collection[str]
 
     def __post_init__(self) -> None:
-        _require_timezone(self.published)
         if unknown_tags := set(self.tags) - set(SITE.tags):
             raise ValueError(f"Unknown tags: {unknown_tags}")
         if list(self.tags) != sorted(set(self.tags)):
@@ -196,7 +200,9 @@ class Post(Page):
             "media",
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
-        published = raw["published"]
+        published_local = raw["published"]
+        _require_timezone(published_local)
+        published = published_local.astimezone(datetime.timezone.utc)
         source_dir_name = template.parent.name
         source_dir_date_prefix = published.strftime("%Y-%m-%d-")
         if not source_dir_name.startswith(source_dir_date_prefix):
@@ -204,8 +210,9 @@ class Post(Page):
                 f"{template}'s published date and directory name don't match."
             )
         slug = source_dir_name.removeprefix(source_dir_date_prefix)
+        url_path = _post_url_path(published, slug)
         return cls(
-            url_path=f"/{published.strftime("%Y/%m/%d")}/{slug}/",
+            url_path=url_path,
             title=raw["title"],
             media=Media.parse(raw.get("media", {})),
             id=source_dir_name,
@@ -213,6 +220,9 @@ class Post(Page):
             published=published,
             author=raw.get("author", SITE.author),
             tags=tuple(raw.get("tags", [])),
+            url_path_aliases=(
+                frozenset((_post_url_path(published_local, slug),)) - {url_path}
+            ),
         )
 
     @override
@@ -228,6 +238,12 @@ class Post(Page):
             key=lambda post_metadata: post_metadata.published,
             reverse=True,
         )
+        if url_path_duplicates := _duplicates(
+            itertools.chain.from_iterable(
+                {post.url_path, *post.url_path_aliases} for post in posts
+            )
+        ):
+            raise ValueError(f"Duplicate URL paths: {url_path_duplicates}")
         if uuid_duplicates := _duplicates(post.uuid for post in posts):
             raise ValueError(f"Duplicate uuids: {uuid_duplicates}")
         if published_duplicates := _duplicates(
