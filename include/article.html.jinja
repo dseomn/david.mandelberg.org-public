@@ -54,12 +54,7 @@
               class="article-header-metadata-value
                      article-header-metadata-numeric"
               >
-            <time>
-              {{
-                post_metadata.published.isoformat(sep=" ", timespec="seconds") |
-                e
-              }}
-            </time>
+            <time>{{ post_metadata.published | e }}</time>
           </dd>
         </div>
         <div class="article-header-metadata-item">
