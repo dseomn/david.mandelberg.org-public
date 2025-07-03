@@ -8,6 +8,34 @@ from dseomn_website import lint
 
 
 @pytest.mark.parametrize(
+    "fragments",
+    (
+        "<script></script>",
+        "<p><script></script></p>",
+        "<p></p><script></script>",
+        "<!-- comment -->",
+        '<?xml version="1.0"?>',
+        "<p id=foo></p>",
+    ),
+)
+def test_comment_error(fragments: str) -> None:
+    with pytest.raises(ValueError, match="Not allowed"):
+        lint.comment(fragments)
+
+
+@pytest.mark.parametrize(
+    "fragments",
+    (
+        '<p><a href="foo">foo</a></p>',
+        "<p>foo</p><p>bar</p>",
+        "<p>&amp;</p>",
+    ),
+)
+def test_comment(fragments: str) -> None:
+    lint.comment(fragments)
+
+
+@pytest.mark.parametrize(
     "html,error_regex",
     (
         ("<h1>foo</h1>", r"does not have a heading class"),

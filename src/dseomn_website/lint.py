@@ -6,6 +6,25 @@ from typing import Any
 
 import lxml.html
 
+_SAFE_ATTRIBUTES_BY_TAG = {
+    "a": {"href"},
+    "p": set(),
+}
+
+
+def comment(fragments: str, /) -> None:
+    """Raises an exception if the blog comment has issues."""
+    for root_node in lxml.html.fragments_fromstring(fragments):
+        for node in root_node.iter():
+            match node:
+                case lxml.html.HtmlElement(tag=tag, attrib=attrib) if (
+                    tag in _SAFE_ATTRIBUTES_BY_TAG  # type: ignore[has-type]
+                    and not {*attrib} - _SAFE_ATTRIBUTES_BY_TAG[tag]  # type: ignore[has-type]
+                ):
+                    pass
+                case _:
+                    raise ValueError(f"Not allowed: {node}")
+
 
 def _headings(parsed: Any) -> None:
     levels = {f"h{n}" for n in range(1, 7)}
