@@ -296,7 +296,7 @@ def test_standalone_all() -> None:
 
 
 @pytest.mark.parametrize(
-    "contents,error_regex",
+    "contents,comments_metadata,error_regex",
     (
         (
             textwrap.dedent(
@@ -307,6 +307,7 @@ def test_standalone_all() -> None:
                 invalid_key_kumquat = "bar"
                 """
             ),
+            {},
             r"invalid_key_kumquat",
         ),
         (
@@ -317,6 +318,7 @@ def test_standalone_all() -> None:
                 title = "Foo"
                 """
             ),
+            {},
             r"published date and directory name don't match",
         ),
         (
@@ -327,6 +329,7 @@ def test_standalone_all() -> None:
                 title = "Foo"
                 """
             ),
+            {},
             r"no timezone",
         ),
         (
@@ -338,6 +341,7 @@ def test_standalone_all() -> None:
                 tags = ["unknown-tag"]
                 """
             ),
+            {},
             r"Unknown tags",
         ),
         (
@@ -349,6 +353,7 @@ def test_standalone_all() -> None:
                 tags = ["dance", "dance"]
                 """
             ),
+            {},
             r"not sorted and unique",
         ),
         (
@@ -360,37 +365,76 @@ def test_standalone_all() -> None:
                 tags = ["music", "dance"]
                 """
             ),
+            {},
             r"not sorted and unique",
+        ),
+        (
+            textwrap.dedent(
+                """\
+                uuid = "67ed54bc-e214-4177-9846-2236de449037"
+                published = 2025-06-27 14:15:01-04:00
+                title = "Foo"
+                comments = [
+                    "096aa7f3-827a-4824-91f0-97da7cbd160b",
+                    "131294af-bba3-4296-a7e8-1f2eb5ca741c",
+                ]
+                """
+            ),
+            {
+                "096aa7f3-827a-4824-91f0-97da7cbd160b": textwrap.dedent(
+                    """\
+                    published = 2025-07-03 16:15:35-04:00
+                    author = "Someone Else"
+                    """
+                ),
+                "131294af-bba3-4296-a7e8-1f2eb5ca741c": textwrap.dedent(
+                    """\
+                    published = 2025-07-02 16:15:35-04:00
+                    author = "Someone Else"
+                    """
+                ),
+            },
+            r"not sorted",
         ),
     ),
 )
 def test_post_load_error(
     contents: str,
+    comments_metadata: dict[str, str],
     error_regex: str,
     tmp_path: pathlib.Path,
 ) -> None:
-    (tmp_path / "ginjarator.toml").write_text(
+    (tmp_path / "public").mkdir()
+    (tmp_path / "public/ginjarator.toml").write_text(
         textwrap.dedent(
             """\
-            source_paths = ["posts"]
+            source_paths = ["posts", "../private"]
             templates = ["posts/2025-06-27-foo/index.html.jinja"]
             """
         )
     )
-    (tmp_path / "posts/2025-06-27-foo").mkdir(parents=True)
-    (tmp_path / "posts/2025-06-27-foo/index.html.jinja").write_text("")
-    (tmp_path / "posts/2025-06-27-foo/metadata.toml").write_text(contents)
+    (tmp_path / "public/posts/2025-06-27-foo").mkdir(parents=True)
+    (tmp_path / "public/posts/2025-06-27-foo/index.html.jinja").write_text("")
+    (tmp_path / "public/posts/2025-06-27-foo/metadata.toml").write_text(
+        contents
+    )
+    (tmp_path / "private/posts/2025-06-27-foo/comments").mkdir(parents=True)
+    for comment_uuid, comment_metadata in comments_metadata.items():
+        (
+            tmp_path
+            / f"private/posts/2025-06-27-foo/comments/{comment_uuid}.toml"
+        ).write_text(comment_metadata)
 
     with ginjarator.testing.api_for_scan(
         current_template="posts/2025-06-27-foo/index.html.jinja",
-        root_path=tmp_path,
+        root_path=(tmp_path / "public"),
     ):
         with pytest.raises(ValueError, match=error_regex):
             metadata.Post.load(ginjarator.api().current_template)
 
 
 @pytest.mark.parametrize(
-    "contents,expected",
+    "contents,comments_metadata,expected",
     (
         (
             textwrap.dedent(
@@ -400,6 +444,7 @@ def test_post_load_error(
                 title = "Foo"
                 """
             ),
+            {},
             metadata.Post(
                 url_path="/2025/06/27/foo/",
                 title="Foo",
@@ -411,6 +456,7 @@ def test_post_load_error(
                 author=metadata.SITE.author,
                 tags=(),
                 url_path_aliases=frozenset(),
+                comments=(),
             ),
         ),
         (
@@ -421,8 +467,26 @@ def test_post_load_error(
                 title = "Foo"
                 author = "Someone Else"
                 tags = ["dance", "music"]
+                comments = [
+                    "096aa7f3-827a-4824-91f0-97da7cbd160b",
+                    "131294af-bba3-4296-a7e8-1f2eb5ca741c",
+                ]
                 """
             ),
+            {
+                "096aa7f3-827a-4824-91f0-97da7cbd160b": textwrap.dedent(
+                    """\
+                    published = 2025-07-02 16:15:35-04:00
+                    author = "Someone Else"
+                    """
+                ),
+                "131294af-bba3-4296-a7e8-1f2eb5ca741c": textwrap.dedent(
+                    """\
+                    published = 2025-07-03 16:15:35-04:00
+                    author = "David Mandelberg"
+                    """
+                ),
+            },
             metadata.Post(
                 url_path="/2025/06/27/foo/",
                 title="Foo",
@@ -434,30 +498,64 @@ def test_post_load_error(
                 author="Someone Else",
                 tags=("dance", "music"),
                 url_path_aliases=frozenset(("/2025/06/26/foo/",)),
+                comments=(
+                    metadata.Comment(
+                        uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
+                        published=datetime.datetime.fromisoformat(
+                            "2025-07-02 20:15:35Z"
+                        ),
+                        author="Someone Else",
+                        contents_path=ginjarator.paths.Filesystem(
+                            "../private/posts/2025-06-27-foo/comments/"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b.html"
+                        ),
+                    ),
+                    metadata.Comment(
+                        uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
+                        published=datetime.datetime.fromisoformat(
+                            "2025-07-03 20:15:35Z"
+                        ),
+                        author="David Mandelberg",
+                        contents_path=ginjarator.paths.Filesystem(
+                            "../private/posts/2025-06-27-foo/comments/"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c.html"
+                        ),
+                    ),
+                ),
             ),
         ),
     ),
 )
 def test_post_load(
     contents: str,
+    comments_metadata: dict[str, str],
     expected: metadata.Post,
     tmp_path: pathlib.Path,
 ) -> None:
-    (tmp_path / "ginjarator.toml").write_text(
+    (tmp_path / "public").mkdir()
+    (tmp_path / "public/ginjarator.toml").write_text(
         textwrap.dedent(
             """\
-            source_paths = ["posts"]
+            source_paths = ["posts", "../private"]
             templates = ["posts/2025-06-27-foo/index.html.jinja"]
             """
         )
     )
-    (tmp_path / "posts/2025-06-27-foo").mkdir(parents=True)
-    (tmp_path / "posts/2025-06-27-foo/index.html.jinja").write_text("")
-    (tmp_path / "posts/2025-06-27-foo/metadata.toml").write_text(contents)
+    (tmp_path / "public/posts/2025-06-27-foo").mkdir(parents=True)
+    (tmp_path / "public/posts/2025-06-27-foo/index.html.jinja").write_text("")
+    (tmp_path / "public/posts/2025-06-27-foo/metadata.toml").write_text(
+        contents
+    )
+    (tmp_path / "private/posts/2025-06-27-foo/comments").mkdir(parents=True)
+    for comment_uuid, comment_metadata in comments_metadata.items():
+        (
+            tmp_path
+            / f"private/posts/2025-06-27-foo/comments/{comment_uuid}.toml"
+        ).write_text(comment_metadata)
 
     with ginjarator.testing.api_for_scan(
         current_template="posts/2025-06-27-foo/index.html.jinja",
-        root_path=tmp_path,
+        root_path=(tmp_path / "public"),
     ):
         post_metadata = metadata.Post.load(ginjarator.api().current_template)
 

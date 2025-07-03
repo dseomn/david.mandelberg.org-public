@@ -220,12 +220,18 @@ class Post(Page):
     author: str
     tags: Sequence[str]
     url_path_aliases: Collection[str]
+    comments: Sequence[Comment]
 
     def __post_init__(self) -> None:
         if unknown_tags := set(self.tags) - set(SITE.tags):
             raise ValueError(f"Unknown tags: {unknown_tags}")
         if list(self.tags) != sorted(set(self.tags)):
             raise ValueError(f"{self.tags} is not sorted and unique.")
+        if list(self.comments) != sorted(
+            self.comments,
+            key=lambda comment: comment.published,
+        ):
+            raise ValueError(f"{self.comments} is not sorted.")
 
     @classmethod
     def load(cls, template: ginjarator.paths.Filesystem) -> Self:
@@ -242,6 +248,7 @@ class Post(Page):
             "author",
             "tags",
             "media",
+            "comments",
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         published_local = raw["published"]
@@ -266,6 +273,13 @@ class Post(Page):
             tags=tuple(raw.get("tags", [])),
             url_path_aliases=(
                 frozenset((_post_url_path(published_local, slug),)) - {url_path}
+            ),
+            comments=tuple(
+                Comment.load(
+                    paths.PRIVATE / "posts" / source_dir_name / "comments",
+                    uuid.UUID(comment_uuid),
+                )
+                for comment_uuid in raw.get("comments", [])
             ),
         )
 
