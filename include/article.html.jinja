@@ -54,7 +54,7 @@
               class="article-header-metadata-value
                      article-header-metadata-numeric"
               >
-            <time>{{ post_metadata.published | e }}</time>
+            {{ base_html.time_from_datetime(post_metadata.published) }}
           </dd>
         </div>
         <div class="article-header-metadata-item">
