@@ -219,6 +219,37 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.comments {
+  display: flow-root;
+}
+
+.comment {
+  margin-block: 1em;
+}
+
+.comment-main {
+  background: @alternate-canvas;
+  display: flow-root;
+  padding-inline: 1em;
+}
+
+.comment-header {
+  margin-block: (.h3()[font-size] * .h3()[margin-block]);
+}
+
+.comment-header-author {
+  margin-block: 0;
+}
+
+.comment-header-published {
+  font-variant-numeric: tabular-nums;
+  margin-block: 0;
+}
+
+.comment-replies {
+  margin-inline: 2em 0;
+}
+
 .image-main {
   block-size: auto;
   max-inline-size: 100%;

@@ -5,6 +5,7 @@
  #}
 
 {% set headings = ginjarator.py.import_("dseomn_website.headings") %}
+{% set lint = ginjarator.py.import_("dseomn_website.lint") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
@@ -27,6 +28,54 @@
   ) %}
     {{ headings.article(fragment) }}
   {% endcall %}
+{% endmacro %}
+
+{% macro _comments(post_metadata, comments_metadata) %}
+  {% for comment_metadata in comments_metadata %}
+    {% set id = (
+      post_metadata.id + "-comment-" + comment_metadata.uuid | string
+    ) %}
+    <article class="comment" id="{{ id | e }}">
+      <section class="comment-main">
+        <header class="comment-header">
+          <h3 class="comment-header-author">
+            {% if comment_metadata.author_url is none %}
+              <bdi>{{ comment_metadata.author | e }}</bdi>
+            {% else %}
+              <a href="{{ comment_metadata.author_url | e }}">
+                <bdi>{{ comment_metadata.author | e }}</bdi>
+              </a>
+            {% endif %}
+          </h3>
+          <p class="comment-header-published">
+            <a href="{{ post_metadata.url_path }}#{{ id | e }}" rel="bookmark">
+              {{ base_html.time_from_datetime(comment_metadata.published) }}
+            </a>
+          </p>
+        </header>
+        {% set contents = ginjarator.fs.read_text(
+          comment_metadata.contents_path
+        ) %}
+        {% if contents is not none %}
+          {% do lint.comment(contents) %}
+          <bdi>
+            {{ contents }}
+          </bdi>
+        {% endif %}
+      </section>
+      {% set replies = post_metadata.comments_by_parent[
+        comment_metadata.uuid
+      ] %}
+      {% if replies %}
+        <section class="comment-replies">
+          {{ _comments(
+            post_metadata=post_metadata,
+            comments_metadata=replies,
+          ) }}
+        </section>
+      {% endif %}
+    </article>
+  {% endfor %}
 {% endmacro %}
 
 {% macro _post_fragment(
@@ -82,6 +131,15 @@
       </dl>
     </header>
     {{ contents }}
+    {% if post_metadata.comments %}
+      <section class="comments">
+        <h2>Comments</h2>
+        {{ _comments(
+          post_metadata=post_metadata,
+          comments_metadata=post_metadata.comments_by_parent[none],
+        ) }}
+      </section>
+    {% endif %}
   </article>
 {% endmacro %}
 
