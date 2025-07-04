@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+@alternate-canvas: color-mix(in srgb, Canvas 95%, CanvasText);
+
 .section-outer() {
   background: Canvas;
   display: flow-root;
@@ -33,7 +35,7 @@
 }
 
 :root {
-  background: color-mix(in srgb, Canvas 95%, CanvasText);
+  background: @alternate-canvas;
   color-scheme: light dark;
 }
 
