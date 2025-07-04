@@ -58,9 +58,9 @@
         ) %}
         {% if contents is not none %}
           {% do lint.comment(contents) %}
-          <bdi>
+          <div dir="auto">
             {{ contents }}
-          </bdi>
+          </div>
         {% endif %}
       </section>
       {% set replies = post_metadata.comments_by_parent[
