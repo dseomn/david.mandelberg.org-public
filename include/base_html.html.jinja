@@ -11,11 +11,11 @@
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
-{% macro time_from_datetime(value) %}
-  {% set isoformat = value.isoformat(sep=" ") %}
-  {% do ginjarator.py.assert_(isoformat.endswith("+00:00")) %}
+{% macro time_from_datetime(value) -%}
+  {%- set isoformat = value.isoformat(sep=" ") -%}
+  {%- do ginjarator.py.assert_(isoformat.endswith("+00:00")) -%}
   <time>{{ isoformat.removesuffix("+00:00") | e }}Z</time>
-{% endmacro %}
+{%- endmacro %}
 
 {% macro minify(html) %}
   {{- subprocess.run(
