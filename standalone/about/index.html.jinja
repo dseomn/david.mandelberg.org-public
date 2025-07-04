@@ -7,6 +7,7 @@
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 
 {% import "include/article.html.jinja" as article %}
+{% import "include/base_html.html.jinja" as base_html %}
 
 {% set extra_head %}
   <meta property="og:type" content="profile">
@@ -18,8 +19,7 @@
 {% call article.standalone(extra_head=extra_head) %}
   <h2>Contact</h2>
   <p>
-    I can be reached at <a
-    href="mailto:david@mandelberg.org">david@mandelberg.org</a>. <a
+    I can be reached at {{ base_html.a_mailto("david@mandelberg.org") }}. <a
     href="https://en.wikipedia.org/wiki/IP_over_Avian_Carriers">Carrier
     pigeon</a> might work too, and I wish good luck to anybody who tries to
     reach me that way.
