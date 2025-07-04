@@ -27,7 +27,7 @@
   ).stdout -}}
 {% endmacro %}
 
-{% macro blog_list_link(list_metadata, link_text) %}
+{% macro _blog_list_link(list_metadata, link_text) %}
   <a href="{{ list_metadata.url_path | e }}">{{ link_text | e }}</a>
   (<a href="{{ list_metadata.feed_url_path | e }}">feed</a>)
 {% endmacro %}
@@ -106,14 +106,14 @@
         <footer class="site-footer">
           <ul class="site-footer-list">
             <li class="site-footer-list-item">
-              {{ blog_list_link(
+              {{ _blog_list_link(
                 metadata.PostList.main(),
                 link_text=metadata.PostList.main().title,
               ) }}
               <ul>
                 {% for tag in metadata.SITE.tags %}
                   <li>
-                    {{ blog_list_link(
+                    {{ _blog_list_link(
                       metadata.PostList.tag(tag),
                       link_text=tag,
                     ) }}
