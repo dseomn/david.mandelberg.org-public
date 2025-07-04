@@ -4,6 +4,7 @@
 
 source_paths = [
   "../private/media",
+  "../private/posts",
   "css",
   "errors",
   "htaccess.jinja",
