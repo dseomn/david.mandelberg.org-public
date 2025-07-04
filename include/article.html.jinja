@@ -36,7 +36,7 @@
       post_metadata.id + "-comment-" + comment_metadata.uuid | string
     ) %}
     <article class="comment" id="{{ id | e }}">
-      <section class="comment-main">
+      <div class="comment-main">
         <header class="comment-header">
           <h3 class="comment-header-author">
             {% if comment_metadata.author_url is none %}
@@ -62,17 +62,17 @@
             {{ contents }}
           </div>
         {% endif %}
-      </section>
+      </div>
       {% set replies = post_metadata.comments_by_parent[
         comment_metadata.uuid
       ] %}
       {% if replies %}
-        <section class="comment-replies">
+        <div class="comment-replies">
           {{ _comments(
             post_metadata=post_metadata,
             comments_metadata=replies,
           ) }}
-        </section>
+        </div>
       {% endif %}
     </article>
   {% endfor %}
