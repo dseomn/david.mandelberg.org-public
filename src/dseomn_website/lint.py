@@ -43,6 +43,8 @@ def _ids(parsed: Any) -> None:
     # collisions, make sure that every ID in a blog post has the blog post's own
     # ID as a prefix.
     for article in parsed.cssselect("article[id]"):
+        if article.classes == {"comment"}:
+            continue
         article_id = article.get("id")
         for descendant in article.cssselect("[id]"):
             descendant_id = descendant.get("id")

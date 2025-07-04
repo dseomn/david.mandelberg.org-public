@@ -73,6 +73,18 @@ def test_comment(fragments: str) -> None:
             '<div><article id="foo"><div><p id="bar"></div></article></div>',
             r"its id does not start with",
         ),
+        (
+            "".join(
+                (
+                    '<article id="foo">',
+                    '<article id="foo-bar" class="comment">',
+                    '<p id="quux">',
+                    "</article>",
+                    "</article>",
+                )
+            ),
+            r"its id does not start with",
+        ),
     ),
 )
 def test_html_error(html: str, error_regex: str) -> None:
@@ -91,6 +103,15 @@ def test_html_error(html: str, error_regex: str) -> None:
                 '<article id="foo">',
                 '<article id="foo-bar">',
                 '<p id="foo-bar-quux">',
+                "</article>",
+                "</article>",
+            )
+        ),
+        "".join(
+            (
+                '<article id="foo">',
+                '<article id="foo-bar" class="comment">',
+                '<p id="foo-quux">',
                 "</article>",
                 "</article>",
             )
