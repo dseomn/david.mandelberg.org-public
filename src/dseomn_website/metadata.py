@@ -153,7 +153,7 @@ class Comment(Resource):
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         return cls(
-            url_path=f"{parent_url_path}#{comment_id}",
+            url_path=urllib.parse.urljoin(parent_url_path, f"#{comment_id}"),
             id=comment_id,
             uuid=comment_uuid,
             published=_comment_datetime(raw["published"]),
