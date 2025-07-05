@@ -12,6 +12,7 @@ import http
 import itertools
 import tomllib
 from typing import Any, final, override, Self
+import urllib.parse
 import uuid as uuid_
 
 import ginjarator
@@ -95,7 +96,7 @@ class Resource:
 
     @property
     def url(self) -> str:
-        return SITE.url + self.url_path
+        return urllib.parse.urljoin(SITE.url, self.url_path)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -462,7 +463,7 @@ class PostList(Page):
         if page_number == 1:
             return self.url_path
         else:
-            return f"{self.url_path}page/{page_number}/"
+            return urllib.parse.urljoin(self.url_path, f"page/{page_number}/")
 
     def _page_title(self, page_number: int) -> str:
         if page_number == 1:
@@ -493,13 +494,13 @@ class PostList(Page):
             for post in page.posts:
                 result.setdefault(
                     post.published.year,
-                    f"{page.url_path}#{post.id}",
+                    urllib.parse.urljoin(page.url_path, f"#{post.id}"),
                 )
         return result
 
     @property
     def feed_url_path(self) -> str:
-        return f"{self.url_path}feed/"
+        return urllib.parse.urljoin(self.url_path, "feed/")
 
     @functools.cached_property
     def feed_posts(self) -> Sequence[Post]:
