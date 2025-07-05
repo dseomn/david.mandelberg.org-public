@@ -16,6 +16,7 @@ import pytest
 from dseomn_website import media
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "conversion",
     (

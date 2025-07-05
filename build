@@ -11,7 +11,7 @@ reuse lint
 black --check --diff .
 isort --check --diff .
 mypy
-pytest -m 'not output'
+pytest -m 'not output and not slow'
 
 ninja
 ninja -t cleandead
@@ -26,4 +26,4 @@ htmlproofer \
   --disable-external \
   --url-swap '/feed/\Z:/feed/index.xml,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
   output
-pytest -m output --no-cov
+pytest -m 'output and not slow' --no-cov
