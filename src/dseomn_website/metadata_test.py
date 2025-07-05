@@ -58,6 +58,13 @@ def test_site() -> None:
     assert list(metadata.SITE.tags) == sorted(set(metadata.SITE.tags))
 
 
+def test_resource_url() -> None:
+    assert (
+        metadata.Resource(url_path="/foo/").url
+        == "https://david.mandelberg.org/foo/"
+    )
+
+
 def test_media_parse_error() -> None:
     with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
         metadata.Media.parse(dict(invalid_key_kumquat=42))
@@ -123,8 +130,10 @@ def test_comment_load_error(
     with ginjarator.testing.api_for_scan(root_path=tmp_path):
         with pytest.raises(ValueError, match=error_regex):
             metadata.Comment.load(
-                ginjarator.paths.Filesystem("comments"),
-                uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
+                parent_url_path="/",
+                parent_path=ginjarator.paths.Filesystem("comments"),
+                comment_id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
+                comment_uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
             )
 
 
@@ -139,6 +148,8 @@ def test_comment_load_error(
                 """
             ),
             metadata.Comment(
+                url_path="/#comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
+                id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
                 uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:47:37Z"
@@ -158,6 +169,8 @@ def test_comment_load_error(
                 """
             ),
             metadata.Comment(
+                url_path="/#comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
+                id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
                 uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:56:21Z"
@@ -178,6 +191,8 @@ def test_comment_load_error(
                 """
             ),
             metadata.Comment(
+                url_path="/#comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
+                id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
                 uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:47:37Z"
@@ -211,8 +226,10 @@ def test_comment_load(
     with ginjarator.testing.api_for_scan(root_path=tmp_path):
         assert (
             metadata.Comment.load(
-                ginjarator.paths.Filesystem("comments"),
-                uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
+                parent_url_path="/",
+                parent_path=ginjarator.paths.Filesystem("comments"),
+                comment_id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
+                comment_uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
             )
             == expected
         )
@@ -221,13 +238,6 @@ def test_comment_load(
 def test_page_all() -> None:
     with ginjarator.testing.api_for_scan():
         assert metadata.Page.all()
-
-
-def test_page_url() -> None:
-    assert (
-        metadata.Page(url_path="/foo/", title="Foo").url
-        == "https://david.mandelberg.org/foo/"
-    )
 
 
 def test_page_full_title() -> None:
@@ -624,6 +634,14 @@ def test_post_load_error(
                 url_path_aliases=frozenset(("/2025/06/26/foo/",)),
                 comments=(
                     metadata.Comment(
+                        url_path=(
+                            "/2025/06/27/foo/#2025-06-27-foo-comment-"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
+                        id=(
+                            "2025-06-27-foo-comment-"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
                         uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
@@ -636,6 +654,14 @@ def test_post_load_error(
                         ),
                     ),
                     metadata.Comment(
+                        url_path=(
+                            "/2025/06/27/foo/#2025-06-27-foo-comment-"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
+                        ),
+                        id=(
+                            "2025-06-27-foo-comment-"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
+                        ),
                         uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-03 20:15:35Z"
@@ -654,6 +680,14 @@ def test_post_load_error(
             {
                 uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"): (
                     metadata.Comment(
+                        url_path=(
+                            "/2025/06/27/foo/#2025-06-27-foo-comment-"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
+                        id=(
+                            "2025-06-27-foo-comment-"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
                         uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
@@ -668,6 +702,14 @@ def test_post_load_error(
                 ),
                 uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"): (
                     metadata.Comment(
+                        url_path=(
+                            "/2025/06/27/foo/#2025-06-27-foo-comment-"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
+                        ),
+                        id=(
+                            "2025-06-27-foo-comment-"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
+                        ),
                         uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-03 20:15:35Z"
@@ -686,6 +728,14 @@ def test_post_load_error(
             {
                 None: [
                     metadata.Comment(
+                        url_path=(
+                            "/2025/06/27/foo/#2025-06-27-foo-comment-"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
+                        id=(
+                            "2025-06-27-foo-comment-"
+                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
+                        ),
                         uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
@@ -700,6 +750,14 @@ def test_post_load_error(
                 ],
                 uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"): [
                     metadata.Comment(
+                        url_path=(
+                            "/2025/06/27/foo/#2025-06-27-foo-comment-"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
+                        ),
+                        id=(
+                            "2025-06-27-foo-comment-"
+                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
+                        ),
                         uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-03 20:15:35Z"

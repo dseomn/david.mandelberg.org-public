@@ -42,17 +42,14 @@
 
 {% macro _comments(post_metadata, comments_metadata) %}
   {% for comment_metadata in comments_metadata %}
-    {% set id = (
-      post_metadata.id + "-comment-" + comment_metadata.uuid | string
-    ) %}
-    <article class="comment" id="{{ id | e }}">
+    <article class="comment" id="{{ comment_metadata.id | e }}">
       <div class="comment-main">
         <header class="comment-header">
           <h3 class="comment-header-author">
             {{ _a_author(comment_metadata.author) }}
           </h3>
           <p class="comment-header-published">
-            <a href="{{ post_metadata.url_path }}#{{ id | e }}" rel="bookmark">
+            <a href="{{ comment_metadata.url_path | e }}" rel="bookmark">
               {{ base_html.time_from_datetime(comment_metadata.published) }}
             </a>
           </p>

@@ -90,6 +90,15 @@ SITE = Site(
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
+class Resource:
+    url_path: str
+
+    @property
+    def url(self) -> str:
+        return SITE.url + self.url_path
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class Media:
     profile_names_by_image: Mapping[
         ginjarator.paths.Filesystem, Collection[str]
@@ -113,7 +122,8 @@ class Media:
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Comment:
+class Comment(Resource):
+    id: str
     uuid: uuid_.UUID
     published: datetime.datetime
     author: User
@@ -123,7 +133,10 @@ class Comment:
     @classmethod
     def load(
         cls,
+        *,
+        parent_url_path: str,
         parent_path: ginjarator.paths.Filesystem,
+        comment_id: str,
         comment_uuid: uuid_.UUID,
     ) -> Self:
         raw = tomllib.loads(
@@ -139,6 +152,8 @@ class Comment:
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         return cls(
+            url_path=f"{parent_url_path}#{comment_id}",
+            id=comment_id,
             uuid=comment_uuid,
             published=_comment_datetime(raw["published"]),
             author=User.parse(raw["author"]),
@@ -150,8 +165,7 @@ class Comment:
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Page:
-    url_path: str
+class Page(Resource):
     title: str
     media: Media = Media.parse({})
 
@@ -162,10 +176,6 @@ class Page:
                 subclass.all() for subclass in cls.__subclasses__()
             )
         )
-
-    @property
-    def url(self) -> str:
-        return SITE.url + self.url_path
 
     @property
     def full_title(self) -> str:
@@ -323,8 +333,12 @@ class Post(Page):
             ),
             comments=tuple(
                 Comment.load(
-                    paths.PRIVATE / "posts" / source_dir_name / "comments",
-                    uuid_.UUID(comment_uuid),
+                    parent_url_path=url_path,
+                    parent_path=(
+                        paths.PRIVATE / "posts" / source_dir_name / "comments"
+                    ),
+                    comment_id=f"{source_dir_name}-comment-{comment_uuid}",
+                    comment_uuid=uuid_.UUID(comment_uuid),
                 )
                 for comment_uuid in raw.get("comments", [])
             ),
