@@ -54,6 +54,28 @@ def test_user_parse(raw: Any, expected: metadata.User) -> None:
     assert metadata.User.parse(raw) == expected
 
 
+@pytest.mark.parametrize(
+    "email_address,extension,error_regex",
+    (
+        ("someone+foo@example.com", "bar", r"already has extension"),
+        ("someone@example.com", "a" * 64, r"too long"),
+    ),
+)
+def test_user_email_address_with_extension_error(
+    email_address: str,
+    extension: str,
+    error_regex: str,
+) -> None:
+    user = metadata.User(name="Someone", email_address=email_address)
+    with pytest.raises(ValueError, match=error_regex):
+        user.email_address_with_extension(extension)
+
+
+def test_user_email_address_with_extension() -> None:
+    user = metadata.User(name="Someone", email_address="someone@example.com")
+    assert user.email_address_with_extension("foo") == "someone+foo@example.com"
+
+
 def test_site() -> None:
     assert list(metadata.SITE.tags) == sorted(set(metadata.SITE.tags))
 

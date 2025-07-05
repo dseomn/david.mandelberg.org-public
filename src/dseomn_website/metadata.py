@@ -6,6 +6,7 @@ import collections
 from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 import dataclasses
 import datetime
+import email.headerregistry
 import email.utils
 import functools
 import http
@@ -62,6 +63,24 @@ class User:
             uri=raw.get("uri"),
             email_address=raw.get("email_address"),
         )
+
+    def email_address_with_extension(self, extension: str) -> str:
+        delimiter = "+"
+        address = email.headerregistry.Address(addr_spec=self.email_address)
+        if delimiter in address.username:
+            raise ValueError(
+                f"Address already has extension: {address.addr_spec!r}"
+            )
+        address_with_extension = email.headerregistry.Address(
+            username=f"{address.username}{delimiter}{extension}",
+            domain=address.domain,
+        )
+        if len(address_with_extension.username.encode("utf-8")) > 64:
+            # https://datatracker.ietf.org/doc/html/rfc5321#section-4.5.3.1.1
+            raise ValueError(
+                f"Local part is too long: {address_with_extension.addr_spec!r}"
+            )
+        return address_with_extension.addr_spec
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
