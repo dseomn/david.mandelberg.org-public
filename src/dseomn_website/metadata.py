@@ -43,7 +43,7 @@ class Site:
     url: str
     title: str
     author: str
-    email: str
+    email_address: str
     language: str
     direction: str
     tags: Sequence[str]
@@ -53,7 +53,7 @@ SITE = Site(
     url="https://david.mandelberg.org",
     title="David Mandelberg",
     author="David Mandelberg",
-    email="david@mandelberg.org",
+    email_address="david@mandelberg.org",
     language="en-US",
     direction="ltr",
     tags=(

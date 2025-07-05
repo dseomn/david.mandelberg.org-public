@@ -12,10 +12,10 @@
 {% call error.page() %}
   <p>
     Huh, that’s strange. If you’re trying to look at the <code>.htaccess</code>
-    file or similar, maybe check out
-    <a href="https://github.com/dseomn/david.mandelberg.org-public">this
-    website’s source code</a> instead? Or <a href="{{
-    iri.mailto(metadata.SITE.email) | e }}">email me</a> if you think this is a
-    mistake.
+    file or similar, maybe check out <a
+    href="https://github.com/dseomn/david.mandelberg.org-public">this website’s
+    source code</a> instead? Or <a href="{{
+    iri.mailto(metadata.SITE.email_address) | e }}">email me</a> if you think
+    this is a mistake.
   </p>
 {% endcall %}
