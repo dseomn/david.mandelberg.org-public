@@ -10,6 +10,16 @@
 
 {% import "include/base_html.html.jinja" as base_html %}
 
+{% macro _a_author(author) -%}
+  {%- if author.uri is none -%}
+    <bdi>{{ author.name | e }}</bdi>
+  {%- else -%}
+    <a href="{{ author.uri | e }}" rel="author">
+      {#- #}<bdi>{{ author.name | e }}</bdi>{# -#}
+    </a>
+  {%- endif -%}
+{%- endmacro %}
+
 {% macro standalone(
   extra_head=""
 ) %}
@@ -39,13 +49,7 @@
       <div class="comment-main">
         <header class="comment-header">
           <h3 class="comment-header-author">
-            {% if comment_metadata.author.uri is none %}
-              <bdi>{{ comment_metadata.author.name | e }}</bdi>
-            {% else %}
-              <a href="{{ comment_metadata.author.uri | e }}">
-                <bdi>{{ comment_metadata.author.name | e }}</bdi>
-              </a>
-            {% endif %}
+            {{ _a_author(comment_metadata.author) }}
           </h3>
           <p class="comment-header-published">
             <a href="{{ post_metadata.url_path }}#{{ id | e }}" rel="bookmark">
@@ -111,7 +115,7 @@
             <span aria-label="author" role="img">👤</span>
           </dt>
           <dd  class="article-header-metadata-value">
-            {{ post_metadata.author.name | e }}
+            {{ _a_author(post_metadata.author) }}
           </dd>
         </div>
         {% if post_metadata.tags %}
