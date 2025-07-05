@@ -23,6 +23,7 @@ find output work -depth -type d -empty -print -delete
 htmlproofer \
   --check-favicon \
   --check-opengraph \
+  --disable-external \
   --url-swap '/feed/\Z:/feed/index.xml,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
   output
 pytest -m output --no-cov
