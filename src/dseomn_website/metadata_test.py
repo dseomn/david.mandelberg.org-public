@@ -6,6 +6,7 @@ import datetime
 import http
 import pathlib
 import textwrap
+from typing import Any
 import uuid
 
 import ginjarator.testing
@@ -13,6 +14,44 @@ import pytest
 
 from dseomn_website import metadata
 from dseomn_website import paths
+
+
+def test_user_parse_error() -> None:
+    with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
+        metadata.User.parse(dict(name="foo", invalid_key_kumquat=42))
+
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    (
+        (
+            "dseomn",
+            metadata.User(
+                name="David Mandelberg",
+                uri="/",
+                email_address="david@mandelberg.org",
+            ),
+        ),
+        (
+            dict(name="Someone"),
+            metadata.User(name="Someone"),
+        ),
+        (
+            dict(
+                name="Someone",
+                uri="https://example.com",
+                email_address="someone@example.com",
+            ),
+            metadata.User(
+                name="Someone",
+                uri="https://example.com",
+                email_address="someone@example.com",
+            ),
+        ),
+    ),
+)
+def test_user_parse(raw: Any, expected: metadata.User) -> None:
+    assert metadata.User.parse(raw) == expected
 
 
 def test_site() -> None:
@@ -47,7 +86,7 @@ def test_media_parse() -> None:
             textwrap.dedent(
                 """\
                 published = 2025-07-03 15:47:37-04:00
-                author = "Someone Else"
+                author = "dseomn"
                 invalid_key_kumquat = "bar"
                 """
             ),
@@ -57,7 +96,7 @@ def test_media_parse() -> None:
             textwrap.dedent(
                 """\
                 published = 2025-07-03 15:47:37
-                author = "Someone Else"
+                author = "dseomn"
                 """
             ),
             r"no timezone",
@@ -96,7 +135,7 @@ def test_comment_load_error(
             textwrap.dedent(
                 """\
                 published = 2025-07-03 15:47:37-04:00
-                author = "Someone Else"
+                author.name = "Someone Else"
                 """
             ),
             metadata.Comment(
@@ -104,8 +143,7 @@ def test_comment_load_error(
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:47:37Z"
                 ),
-                author="Someone Else",
-                author_url=None,
+                author=metadata.User(name="Someone Else"),
                 in_reply_to=None,
                 contents_path=ginjarator.paths.Filesystem(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
@@ -116,7 +154,7 @@ def test_comment_load_error(
             textwrap.dedent(
                 """\
                 published = "Thu, 3 Jul 2025 15:56:21 -0400"
-                author = "Someone Else"
+                author.name = "Someone Else"
                 """
             ),
             metadata.Comment(
@@ -124,8 +162,7 @@ def test_comment_load_error(
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:56:21Z"
                 ),
-                author="Someone Else",
-                author_url=None,
+                author=metadata.User(name="Someone Else"),
                 in_reply_to=None,
                 contents_path=ginjarator.paths.Filesystem(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
@@ -136,8 +173,7 @@ def test_comment_load_error(
             textwrap.dedent(
                 """\
                 published = 2025-07-03 15:47:37-04:00
-                author = "Someone Else"
-                author_url = "https://example.com"
+                author.name = "Someone Else"
                 in_reply_to = "4e276685-4c4d-4e68-9d87-388363160661"
                 """
             ),
@@ -146,8 +182,7 @@ def test_comment_load_error(
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:47:37Z"
                 ),
-                author="Someone Else",
-                author_url="https://example.com",
+                author=metadata.User(name="Someone Else"),
                 in_reply_to=uuid.UUID("4e276685-4c4d-4e68-9d87-388363160661"),
                 contents_path=ginjarator.paths.Filesystem(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
@@ -411,13 +446,13 @@ def test_standalone_all() -> None:
                 "096aa7f3-827a-4824-91f0-97da7cbd160b": textwrap.dedent(
                     """\
                     published = 2025-07-03 16:15:35-04:00
-                    author = "Someone Else"
+                    author.name = "Someone Else"
                     """
                 ),
                 "131294af-bba3-4296-a7e8-1f2eb5ca741c": textwrap.dedent(
                     """\
                     published = 2025-07-02 16:15:35-04:00
-                    author = "Someone Else"
+                    author.name = "Someone Else"
                     """
                 ),
             },
@@ -438,7 +473,7 @@ def test_standalone_all() -> None:
                 "096aa7f3-827a-4824-91f0-97da7cbd160b": textwrap.dedent(
                     """\
                     published = 2025-07-03 16:15:35-04:00
-                    author = "Someone Else"
+                    author.name = "Someone Else"
                     in_reply_to = "26918b04-49ce-4ce8-aecc-8643b360ce56"
                     """
                 ),
@@ -461,14 +496,14 @@ def test_standalone_all() -> None:
                 "096aa7f3-827a-4824-91f0-97da7cbd160b": textwrap.dedent(
                     """\
                     published = 2025-07-02 16:15:35-04:00
-                    author = "Someone Else"
+                    author.name = "Someone Else"
                     in_reply_to = "131294af-bba3-4296-a7e8-1f2eb5ca741c"
                     """
                 ),
                 "131294af-bba3-4296-a7e8-1f2eb5ca741c": textwrap.dedent(
                     """\
                     published = 2025-07-03 16:15:35-04:00
-                    author = "Someone Else"
+                    author.name = "Someone Else"
                     """
                 ),
             },
@@ -553,7 +588,7 @@ def test_post_load_error(
                 uuid = "67ed54bc-e214-4177-9846-2236de449037"
                 published = 2025-06-26 22:15:01-04:00
                 title = "Foo"
-                author = "Someone Else"
+                author.name = "Someone Else"
                 tags = ["dance", "music"]
                 comments = [
                     "096aa7f3-827a-4824-91f0-97da7cbd160b",
@@ -565,13 +600,13 @@ def test_post_load_error(
                 "096aa7f3-827a-4824-91f0-97da7cbd160b": textwrap.dedent(
                     """\
                     published = 2025-07-02 16:15:35-04:00
-                    author = "Someone Else"
+                    author.name = "Someone Else"
                     """
                 ),
                 "131294af-bba3-4296-a7e8-1f2eb5ca741c": textwrap.dedent(
                     """\
                     published = 2025-07-03 16:15:35-04:00
-                    author = "David Mandelberg"
+                    author.name = "David Mandelberg"
                     in_reply_to = "096aa7f3-827a-4824-91f0-97da7cbd160b"
                     """
                 ),
@@ -584,7 +619,7 @@ def test_post_load_error(
                 published=datetime.datetime.fromisoformat(
                     "2025-06-27 02:15:01-00:00"
                 ),
-                author="Someone Else",
+                author=metadata.User(name="Someone Else"),
                 tags=("dance", "music"),
                 url_path_aliases=frozenset(("/2025/06/26/foo/",)),
                 comments=(
@@ -593,8 +628,7 @@ def test_post_load_error(
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
                         ),
-                        author="Someone Else",
-                        author_url=None,
+                        author=metadata.User(name="Someone Else"),
                         in_reply_to=None,
                         contents_path=ginjarator.paths.Filesystem(
                             "../private/posts/2025-06-27-foo/comments/"
@@ -606,8 +640,7 @@ def test_post_load_error(
                         published=datetime.datetime.fromisoformat(
                             "2025-07-03 20:15:35Z"
                         ),
-                        author="David Mandelberg",
-                        author_url=None,
+                        author=metadata.User(name="David Mandelberg"),
                         in_reply_to=uuid.UUID(
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),
@@ -625,8 +658,7 @@ def test_post_load_error(
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
                         ),
-                        author="Someone Else",
-                        author_url=None,
+                        author=metadata.User(name="Someone Else"),
                         in_reply_to=None,
                         contents_path=ginjarator.paths.Filesystem(
                             "../private/posts/2025-06-27-foo/comments/"
@@ -640,8 +672,7 @@ def test_post_load_error(
                         published=datetime.datetime.fromisoformat(
                             "2025-07-03 20:15:35Z"
                         ),
-                        author="David Mandelberg",
-                        author_url=None,
+                        author=metadata.User(name="David Mandelberg"),
                         in_reply_to=uuid.UUID(
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),
@@ -659,8 +690,7 @@ def test_post_load_error(
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
                         ),
-                        author="Someone Else",
-                        author_url=None,
+                        author=metadata.User(name="Someone Else"),
                         in_reply_to=None,
                         contents_path=ginjarator.paths.Filesystem(
                             "../private/posts/2025-06-27-foo/comments/"
@@ -674,8 +704,7 @@ def test_post_load_error(
                         published=datetime.datetime.fromisoformat(
                             "2025-07-03 20:15:35Z"
                         ),
-                        author="David Mandelberg",
-                        author_url=None,
+                        author=metadata.User(name="David Mandelberg"),
                         in_reply_to=uuid.UUID(
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),

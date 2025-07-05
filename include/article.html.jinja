@@ -39,11 +39,11 @@
       <div class="comment-main">
         <header class="comment-header">
           <h3 class="comment-header-author">
-            {% if comment_metadata.author_url is none %}
-              <bdi>{{ comment_metadata.author | e }}</bdi>
+            {% if comment_metadata.author.uri is none %}
+              <bdi>{{ comment_metadata.author.name | e }}</bdi>
             {% else %}
-              <a href="{{ comment_metadata.author_url | e }}">
-                <bdi>{{ comment_metadata.author | e }}</bdi>
+              <a href="{{ comment_metadata.author.uri | e }}">
+                <bdi>{{ comment_metadata.author.name | e }}</bdi>
               </a>
             {% endif %}
           </h3>
@@ -111,7 +111,7 @@
             <span aria-label="author" role="img">👤</span>
           </dt>
           <dd  class="article-header-metadata-value">
-            {{ post_metadata.author | e }}
+            {{ post_metadata.author.name | e }}
           </dd>
         </div>
         {% if post_metadata.tags %}
@@ -181,7 +181,7 @@
   ) %}
   {% call ginjarator.fs.write_text_macro(post_metadata.atom_fragment_path) %}
     <entry>
-      <author><name>{{ post_metadata.author | e }}</name></author>
+      <author><name>{{ post_metadata.author.name | e }}</name></author>
       {% for tag in post_metadata.tags %}
         <category term="{{ tag | e }}"/>
       {% endfor %}

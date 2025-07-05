@@ -17,7 +17,7 @@
         xml:lang="{{ metadata.SITE.language | e }}"
         xmlns="http://www.w3.org/2005/Atom"
         >
-      <author><name>{{ metadata.SITE.author | e }}</name></author>
+      <author><name>{{ metadata.SITE.author.name | e }}</name></author>
       <id>{{ list_metadata.url | e }}</id>
       <link href="{{ list_metadata.url_path | e }}" rel="alternate"/>
       <link href="{{ list_metadata.feed_url_path | e }}" rel="self"/>

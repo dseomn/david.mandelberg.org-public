@@ -39,11 +39,35 @@ def _duplicates[T](iterable: Iterable[T]) -> Collection[T]:
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
+class User:
+    name: str
+    uri: str | None = None
+    email_address: str | None = None
+
+    @classmethod
+    def parse(cls, raw: Any) -> Self:
+        if isinstance(raw, str):
+            return {
+                "dseomn": cls(
+                    name="David Mandelberg",
+                    uri="/",
+                    email_address="david@mandelberg.org",
+                ),
+            }[raw]
+        if unexpected_keys := raw.keys() - {"name", "uri", "email_address"}:
+            raise ValueError(f"Unexpected keys: {unexpected_keys}")
+        return cls(
+            name=raw["name"],
+            uri=raw.get("uri"),
+            email_address=raw.get("email_address"),
+        )
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class Site:
     url: str
     title: str
-    author: str
-    email_address: str
+    author: User
     language: str
     direction: str
     tags: Sequence[str]
@@ -52,8 +76,7 @@ class Site:
 SITE = Site(
     url="https://david.mandelberg.org",
     title="David Mandelberg",
-    author="David Mandelberg",
-    email_address="david@mandelberg.org",
+    author=User.parse("dseomn"),
     language="en-US",
     direction="ltr",
     tags=(
@@ -93,8 +116,7 @@ class Media:
 class Comment:
     uuid: uuid_.UUID
     published: datetime.datetime
-    author: str
-    author_url: str | None
+    author: User
     in_reply_to: uuid_.UUID | None
     contents_path: ginjarator.paths.Filesystem
 
@@ -113,15 +135,13 @@ class Comment:
         if unexpected_keys := raw.keys() - {
             "published",
             "author",
-            "author_url",
             "in_reply_to",
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         return cls(
             uuid=comment_uuid,
             published=_comment_datetime(raw["published"]),
-            author=raw["author"],
-            author_url=raw.get("author_url", None),
+            author=User.parse(raw["author"]),
             in_reply_to=(
                 uuid_.UUID(raw["in_reply_to"]) if "in_reply_to" in raw else None
             ),
@@ -223,7 +243,7 @@ class Post(Page):
     id: str
     uuid: uuid_.UUID
     published: datetime.datetime
-    author: str
+    author: User
     tags: Sequence[str]
     url_path_aliases: Collection[str]
     comments: Sequence[Comment]
@@ -294,7 +314,9 @@ class Post(Page):
             id=source_dir_name,
             uuid=uuid_.UUID(raw["uuid"]),
             published=published,
-            author=raw.get("author", SITE.author),
+            author=(
+                User.parse(raw["author"]) if "author" in raw else SITE.author
+            ),
             tags=tuple(raw.get("tags", [])),
             url_path_aliases=(
                 frozenset((_post_url_path(published_local, slug),)) - {url_path}
