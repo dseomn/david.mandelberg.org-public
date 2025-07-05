@@ -12,13 +12,11 @@ import http
 import itertools
 import tomllib
 from typing import Any, final, override, Self
-import uuid
+import uuid as uuid_
 
 import ginjarator
 
 from dseomn_website import paths
-
-uuid_ = uuid  # To access when the name is shadowed.
 
 
 def _require_timezone(value: datetime.datetime) -> None:
@@ -125,7 +123,7 @@ class Comment:
             author=raw["author"],
             author_url=raw.get("author_url", None),
             in_reply_to=(
-                uuid.UUID(raw["in_reply_to"]) if "in_reply_to" in raw else None
+                uuid_.UUID(raw["in_reply_to"]) if "in_reply_to" in raw else None
             ),
             contents_path=parent_path / f"{comment_uuid}.html",
         )
@@ -294,7 +292,7 @@ class Post(Page):
             title=raw["title"],
             media=Media.parse(raw.get("media", {})),
             id=source_dir_name,
-            uuid=uuid.UUID(raw["uuid"]),
+            uuid=uuid_.UUID(raw["uuid"]),
             published=published,
             author=raw.get("author", SITE.author),
             tags=tuple(raw.get("tags", [])),
@@ -304,7 +302,7 @@ class Post(Page):
             comments=tuple(
                 Comment.load(
                     paths.PRIVATE / "posts" / source_dir_name / "comments",
-                    uuid.UUID(comment_uuid),
+                    uuid_.UUID(comment_uuid),
                 )
                 for comment_uuid in raw.get("comments", [])
             ),
