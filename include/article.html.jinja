@@ -188,26 +188,19 @@
     <meta property="og:type" content="article">
   {% endset %}
   {% set contents = caller() %}
+  {% set fragment = _post_fragment(
+    post_metadata=post_metadata,
+    contents=contents,
+  ) %}
   {% call base_html.write(
     page_metadata=post_metadata,
     extra_head=extra_head,
   ) %}
-    {{ headings.article(
-      _post_fragment(
-        post_metadata=post_metadata,
-        contents=contents,
-      ),
-    ) }}
+    {{ headings.article(fragment) }}
   {% endcall %}
   {% do ginjarator.fs.write_text(
     post_metadata.include_fragment_path,
-    headings.article(
-      _post_fragment(
-        post_metadata=post_metadata,
-        contents=contents,
-      ),
-      offset=1,
-    ),
+    headings.article(fragment, offset=1),
   ) %}
   {% call ginjarator.fs.write_text_macro(post_metadata.atom_fragment_path) %}
     <entry>
