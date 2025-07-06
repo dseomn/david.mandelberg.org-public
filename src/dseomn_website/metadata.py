@@ -199,6 +199,15 @@ class Comment(Resource):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
+class Feed[EntryType](Resource):
+    entries_callback: Callable[[], Sequence[EntryType]]
+
+    @functools.cached_property
+    def entries(self) -> Sequence[EntryType]:
+        return self.entries_callback()
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class Page(Resource):
     title: str
     media: Media = Media.parse({})
@@ -531,13 +540,12 @@ class PostList(Page):
                 )
         return result
 
-    @property
-    def feed_url_path(self) -> str:
-        return urllib.parse.urljoin(self.url_path, "feed/")
-
     @functools.cached_property
-    def feed_posts(self) -> Sequence[Post]:
-        return self.posts[:_POSTS_PER_FEED]
+    def feed(self) -> Feed[Post]:
+        return Feed(
+            url_path=urllib.parse.urljoin(self.url_path, "feed/"),
+            entries_callback=lambda: self.posts[:_POSTS_PER_FEED],
+        )
 
 
 def main_nav() -> Sequence[Page]:

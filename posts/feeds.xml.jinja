@@ -19,18 +19,18 @@
       <author><name>{{ metadata.SITE.author.name | e }}</name></author>
       <id>{{ list_metadata.url | e }}</id>
       <link href="{{ list_metadata.url_path | e }}" rel="alternate"/>
-      <link href="{{ list_metadata.feed_url_path | e }}" rel="self"/>
+      <link href="{{ list_metadata.feed.url_path | e }}" rel="self"/>
       <title>{{ list_metadata.full_title | e }}</title>
       <updated>
-        {{- (list_metadata.feed_posts[0]).published.isoformat() | e -}}
+        {{- list_metadata.feed.entries[0].published.isoformat() | e -}}
       </updated>
-      {% for post_metadata in list_metadata.feed_posts %}
+      {% for post_metadata in list_metadata.feed.entries %}
         {{ ginjarator.fs.read_text(post_metadata.atom_fragment_path) }}
       {% endfor %}
     </feed>
   {% endset %}
   {% do ginjarator.fs.write_text(
-    paths.from_url_path(list_metadata.feed_url_path, dir_index="index.xml"),
+    paths.from_url_path(list_metadata.feed.url_path, dir_index="index.xml"),
     minify.xml(feed),
   ) %}
 {% endfor %}

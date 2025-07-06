@@ -113,7 +113,7 @@
   {% for page_metadata in list_metadata.page_by_number.values() %}
     {% set extra_head %}
       <link
-          href="{{ list_metadata.feed_url_path | e }}"
+          href="{{ list_metadata.feed.url_path | e }}"
           rel="alternate"
           type="application/atom+xml"
           >

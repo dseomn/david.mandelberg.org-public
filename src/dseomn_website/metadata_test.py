@@ -294,6 +294,15 @@ def test_comment_contents_error(tmp_path: pathlib.Path) -> None:
             comment.contents
 
 
+def test_feed() -> None:
+    feed = metadata.Feed[int](
+        url_path="/feed/",
+        entries_callback=lambda: (0, 7),
+    )
+
+    assert feed.entries == (0, 7)
+
+
 def test_page_all() -> None:
     with ginjarator.testing.api_for_scan():
         assert metadata.Page.all()
@@ -1036,7 +1045,7 @@ def test_post_list_all() -> None:
         lists = metadata.PostList.all()
         assert lists
         assert all(post_list.posts for post_list in lists)
-        assert all(post_list.feed_posts for post_list in lists)
+        assert all(post_list.feed.entries for post_list in lists)
 
 
 def test_post_list_pages() -> None:
@@ -1069,11 +1078,11 @@ def test_post_list_link_by_year() -> None:
         )
 
 
-def test_post_list_feed_url_path() -> None:
+def test_post_list_feed() -> None:
     with ginjarator.testing.api_for_scan():
         post_list = metadata.PostList.main()
 
-    assert post_list.feed_url_path == "/feed/"
+        assert post_list.feed.url_path == "/feed/"
 
 
 def test_main_nav() -> None:
