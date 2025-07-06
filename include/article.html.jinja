@@ -236,19 +236,23 @@
         {{- post_metadata.comments_feed.updated.isoformat() | e -}}
       </updated>
       {% for comment_metadata in post_metadata.comments_feed.entries %}
-        <entry>
-          <author><name>{{ comment_metadata.author.name | e }}</name></author>
-          <content type="html">
-            {{- minify.html(comment_metadata.contents) | e -}}
-          </content>
-          <id>{{ comment_metadata.uuid.urn | e }}</id>
-          <link href="{{ comment_metadata.url_path | e }}" rel="alternate"/>
-          <published>
-            {{- comment_metadata.published.isoformat() | e -}}
-          </published>
-          <title>{{ comment_metadata.pseudo_title | e }}</title>
-          <updated>{{ comment_metadata.published.isoformat() | e }}</updated>
-        </entry>
+        {% call ginjarator.fs.write_text_macro(
+          comment_metadata.atom_fragment_path,
+        ) %}
+          <entry>
+            <author><name>{{ comment_metadata.author.name | e }}</name></author>
+            <content type="html">
+              {{- minify.html(comment_metadata.contents) | e -}}
+            </content>
+            <id>{{ comment_metadata.uuid.urn | e }}</id>
+            <link href="{{ comment_metadata.url_path | e }}" rel="alternate"/>
+            <published>
+              {{- comment_metadata.published.isoformat() | e -}}
+            </published>
+            <title>{{ comment_metadata.pseudo_title | e }}</title>
+            <updated>{{ comment_metadata.published.isoformat() | e }}</updated>
+          </entry>
+        {% endcall %}
       {% endfor %}
     </feed>
   {% endset %}

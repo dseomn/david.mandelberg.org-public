@@ -272,6 +272,10 @@ def test_comment_load(
 
         assert actual == expected
         assert actual.contents == "<p>kumquat"
+        assert actual.atom_fragment_path == ginjarator.paths.Filesystem(
+            "work/comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc/"
+            "atom-fragment.xml"
+        )
         assert actual.pseudo_title == expected_pseudo_title
 
 

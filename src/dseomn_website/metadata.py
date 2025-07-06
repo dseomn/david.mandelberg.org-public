@@ -220,6 +220,10 @@ class Comment(Fragment):
         return contents
 
     @functools.cached_property
+    def atom_fragment_path(self) -> ginjarator.paths.Filesystem:
+        return paths.WORK / f"comments/{self.uuid}/atom-fragment.xml"
+
+    @functools.cached_property
     def pseudo_title(self) -> str:
         """Synthesized title for places like atom feeds that require them."""
         return f"Comment by {self.author.name} on {self.published}"
