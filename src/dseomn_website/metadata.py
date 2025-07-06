@@ -18,6 +18,7 @@ import uuid as uuid_
 
 import ginjarator
 
+from dseomn_website import lint
 from dseomn_website import paths
 
 
@@ -186,6 +187,15 @@ class Comment(Resource):
             ),
             contents_path=parent_path / f"{comment_uuid}.html",
         )
+
+    @functools.cached_property
+    def contents(self) -> str:
+        contents = ginjarator.api().fs.read_text(
+            self.contents_path,
+            defer_ok=False,
+        )
+        lint.comment(contents)
+        return contents
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)

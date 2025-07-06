@@ -94,15 +94,9 @@
             </a>
           </p>
         </header>
-        {% set contents = ginjarator.fs.read_text(
-          comment_metadata.contents_path
-        ) %}
-        {% if contents is not none %}
-          {% do lint.comment(contents) %}
-          <div dir="auto">
-            {{ contents }}
-          </div>
-        {% endif %}
+        <div dir="auto">
+          {{ comment_metadata.contents }}
+        </div>
       </div>
       <div class="comment-replies">
         {{ _reply(parent_metadata=comment_metadata, top_level=false) }}

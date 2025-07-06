@@ -242,19 +242,56 @@ def test_comment_load(
     )
     (tmp_path / "comments").mkdir()
     (
+        tmp_path / "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
+    ).write_text("<p>kumquat")
+    (
         tmp_path / "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.toml"
     ).write_text(contents)
 
     with ginjarator.testing.api_for_scan(root_path=tmp_path):
-        assert (
-            metadata.Comment.load(
-                parent_url_path="/",
-                parent_path=ginjarator.paths.Filesystem("comments"),
-                comment_id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
-                comment_uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
-            )
-            == expected
+        actual = metadata.Comment.load(
+            parent_url_path="/",
+            parent_path=ginjarator.paths.Filesystem("comments"),
+            comment_id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
+            comment_uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
         )
+
+        assert actual == expected
+        assert actual.contents == "<p>kumquat"
+
+
+def test_comment_contents_error(tmp_path: pathlib.Path) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["comments"]
+            """
+        )
+    )
+    (tmp_path / "comments").mkdir()
+    (
+        tmp_path / "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
+    ).write_text("<script></script>")
+    (
+        tmp_path / "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.toml"
+    ).write_text(
+        textwrap.dedent(
+            """\
+            published = 2025-07-03 15:47:37-04:00
+            author.name = "Someone Else"
+            """
+        )
+    )
+    with ginjarator.testing.api_for_scan(root_path=tmp_path):
+        comment = metadata.Comment.load(
+            parent_url_path="/",
+            parent_path=ginjarator.paths.Filesystem("comments"),
+            comment_id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
+            comment_uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
+        )
+
+        with pytest.raises(ValueError, match=r"Not allowed"):
+            comment.contents
 
 
 def test_page_all() -> None:
