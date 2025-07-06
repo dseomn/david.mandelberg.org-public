@@ -298,6 +298,7 @@ def test_feed() -> None:
     updated = datetime.datetime(2025, 1, 1)
     feed = metadata.Feed[int](
         url_path="/feed/",
+        title="Foo",
         updated_callback=lambda: updated,
         entries_callback=lambda: (0, 7),
     )
@@ -1086,6 +1087,7 @@ def test_post_list_feed() -> None:
         post_list = metadata.PostList.main()
 
         assert post_list.feed.url_path == "/feed/"
+        assert post_list.feed.title == "Blog — David Mandelberg"
         assert post_list.feed.updated == max(
             post.published for post in post_list.posts
         )

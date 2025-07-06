@@ -20,7 +20,7 @@
       <id>{{ list_metadata.url | e }}</id>
       <link href="{{ list_metadata.url_path | e }}" rel="alternate"/>
       <link href="{{ list_metadata.feed.url_path | e }}" rel="self"/>
-      <title>{{ list_metadata.full_title | e }}</title>
+      <title>{{ list_metadata.feed.title | e }}</title>
       <updated>{{ list_metadata.feed.updated.isoformat() | e }}</updated>
       {% for post_metadata in list_metadata.feed.entries %}
         {{ ginjarator.fs.read_text(post_metadata.atom_fragment_path) }}

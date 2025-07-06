@@ -200,6 +200,7 @@ class Comment(Resource):
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Feed[EntryType](Resource):
+    title: str
     updated_callback: Callable[[], datetime.datetime]
     entries_callback: Callable[[], Sequence[EntryType]]
 
@@ -549,6 +550,7 @@ class PostList(Page):
     def feed(self) -> Feed[Post]:
         return Feed(
             url_path=urllib.parse.urljoin(self.url_path, "feed/"),
+            title=self.full_title,
             updated_callback=lambda: self.posts[0].published,
             entries_callback=lambda: self.posts[:_POSTS_PER_FEED],
         )
