@@ -168,8 +168,7 @@ class Media:
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Comment(Resource):
-    id: str
+class Comment(Fragment):
     uuid: uuid_.UUID
     published: datetime.datetime
     author: User
@@ -199,7 +198,6 @@ class Comment(Resource):
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         return cls(
             url_path=urllib.parse.urljoin(parent_url_path, f"#{comment_id}"),
-            id=comment_id,
             uuid=comment_uuid,
             published=_comment_datetime(raw["published"]),
             author=User.parse(raw["author"]),

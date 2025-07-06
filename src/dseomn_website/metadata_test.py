@@ -184,7 +184,6 @@ def test_comment_load_error(
             ),
             metadata.Comment(
                 url_path="/#comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
-                id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
                 uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:47:37Z"
@@ -205,7 +204,6 @@ def test_comment_load_error(
             ),
             metadata.Comment(
                 url_path="/#comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
-                id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
                 uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:56:21Z"
@@ -227,7 +225,6 @@ def test_comment_load_error(
             ),
             metadata.Comment(
                 url_path="/#comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
-                id="comment-6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc",
                 uuid=uuid.UUID("6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc"),
                 published=datetime.datetime.fromisoformat(
                     "2025-07-03 19:47:37Z"
@@ -723,10 +720,6 @@ def test_post_load_error(
                             "/2025/06/27/foo/#2025-06-27-foo-comment-"
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),
-                        id=(
-                            "2025-06-27-foo-comment-"
-                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
-                        ),
                         uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
@@ -741,10 +734,6 @@ def test_post_load_error(
                     metadata.Comment(
                         url_path=(
                             "/2025/06/27/foo/#2025-06-27-foo-comment-"
-                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
-                        ),
-                        id=(
-                            "2025-06-27-foo-comment-"
                             "131294af-bba3-4296-a7e8-1f2eb5ca741c"
                         ),
                         uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
@@ -769,10 +758,6 @@ def test_post_load_error(
                             "/2025/06/27/foo/#2025-06-27-foo-comment-"
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),
-                        id=(
-                            "2025-06-27-foo-comment-"
-                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
-                        ),
                         uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
@@ -789,10 +774,6 @@ def test_post_load_error(
                     metadata.Comment(
                         url_path=(
                             "/2025/06/27/foo/#2025-06-27-foo-comment-"
-                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
-                        ),
-                        id=(
-                            "2025-06-27-foo-comment-"
                             "131294af-bba3-4296-a7e8-1f2eb5ca741c"
                         ),
                         uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
@@ -817,10 +798,6 @@ def test_post_load_error(
                             "/2025/06/27/foo/#2025-06-27-foo-comment-"
                             "096aa7f3-827a-4824-91f0-97da7cbd160b"
                         ),
-                        id=(
-                            "2025-06-27-foo-comment-"
-                            "096aa7f3-827a-4824-91f0-97da7cbd160b"
-                        ),
                         uuid=uuid.UUID("096aa7f3-827a-4824-91f0-97da7cbd160b"),
                         published=datetime.datetime.fromisoformat(
                             "2025-07-02 20:15:35Z"
@@ -837,10 +814,6 @@ def test_post_load_error(
                     metadata.Comment(
                         url_path=(
                             "/2025/06/27/foo/#2025-06-27-foo-comment-"
-                            "131294af-bba3-4296-a7e8-1f2eb5ca741c"
-                        ),
-                        id=(
-                            "2025-06-27-foo-comment-"
                             "131294af-bba3-4296-a7e8-1f2eb5ca741c"
                         ),
                         uuid=uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"),
