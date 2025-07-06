@@ -87,6 +87,19 @@ def test_resource_url() -> None:
     )
 
 
+def test_fragment_error() -> None:
+    with pytest.raises(ValueError, match=r"no fragment ID"):
+        metadata.Resource(url_path="/foo/").fragment("")
+
+
+def test_fragment() -> None:
+    fragment = metadata.Resource(url_path="/foo/").fragment("bar")
+
+    assert fragment.url_path == "/foo/#bar"
+    assert fragment.id == "bar"
+    assert fragment.url_fragment == "#bar"
+
+
 def test_media_parse_error() -> None:
     with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
         metadata.Media.parse(dict(invalid_key_kumquat=42))

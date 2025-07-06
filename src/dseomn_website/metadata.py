@@ -122,6 +122,27 @@ class Resource:
     def url(self) -> str:
         return urllib.parse.urljoin(SITE.url, self.url_path)
 
+    def fragment(self, id: str) -> "Fragment":
+        return Fragment(
+            url_path=urllib.parse.urljoin(self.url_path, f"#{id}"),
+        )
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class Fragment(Resource):
+
+    def __post_init__(self) -> None:
+        if not self.id:
+            raise ValueError(f"{self} has no fragment ID.")
+
+    @functools.cached_property
+    def id(self) -> str:
+        return urllib.parse.urlsplit(self.url_path).fragment
+
+    @functools.cached_property
+    def url_fragment(self) -> str:
+        return f"#{self.id}"
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Media:
