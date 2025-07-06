@@ -4,9 +4,8 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
-{% set subprocess = ginjarator.py.import_("subprocess") %}
-
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
+{% set minify = ginjarator.py.import_("dseomn_website.minify") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% for list_metadata in metadata.PostList.all() %}
@@ -30,15 +29,8 @@
       {% endfor %}
     </feed>
   {% endset %}
-  {% set feed_minified = subprocess.run(
-    ("minify", "--type=xml"),
-    input=feed,
-    stdout=subprocess.PIPE,
-    check=true,
-    text=true,
-  ).stdout %}
   {% do ginjarator.fs.write_text(
     paths.from_url_path(list_metadata.feed_url_path, dir_index="index.xml"),
-    feed_minified,
+    minify.xml(feed),
   ) %}
 {% endfor %}

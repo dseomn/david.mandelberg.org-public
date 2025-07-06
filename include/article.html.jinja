@@ -10,6 +10,7 @@
 {% set iri = ginjarator.py.import_("dseomn_website.iri") %}
 {% set lint = ginjarator.py.import_("dseomn_website.lint") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
+{% set minify = ginjarator.py.import_("dseomn_website.minify") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
 
@@ -208,9 +209,7 @@
       {% for tag in post_metadata.tags %}
         <category term="{{ tag | e }}"/>
       {% endfor %}
-      <content type="html">
-        {{- base_html.minify(contents) | e -}}
-      </content>
+      <content type="html">{{ minify.html(contents) | e }}</content>
       <id>{{ post_metadata.uuid.urn | e }}</id>
       <link href="{{ post_metadata.url_path | e }}" rel="alternate"/>
       <published>{{ post_metadata.published.isoformat() | e }}</published>

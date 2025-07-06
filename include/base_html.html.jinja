@@ -4,12 +4,11 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
-{% set subprocess = ginjarator.py.import_("subprocess") %}
-
 {% set iri = ginjarator.py.import_("dseomn_website.iri") %}
 {% set lint = ginjarator.py.import_("dseomn_website.lint") %}
 {% set media = ginjarator.py.import_("dseomn_website.media") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
+{% set minify = ginjarator.py.import_("dseomn_website.minify") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% macro a_mailto(to) -%}
@@ -21,16 +20,6 @@
   {%- do ginjarator.py.assert_(isoformat.endswith("+00:00")) -%}
   <time>{{ isoformat.removesuffix("+00:00") | e }}Z</time>
 {%- endmacro %}
-
-{% macro minify(html) %}
-  {{- subprocess.run(
-    ("minify", "--type=html"),
-    input=html,
-    stdout=subprocess.PIPE,
-    check=true,
-    text=true,
-  ).stdout -}}
-{% endmacro %}
 
 {% macro _blog_list_link(list_metadata, link_text) %}
   <a href="{{ list_metadata.url_path | e }}">{{ link_text | e }}</a>
@@ -139,7 +128,7 @@
     </html>
   {% endset %}
 
-  {% set minified = minify(contents) %}
+  {% set minified = minify.html(contents) %}
   {% do lint.html(minified) %}
   {% do ginjarator.fs.write_text(
     paths.from_url_path(page_metadata.url_path),
