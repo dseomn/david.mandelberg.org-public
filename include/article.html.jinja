@@ -118,20 +118,11 @@
 
 {% macro _post_fragment(
   post_metadata,
-  link,
   contents
 ) %}
   <article class="article" id="{{ post_metadata.id | e }}">
     <header class="article-header">
-      <h1 class="article-header-title">
-        {% if link is none %}
-          {{ post_metadata.title | e }}
-        {% else %}
-          <a rel="bookmark" href="{{ link | e }}">
-            {{ post_metadata.title | e }}
-          </a>
-        {% endif %}
-      </h1>
+      <h1 class="article-header-title">{{ post_metadata.title | e }}</h1>
       <dl class="article-header-metadata">
         <div class="article-header-metadata-item">
           <dt class="article-header-metadata-key">
@@ -141,7 +132,9 @@
               class="article-header-metadata-value
                      article-header-metadata-numeric"
               >
-            {{ base_html.time_from_datetime(post_metadata.published) }}
+            <a rel="bookmark" href="{{ post_metadata.url_path | e }}">
+              {{ base_html.time_from_datetime(post_metadata.published) }}
+            </a>
           </dd>
         </div>
         <div class="article-header-metadata-item">
@@ -202,7 +195,6 @@
     {{ headings.article(
       _post_fragment(
         post_metadata=post_metadata,
-        link=none,
         contents=contents,
       ),
     ) }}
@@ -212,7 +204,6 @@
     headings.article(
       _post_fragment(
         post_metadata=post_metadata,
-        link=post_metadata.url_path,
         contents=contents,
       ),
       offset=1,
