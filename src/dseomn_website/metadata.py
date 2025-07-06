@@ -454,6 +454,10 @@ class Post(Page):
         return self.work_path / "atom-fragment.xml"
 
     @functools.cached_property
+    def comments_section(self) -> Fragment:
+        return self.fragment(f"{self.id}-comments")
+
+    @functools.cached_property
     def comment_by_uuid(self) -> Mapping[uuid_.UUID, Comment]:
         return {comment.uuid: comment for comment in self.comments}
 

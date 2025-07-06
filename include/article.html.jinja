@@ -157,7 +157,7 @@
       </dl>
     </header>
     {{ contents }}
-    <section class="comments">
+    <section class="comments" id="{{ post_metadata.comments_section.id | e }}">
       <header>
         <h2>Comments</h2>
         {{ _reply(parent_metadata=post_metadata, top_level=true) }}

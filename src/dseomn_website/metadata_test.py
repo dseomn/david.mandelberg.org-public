@@ -880,6 +880,9 @@ def test_post_load(
     assert post_metadata.atom_fragment_path == ginjarator.paths.Filesystem(
         "work/posts/2025-06-27-foo/atom-fragment.xml"
     )
+    assert post_metadata.comments_section == metadata.Fragment(
+        url_path="/2025/06/27/foo/#2025-06-27-foo-comments",
+    )
     assert post_metadata.comment_by_uuid == expected_comment_by_uuid
     assert post_metadata.comments_by_parent == expected_comments_by_parent
 
