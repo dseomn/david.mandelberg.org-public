@@ -31,4 +31,30 @@
     paths.from_url_path(list_metadata.feed.url_path, dir_index="index.xml"),
     minify.xml(feed),
   ) %}
+
+  {% set comments_feed -%}
+    <?xml version="1.0" encoding="utf-8"?>
+    <feed
+        xml:base="{{ metadata.SITE.url | e }}"
+        xml:lang="{{ metadata.SITE.language | e }}"
+        xmlns="http://www.w3.org/2005/Atom"
+        >
+      <id>{{ list_metadata.comments_feed.url | e }}</id>
+      <link href="{{ list_metadata.comments_feed.url_path | e }}" rel="self"/>
+      <title>{{ list_metadata.comments_feed.title | e }}</title>
+      <updated>
+        {{- list_metadata.comments_feed.updated.isoformat() | e -}}
+      </updated>
+      {% for comment_metadata in list_metadata.comments_feed.entries %}
+        {{ ginjarator.fs.read_text(comment_metadata.atom_fragment_path) }}
+      {% endfor %}
+    </feed>
+  {% endset %}
+  {% do ginjarator.fs.write_text(
+    paths.from_url_path(
+      list_metadata.comments_feed.url_path,
+      dir_index="index.xml",
+    ),
+    minify.xml(comments_feed),
+  ) %}
 {% endfor %}
