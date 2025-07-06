@@ -4,7 +4,10 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% set textwrap = ginjarator.py.import_("textwrap") %}
+
 {% set headings = ginjarator.py.import_("dseomn_website.headings") %}
+{% set iri = ginjarator.py.import_("dseomn_website.iri") %}
 {% set lint = ginjarator.py.import_("dseomn_website.lint") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 
@@ -40,6 +43,42 @@
   {% endcall %}
 {% endmacro %}
 
+{% macro _reply(parent_metadata, top_level) %}
+  {% set to = metadata.SITE.author.email_address_with_extension(
+    "website-reply-to-" + parent_metadata.uuid | string
+  ) %}
+  {% set subject = "Re: " + parent_metadata.url %}
+  {% set body_indented %}
+    Name: the name you want on the comment
+    URI (optional): what your name should be a link to
+
+    Comment:
+    your comment here
+  {% endset %}
+  {% set body = textwrap.dedent(body_indented).strip() %}
+  {% set email_link -%}
+    <a href="{{ iri.mailto(to, headers={"subject": subject}, body=body) | e }}">
+      {{- to | e -}}
+    </a>
+  {%- endset %}
+  {% if top_level %}
+    <p>
+      To reply, send a comment to {{ email_link }} along with your name as you
+      want it to appear and optionally a URI to link your name to.
+      {% if parent_metadata.author.email_address is not none %}
+        {% set private_mailto = iri.mailto(
+          parent_metadata.author.email_address,
+          headers={"subject": subject},
+        ) %}
+        Or, send a private reply to <a href="{{ private_mailto | e }}">{{
+        parent_metadata.author.email_address | e }}</a>.
+      {% endif %}
+    </p>
+  {% else %}
+    <p>Reply: {{ email_link }}</p>
+  {% endif %}
+{% endmacro %}
+
 {% macro _comments(post_metadata, comments_metadata) %}
   {% for comment_metadata in comments_metadata %}
     <article class="comment" id="{{ comment_metadata.id | e }}">
@@ -64,17 +103,15 @@
           </div>
         {% endif %}
       </div>
-      {% set replies = post_metadata.comments_by_parent[
-        comment_metadata.uuid
-      ] %}
-      {% if replies %}
-        <div class="comment-replies">
-          {{ _comments(
-            post_metadata=post_metadata,
-            comments_metadata=replies,
-          ) }}
-        </div>
-      {% endif %}
+      <div class="comment-replies">
+        {{ _reply(parent_metadata=comment_metadata, top_level=false) }}
+        {{ _comments(
+          post_metadata=post_metadata,
+          comments_metadata=post_metadata.comments_by_parent[
+            comment_metadata.uuid
+          ],
+        ) }}
+      </div>
     </article>
   {% endfor %}
 {% endmacro %}
@@ -132,15 +169,16 @@
       </dl>
     </header>
     {{ contents }}
-    {% if post_metadata.comments %}
-      <section class="comments">
+    <section class="comments">
+      <header>
         <h2>Comments</h2>
-        {{ _comments(
-          post_metadata=post_metadata,
-          comments_metadata=post_metadata.comments_by_parent[none],
-        ) }}
-      </section>
-    {% endif %}
+        {{ _reply(parent_metadata=post_metadata, top_level=true) }}
+      </header>
+      {{ _comments(
+        post_metadata=post_metadata,
+        comments_metadata=post_metadata.comments_by_parent[none],
+      ) }}
+    </section>
   </article>
 {% endmacro %}
 
