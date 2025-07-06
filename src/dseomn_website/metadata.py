@@ -614,6 +614,38 @@ class PostList(Page):
             entries_callback=lambda: self.posts[:_POSTS_PER_FEED],
         )
 
+    @functools.cached_property
+    def _comments_feed_entries(self) -> Sequence[Comment]:
+        return tuple(
+            sorted(
+                itertools.chain.from_iterable(
+                    post.comments for post in self.posts
+                ),
+                key=lambda comment: comment.published,
+                reverse=True,
+            )[:_COMMENTS_PER_FEED]
+        )
+
+    @functools.cached_property
+    def _comments_feed_updated(self) -> datetime.datetime:
+        if self._comments_feed_entries:
+            return self._comments_feed_entries[0].published
+        else:
+            # In theory, the comments feed should have been created when the
+            # list was created. Since empty lists aren't allowed, that should be
+            # when the first post was published. In practice, that's probably
+            # not always right, but it's probably good enough.
+            return min(post.published for post in self.posts)
+
+    @functools.cached_property
+    def comments_feed(self) -> Feed[Comment]:
+        return Feed(
+            url_path=urllib.parse.urljoin(self.url_path, "comments/feed/"),
+            title=_title_join(parent=self.full_title, child="Comments"),
+            updated_callback=lambda: self._comments_feed_updated,
+            entries_callback=lambda: self._comments_feed_entries,
+        )
+
 
 def main_nav() -> Sequence[Page]:
     return (

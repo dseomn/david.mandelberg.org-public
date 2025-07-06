@@ -1105,6 +1105,113 @@ def test_post_list_feed() -> None:
         )
 
 
+@pytest.mark.parametrize(
+    "comments_1,comments_2,expected_updated,expected_comment_uuids",
+    (
+        ({}, {}, datetime.datetime.fromisoformat("2024-01-01 00:00:00Z"), ()),
+        (
+            {
+                "1892c575-2bf8-48df-b2bc-4a944b6a3631": textwrap.dedent(
+                    """\
+                    published = 2024-02-01 00:00:00Z
+                    author.name = "Someone"
+                    """
+                ),
+                "6c7a6ce4-0231-458c-8410-8c651f52a3e1": textwrap.dedent(
+                    """\
+                    published = 2025-03-01 00:00:00Z
+                    author.name = "Someone"
+                    """
+                ),
+            },
+            {
+                "c4e08f7b-f82c-42a2-95cb-39d7fc29b46a": textwrap.dedent(
+                    """\
+                    published = 2025-02-01 00:00:00Z
+                    author.name = "Someone"
+                    """
+                ),
+            },
+            datetime.datetime.fromisoformat("2025-03-01 00:00:00Z"),
+            (
+                "6c7a6ce4-0231-458c-8410-8c651f52a3e1",  # 2025-03-01
+                "c4e08f7b-f82c-42a2-95cb-39d7fc29b46a",  # 2025-02-01
+                "1892c575-2bf8-48df-b2bc-4a944b6a3631",  # 2024-02-01
+            ),
+        ),
+    ),
+)
+def test_post_list_comments_feed(
+    comments_1: dict[str, str],
+    comments_2: dict[str, str],
+    expected_updated: datetime.datetime,
+    expected_comment_uuids: tuple[str, ...],
+    tmp_path: pathlib.Path,
+) -> None:
+    (tmp_path / "public").mkdir()
+    (tmp_path / "public/ginjarator.toml").write_text(
+        textwrap.dedent(
+            f"""\
+            source_paths = ["posts", "../private"]
+            templates = [
+                "posts/2024-01-01-foo/index.html.jinja",
+                "posts/2025-01-01-bar/index.html.jinja",
+            ]
+            """
+        )
+    )
+    (tmp_path / "public/posts/2024-01-01-foo").mkdir(parents=True)
+    (tmp_path / "public/posts/2024-01-01-foo/metadata.toml").write_text(
+        textwrap.dedent(
+            f"""\
+            uuid = "4cb2c225-2b0d-4056-8b39-698509e59659"
+            published = 2024-01-01 00:00:00Z
+            title = "Foo"
+            comments = {list(comments_1)}
+            """
+        )
+    )
+    (tmp_path / "private/posts/2024-01-01-foo/comments").mkdir(parents=True)
+    for comment_uuid, comment_metadata in comments_1.items():
+        (
+            tmp_path
+            / f"private/posts/2024-01-01-foo/comments/{comment_uuid}.toml"
+        ).write_text(comment_metadata)
+    (tmp_path / "public/posts/2025-01-01-bar").mkdir(parents=True)
+    (tmp_path / "public/posts/2025-01-01-bar/metadata.toml").write_text(
+        textwrap.dedent(
+            f"""\
+            uuid = "46aca45c-1619-41fa-97fb-9858de6b94d4"
+            published = 2025-01-01 00:00:00Z
+            title = "Bar"
+            comments = {list(comments_2)}
+            """
+        )
+    )
+    (tmp_path / "private/posts/2025-01-01-bar/comments").mkdir(parents=True)
+    for comment_uuid, comment_metadata in comments_2.items():
+        (
+            tmp_path
+            / f"private/posts/2025-01-01-bar/comments/{comment_uuid}.toml"
+        ).write_text(comment_metadata)
+
+    with ginjarator.testing.api_for_scan(root_path=tmp_path / "public"):
+        post_list = metadata.PostList.main()
+
+        assert post_list.comments_feed.url_path == "/comments/feed/"
+        assert (
+            post_list.comments_feed.title
+            == "Comments — Blog — David Mandelberg"
+        )
+        assert post_list.comments_feed.updated == expected_updated
+        assert (
+            tuple(
+                str(comment.uuid) for comment in post_list.comments_feed.entries
+            )
+            == expected_comment_uuids
+        )
+
+
 def test_main_nav() -> None:
     with ginjarator.testing.api_for_scan():
         assert metadata.main_nav()
