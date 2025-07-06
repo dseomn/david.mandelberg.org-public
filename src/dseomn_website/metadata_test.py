@@ -173,7 +173,7 @@ def test_comment_load_error(
 
 
 @pytest.mark.parametrize(
-    "contents,expected",
+    "contents,expected,expected_pseudo_title",
     (
         (
             textwrap.dedent(
@@ -194,6 +194,7 @@ def test_comment_load_error(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
                 ),
             ),
+            "Comment by Someone Else on 2025-07-03 19:47:37+00:00",
         ),
         (
             textwrap.dedent(
@@ -214,6 +215,7 @@ def test_comment_load_error(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
                 ),
             ),
+            "Comment by Someone Else on 2025-07-03 19:56:21+00:00",
         ),
         (
             textwrap.dedent(
@@ -235,12 +237,14 @@ def test_comment_load_error(
                     "comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc.html"
                 ),
             ),
+            "Comment by Someone Else on 2025-07-03 19:47:37+00:00",
         ),
     ),
 )
 def test_comment_load(
     contents: str,
     expected: metadata.Comment,
+    expected_pseudo_title: str,
     tmp_path: pathlib.Path,
 ) -> None:
     (tmp_path / "ginjarator.toml").write_text(
@@ -268,6 +272,7 @@ def test_comment_load(
 
         assert actual == expected
         assert actual.contents == "<p>kumquat"
+        assert actual.pseudo_title == expected_pseudo_title
 
 
 def test_comment_contents_error(tmp_path: pathlib.Path) -> None:
@@ -646,6 +651,7 @@ def test_post_load_error(
             "expected",
             "expected_comment_by_uuid",
             "expected_comments_by_parent",
+            "expected_comments_feed_updated",
         )
     ),
     (
@@ -673,6 +679,7 @@ def test_post_load_error(
             ),
             {},
             {None: []},
+            datetime.datetime.fromisoformat("2025-06-27 18:15:01-00:00"),
         ),
         (
             textwrap.dedent(
@@ -832,6 +839,7 @@ def test_post_load_error(
                 ],
                 uuid.UUID("131294af-bba3-4296-a7e8-1f2eb5ca741c"): [],
             },
+            datetime.datetime.fromisoformat("2025-07-03 20:15:35Z"),
         ),
     ),
 )
@@ -841,6 +849,7 @@ def test_post_load(
     expected: metadata.Post,
     expected_comment_by_uuid: dict[uuid.UUID, metadata.Comment],
     expected_comments_by_parent: dict[uuid.UUID | None, list[metadata.Comment]],
+    expected_comments_feed_updated: datetime.datetime,
     tmp_path: pathlib.Path,
 ) -> None:
     (tmp_path / "public").mkdir()
@@ -885,6 +894,16 @@ def test_post_load(
     )
     assert post_metadata.comment_by_uuid == expected_comment_by_uuid
     assert post_metadata.comments_by_parent == expected_comments_by_parent
+    assert (
+        post_metadata.comments_feed.url_path == "/2025/06/27/foo/comments/feed/"
+    )
+    assert (
+        post_metadata.comments_feed.title == "Comments — Foo — David Mandelberg"
+    )
+    assert post_metadata.comments_feed.updated == expected_comments_feed_updated
+    assert tuple(post_metadata.comments_feed.entries) == tuple(
+        reversed(post_metadata.comments)
+    )
 
 
 @pytest.mark.parametrize(

@@ -167,6 +167,9 @@ class Media:
         )
 
 
+_COMMENTS_PER_FEED = 50
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Comment(Fragment):
     uuid: uuid_.UUID
@@ -215,6 +218,11 @@ class Comment(Fragment):
         )
         lint.comment(contents)
         return contents
+
+    @functools.cached_property
+    def pseudo_title(self) -> str:
+        """Synthesized title for places like atom feeds that require them."""
+        return f"Comment by {self.author.name} on {self.published}"
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -475,6 +483,30 @@ class Post(Page):
             itertools.chain.from_iterable(result.values())
         ) == collections.Counter(self.comments)
         return result
+
+    @functools.cached_property
+    def _comments_feed_entries(self) -> Sequence[Comment]:
+        return sorted(
+            self.comments,
+            key=lambda comment: comment.published,
+            reverse=True,
+        )[:_COMMENTS_PER_FEED]
+
+    @functools.cached_property
+    def _comments_feed_updated(self) -> datetime.datetime:
+        if self._comments_feed_entries:
+            return self._comments_feed_entries[0].published
+        else:
+            return self.published
+
+    @functools.cached_property
+    def comments_feed(self) -> Feed[Comment]:
+        return Feed(
+            url_path=urllib.parse.urljoin(self.url_path, "comments/feed/"),
+            title=_title_join(parent=self.full_title, child="Comments"),
+            updated_callback=lambda: self._comments_feed_updated,
+            entries_callback=lambda: self._comments_feed_entries,
+        )
 
 
 _POSTS_PER_PAGE = 10
