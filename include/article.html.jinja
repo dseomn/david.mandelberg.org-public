@@ -11,6 +11,7 @@
 {% set lint = ginjarator.py.import_("dseomn_website.lint") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set minify = ginjarator.py.import_("dseomn_website.minify") %}
+{% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
 
@@ -74,6 +75,8 @@
         Or, send a private reply to <a href="{{ private_mailto | e }}">{{
         parent_metadata.author.email_address | e }}</a>.
       {% endif %}
+      To subscribe, there’s a <a href="{{ parent_metadata.comments_feed.url_path
+      | e }}">comments feed</a>.
     </p>
   {% else %}
     <p>Reply: {{ email_link }}</p>
@@ -214,4 +217,46 @@
       <updated>{{ post_metadata.published.isoformat() | e }}</updated>
     </entry>
   {% endcall %}
+
+  {% set comments_feed -%}
+    <?xml version="1.0" encoding="utf-8"?>
+    <feed
+        xml:base="{{ metadata.SITE.url | e }}"
+        xml:lang="{{ metadata.SITE.language | e }}"
+        xmlns="http://www.w3.org/2005/Atom"
+        >
+      <id>{{ post_metadata.comments_section.url | e }}</id>
+      <link
+          href="{{ post_metadata.comments_section.url_path | e }}"
+          rel="alternate"
+          />
+      <link href="{{ post_metadata.comments_feed.url_path | e }}" rel="self"/>
+      <title>{{ post_metadata.comments_feed.title | e }}</title>
+      <updated>
+        {{- post_metadata.comments_feed.updated.isoformat() | e -}}
+      </updated>
+      {% for comment_metadata in post_metadata.comments_feed.entries %}
+        <entry>
+          <author><name>{{ comment_metadata.author.name | e }}</name></author>
+          <content type="html">
+            {{- minify.html(comment_metadata.contents) | e -}}
+          </content>
+          <id>{{ comment_metadata.uuid.urn | e }}</id>
+          <link href="{{ comment_metadata.url_path | e }}" rel="alternate"/>
+          <published>
+            {{- comment_metadata.published.isoformat() | e -}}
+          </published>
+          <title>{{ comment_metadata.pseudo_title | e }}</title>
+          <updated>{{ comment_metadata.published.isoformat() | e }}</updated>
+        </entry>
+      {% endfor %}
+    </feed>
+  {% endset %}
+  {% do ginjarator.fs.write_text(
+    paths.from_url_path(
+      post_metadata.comments_feed.url_path,
+      dir_index="index.xml",
+    ),
+    minify.xml(comments_feed),
+  ) %}
 {% endmacro %}
