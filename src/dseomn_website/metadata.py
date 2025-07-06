@@ -40,6 +40,10 @@ def _duplicates[T](iterable: Iterable[T]) -> Collection[T]:
     return tuple(item for item, count in counter.items() if count > 1)
 
 
+def _title_join(*, parent: str, child: str) -> str:
+    return f"{child} — {parent}"
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class User:
     name: str
@@ -199,7 +203,7 @@ class Page(Resource):
 
     @property
     def full_title(self) -> str:
-        return f"{self.title} — {SITE.title}"
+        return _title_join(parent=SITE.title, child=self.title)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
