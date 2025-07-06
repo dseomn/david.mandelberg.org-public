@@ -200,7 +200,12 @@ class Comment(Resource):
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Feed[EntryType](Resource):
+    updated_callback: Callable[[], datetime.datetime]
     entries_callback: Callable[[], Sequence[EntryType]]
+
+    @functools.cached_property
+    def updated(self) -> datetime.datetime:
+        return self.updated_callback()
 
     @functools.cached_property
     def entries(self) -> Sequence[EntryType]:
@@ -544,6 +549,7 @@ class PostList(Page):
     def feed(self) -> Feed[Post]:
         return Feed(
             url_path=urllib.parse.urljoin(self.url_path, "feed/"),
+            updated_callback=lambda: self.posts[0].published,
             entries_callback=lambda: self.posts[:_POSTS_PER_FEED],
         )
 
