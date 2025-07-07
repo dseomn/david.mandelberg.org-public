@@ -27,11 +27,12 @@ pytestmark = pytest.mark.output
         if path.is_file() and path != paths.OUTPUT / ".htaccess"
     ),
 )
-def test_all(url_path: str) -> None:
+def test_ok(url_path: str) -> None:
     header_registry = headerregistry.HeaderRegistry()
 
     response = requests.get(urllib.parse.urljoin(_BASE, url_path))
 
+    assert not response.history
     assert response.status_code == http.HTTPStatus.OK
 
     assert "content-type" in response.headers
@@ -46,3 +47,40 @@ def test_all(url_path: str) -> None:
         assert content_type.params["charset"] == "utf-8"
     else:
         assert "charset" not in content_type.params
+
+
+@pytest.mark.parametrize(
+    "request_url_path,response_url_path",
+    (
+        ("/index.html", "/"),
+        ("/about/index.html", "/about/"),
+        ("/feed/index.xml", "/feed/"),
+        ("/2025/04/01/placeholder/", "/2025/04/02/placeholder/"),
+    ),
+)
+def test_redirect(request_url_path: str, response_url_path: str) -> None:
+    response = requests.get(urllib.parse.urljoin(_BASE, request_url_path))
+
+    assert len(response.history) == 1
+    assert response.url == urllib.parse.urljoin(_BASE, response_url_path)
+    assert response.status_code == http.HTTPStatus.OK
+
+
+@pytest.mark.parametrize(
+    "url_path,expected",
+    (
+        ("/.htaccess", http.HTTPStatus.FORBIDDEN),
+        ("/does-not-exist", http.HTTPStatus.NOT_FOUND),
+    ),
+)
+def test_error(url_path: str, expected: http.HTTPStatus) -> None:
+    response = requests.get(urllib.parse.urljoin(_BASE, url_path))
+
+    assert not response.history
+    assert response.status_code == expected
+    assert (
+        response.text
+        == pathlib.Path(
+            paths.OUTPUT / f"errors/{expected.value}/index.html"
+        ).read_text()
+    )
