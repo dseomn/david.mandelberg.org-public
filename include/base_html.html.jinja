@@ -21,11 +21,6 @@
   <time>{{ isoformat.removesuffix("+00:00") | e }}Z</time>
 {%- endmacro %}
 
-{% macro _blog_list_link(list_metadata, link_text) %}
-  <a href="{{ list_metadata.url_path | e }}">{{ link_text | e }}</a>
-  (<a href="{{ list_metadata.feed.url_path | e }}">feed</a>)
-{% endmacro %}
-
 {% macro write(
   page_metadata,
   site_title_is_h1=false,
@@ -100,17 +95,15 @@
         <footer class="site-footer">
           <ul class="site-footer-list">
             <li class="site-footer-list-item">
-              {{ _blog_list_link(
-                metadata.PostList.main(),
-                link_text=metadata.PostList.main().title,
-              ) }}
+              <a href="{{ metadata.PostList.main().url_path | e }}">
+                {{ metadata.PostList.main().title | e }}
+              </a>
               <ul>
                 {% for tag in metadata.SITE.tags %}
                   <li>
-                    {{ _blog_list_link(
-                      metadata.PostList.tag(tag),
-                      link_text=tag,
-                    ) }}
+                    <a href="{{ metadata.PostList.tag(tag).url_path | e }}">
+                      {{ tag | e }}
+                    </a>
                   </li>
                 {% endfor %}
               </ul>

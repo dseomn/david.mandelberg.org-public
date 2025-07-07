@@ -144,8 +144,8 @@
       {% for post_metadata in page_metadata.posts %}
         {{ ginjarator.fs.read_text(post_metadata.include_fragment_path) }}
       {% endfor %}
-      {% if loop.length > 1 %}
-        <footer class="list-footer">
+      <footer class="list-footer">
+        {% if loop.length > 1 %}
           <nav class="list-nav">
             {{ pagination_list_pages(
               list_metadata=list_metadata,
@@ -156,8 +156,12 @@
               {{ pagination_list_years(list_metadata=list_metadata) }}
             {% endif %}
           </nav>
-        </footer>
-      {% endif %}
+        {% endif %}
+        <p class="list-footer-feeds">
+          <a href="{{ list_metadata.feed.url_path | e }}">Atom feed</a> (<a
+          href="{{ list_metadata.comments_feed.url_path | e }}">comments</a>)
+        </p>
+      </footer>
     {% endcall %}
   {% endfor %}
 {% endfor %}
