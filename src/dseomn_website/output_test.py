@@ -6,6 +6,7 @@ from email import headerregistry
 import http
 import pathlib
 from typing import cast
+import urllib.parse
 
 import ginjarator
 import pytest
@@ -29,7 +30,7 @@ pytestmark = pytest.mark.output
 def test_all(url_path: str) -> None:
     header_registry = headerregistry.HeaderRegistry()
 
-    response = requests.get(_BASE + url_path)
+    response = requests.get(urllib.parse.urljoin(_BASE, url_path))
 
     assert response.status_code == http.HTTPStatus.OK
 
