@@ -1,0 +1,35 @@
+// SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+//
+// SPDX-License-Identifier: Apache-2.0
+
+.comments {
+  clear: both;
+  display: flow-root;
+}
+
+.comment {
+  margin-block: 1em;
+}
+
+.comment-main {
+  background: @alternate-canvas;
+  display: flow-root;
+  padding-inline: 1em;
+}
+
+.comment-header {
+  margin-block: (.h3()[font-size] * .h3()[margin-block]);
+}
+
+.comment-header-author {
+  margin-block: 0;
+}
+
+.comment-header-published {
+  font-variant-numeric: tabular-nums;
+  margin-block: 0;
+}
+
+.comment-replies {
+  margin-inline: 2em 0;
+}

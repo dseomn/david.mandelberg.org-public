@@ -1,0 +1,53 @@
+// SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+//
+// SPDX-License-Identifier: Apache-2.0
+
+// Defaults for common elements.
+
+:root {
+  background: @alternate-canvas;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+}
+
+// On the homepage, the site title in the <header> is an <h1> because it's the
+// main heading for the page in addition to being the site title. On other
+// pages, the site title is a <p> and the <h1> is for the page title. Similarly,
+// the main heading of an article can either be an <h1> on the article's own
+// page, or an <h2> if the article is included in a list of articles. These
+// classes are used to keep the styling of the site title and article headings
+// consistent between pages. Values are from
+// https://html.spec.whatwg.org/#sections-and-headings
+.h1 {
+  margin-block: 0.67em;
+  font-size: 2.00em;
+  font-weight: bold;
+}
+.h2 {
+  margin-block: 0.83em;
+  font-size: 1.50em;
+  font-weight: bold;
+}
+.h3 {
+  margin-block: 1.00em;
+  font-size: 1.17em;
+  font-weight: bold;
+}
+.h4 {
+  margin-block: 1.33em;
+  font-size: 1.00em;
+  font-weight: bold;
+}
+.h5 {
+  margin-block: 1.67em;
+  font-size: 0.83em;
+  font-weight: bold;
+}
+.h6 {
+  margin-block: 2.33em;
+  font-size: 0.67em;
+  font-weight: bold;
+}

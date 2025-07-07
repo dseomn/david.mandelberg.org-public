@@ -1,0 +1,53 @@
+// SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+//
+// SPDX-License-Identifier: Apache-2.0
+
+// Site-wide elements.
+
+.site-header {
+  .section-outer();
+  margin-block-start: 0;
+}
+
+.site-header-inner {
+  .section-inner();
+  align-items: baseline;
+  display: flex;
+  flex-flow: wrap;
+  gap: 1em 10em;
+  justify-content: space-between;
+}
+
+.site-header-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.site-header-nav-list {
+  display: flex;
+  flex-flow: wrap;
+  font-weight: bold;
+  gap: 1em 2em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-footer {
+  .pseudo-section();
+  columns: 15em auto;
+}
+
+.site-footer-list {
+  margin: 0;
+}
+
+.site-footer-list-item {
+  break-inside: avoid-column;
+}
+
+.site-error {
+  .pseudo-section-before-site-footer();
+  text-align: center;
+}
