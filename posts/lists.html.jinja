@@ -41,7 +41,8 @@
 {% endmacro %}
 
 {% macro pagination_list_pages(list_metadata, current, total) %}
-    <ol class="pagination-list">
+  <div class="pagination-list">
+    <ol class="pagination-items">
       {{ pagination_prev_next(
         list_metadata=list_metadata,
         target=current - 1,
@@ -86,10 +87,13 @@
         text="→",
       ) }}
     </ol>
+  </div>
 {% endmacro %}
 
 {% macro pagination_list_years(list_metadata) %}
-      <ol class="pagination-list">
+  <div class="pagination-list">
+      <p class="pagination-list-header">Jump to year:</p>
+      <ol class="pagination-items">
         {% for year, link in list_metadata.link_by_year.items() %}
           {% if not loop.first and loop.previtem[0] != year + 1 %}
             <li>
@@ -106,6 +110,7 @@
           </li>
         {% endfor %}
       </ol>
+  </div>
 {% endmacro %}
 
 {% for list_metadata in metadata.PostList.all() %}
