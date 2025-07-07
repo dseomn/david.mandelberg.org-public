@@ -92,24 +92,21 @@
 
 {% macro pagination_list_years(list_metadata) %}
   <div class="pagination-list">
-      <p class="pagination-list-header">Jump to year:</p>
-      <ol class="pagination-items">
-        {% for year, link in list_metadata.link_by_year.items() %}
-          {% if not loop.first and loop.previtem[0] != year + 1 %}
-            <li>
-              <span class="pagination-item pagination-item-ellipsis">…</span>
-            </li>
-          {% endif %}
+    <p class="pagination-list-header">Jump to year:</p>
+    <ol class="pagination-items">
+      {% for year, link in list_metadata.link_by_year.items() %}
+        {% if not loop.first and loop.previtem[0] != year + 1 %}
           <li>
-            <a
-                class="pagination-item pagination-item-jump"
-                href="{{ link | e }}"
-                >
-              <time>{{ year | e }}</time>
-            </a>
+            <span class="pagination-item pagination-item-ellipsis">…</span>
           </li>
-        {% endfor %}
-      </ol>
+        {% endif %}
+        <li>
+          <a class="pagination-item pagination-item-jump" href="{{ link | e }}">
+            <time>{{ year | e }}</time>
+          </a>
+        </li>
+      {% endfor %}
+    </ol>
   </div>
 {% endmacro %}
 
