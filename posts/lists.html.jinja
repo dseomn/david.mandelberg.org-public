@@ -40,8 +40,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro pagination_nav(list_metadata, current, total, show_link_by_year) %}
-  <nav class="pagination-nav">
+{% macro pagination_list_pages(list_metadata, current, total) %}
     <ol class="pagination-list">
       {{ pagination_prev_next(
         list_metadata=list_metadata,
@@ -87,7 +86,9 @@
         text="→",
       ) }}
     </ol>
-    {% if show_link_by_year and list_metadata.link_by_year | length > 1 %}
+{% endmacro %}
+
+{% macro pagination_list_years(list_metadata) %}
       <ol class="pagination-list">
         {% for year, link in list_metadata.link_by_year.items() %}
           {% if not loop.first and loop.previtem[0] != year + 1 %}
@@ -105,8 +106,6 @@
           </li>
         {% endfor %}
       </ol>
-    {% endif %}
-  </nav>
 {% endmacro %}
 
 {% for list_metadata in metadata.PostList.all() %}
@@ -130,12 +129,13 @@
             <h1 class="h1 list-header-title">{{ list_metadata.title | e }}</h1>
           {% endif %}
           {% if not loop.first %}
-            {{ pagination_nav(
-              list_metadata=list_metadata,
-              current=loop.index,
-              total=loop.length,
-              show_link_by_year=false,
-            ) }}
+            <nav class="pagination-nav">
+              {{ pagination_list_pages(
+                list_metadata=list_metadata,
+                current=loop.index,
+                total=loop.length,
+              ) }}
+            </nav>
           {% endif %}
         </header>
       {% endif %}
@@ -144,12 +144,16 @@
       {% endfor %}
       {% if loop.length > 1 %}
         <footer class="list-footer">
-          {{ pagination_nav(
-            list_metadata=list_metadata,
-            current=loop.index,
-            total=loop.length,
-            show_link_by_year=true,
-          ) }}
+          <nav class="pagination-nav">
+            {{ pagination_list_pages(
+              list_metadata=list_metadata,
+              current=loop.index,
+              total=loop.length,
+            ) }}
+            {% if list_metadata.link_by_year | length > 1 %}
+              {{ pagination_list_years(list_metadata=list_metadata) }}
+            {% endif %}
+          </nav>
         </footer>
       {% endif %}
     {% endcall %}
