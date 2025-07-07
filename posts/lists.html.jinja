@@ -129,7 +129,7 @@
             <h1 class="h1 list-header-title">{{ list_metadata.title | e }}</h1>
           {% endif %}
           {% if not loop.first %}
-            <nav class="pagination-nav">
+            <nav class="list-nav">
               {{ pagination_list_pages(
                 list_metadata=list_metadata,
                 current=loop.index,
@@ -144,7 +144,7 @@
       {% endfor %}
       {% if loop.length > 1 %}
         <footer class="list-footer">
-          <nav class="pagination-nav">
+          <nav class="list-nav">
             {{ pagination_list_pages(
               list_metadata=list_metadata,
               current=loop.index,
