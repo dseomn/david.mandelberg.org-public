@@ -2,11 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-.list-header {
-  .pseudo-section();
+.list-pseudo-section-block-spacing() {
   display: flex;
   flex-flow: column;
   gap: 1em 0;
+}
+
+.list-header {
+  .pseudo-section();
+  .list-pseudo-section-block-spacing();
 }
 
 .list-header-title {
@@ -19,9 +23,7 @@
 }
 
 .pagination-nav {
-  display: flex;
-  flex-flow: column;
-  gap: 1em 0;
+  .list-pseudo-section-block-spacing();
 }
 
 .pagination-list {
