@@ -121,7 +121,8 @@ def test_favicon_profile_responsive_sizes() -> None:
         media.FaviconProfile().responsive_sizes()
 
 
-def test_normal_image_profile_outputs() -> None:
+@pytest.mark.parametrize("lossy", (True, False))
+def test_normal_image_profile_outputs(lossy: bool) -> None:
     primary_conversion = media.ImageConversion.jpeg(
         max_width=960, max_height=960, quality=90
     )
@@ -129,11 +130,16 @@ def test_normal_image_profile_outputs() -> None:
         max_width=480, max_height=480, quality=90
     )
     profile = media.NormalImageProfile(
-        lossy_conversions=(primary_conversion, other_conversion),
+        lossy_conversions=(
+            (primary_conversion, other_conversion) if lossy else ()
+        ),
+        lossless_conversions=(
+            () if lossy else (primary_conversion, other_conversion)
+        ),
         container_max_inline_size="",
         container_padding_inline="",
     )
-    source = ginjarator.paths.Filesystem("foo.jpg")
+    source = ginjarator.paths.Filesystem("foo.jpg" if lossy else "foo.png")
 
     assert collections.Counter(profile.outputs(source)) == collections.Counter(
         (
@@ -150,6 +156,7 @@ def test_normal_image_profile_outputs() -> None:
 def test_normal_image_profile_outputs_unknown_extension() -> None:
     profile = media.NormalImageProfile(
         lossy_conversions=(),
+        lossless_conversions=(),
         container_max_inline_size="",
         container_padding_inline="",
     )
@@ -164,6 +171,7 @@ def test_normal_image_profile_outputs_unknown_extension() -> None:
 def test_normal_image_profile_responsive_sizes() -> None:
     profile = media.NormalImageProfile(
         lossy_conversions=(),
+        lossless_conversions=(),
         container_max_inline_size="60em",
         container_padding_inline="1em",
     )

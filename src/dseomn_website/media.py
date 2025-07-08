@@ -147,6 +147,7 @@ class NormalImageProfile(ImageProfile):
         self,
         *,
         lossy_conversions: Sequence[ImageConversion],
+        lossless_conversions: Sequence[ImageConversion],
         container_max_inline_size: str,
         container_padding_inline: str,
     ) -> None:
@@ -155,10 +156,13 @@ class NormalImageProfile(ImageProfile):
         Args:
             lossy_conversions: Conversions to use for lossy sources. First item
                 is the primary one.
+            lossless_conversions: Conversions to use for lossless sources. First
+                item is the primary one.
             container_max_inline_size: The image's container's max-inline-size.
             container_padding_inline: The image's container's padding-inline.
         """
         self._lossy_conversions = lossy_conversions
+        self._lossless_conversions = lossless_conversions
         self._container_max_inline_size = container_max_inline_size
         self._container_padding_inline = container_padding_inline
 
@@ -168,6 +172,8 @@ class NormalImageProfile(ImageProfile):
     ) -> Sequence[ImageConversion]:
         if source.name.endswith((".jpg",)):
             return self._lossy_conversions
+        elif source.name.endswith((".png",)):
+            return self._lossless_conversions
         else:
             raise NotImplementedError(f"{source.name=}")
 
@@ -210,6 +216,11 @@ IMAGE_PROFILES = {
             ImageConversion.jpeg(max_width=960, max_height=960, quality=90),
             ImageConversion.jpeg(max_width=480, max_height=480, quality=90),
             ImageConversion.jpeg(max_width=1920, max_height=1920, quality=90),
+        ),
+        lossless_conversions=(
+            ImageConversion.png(max_width=960, max_height=960),
+            ImageConversion.png(max_width=480, max_height=480),
+            ImageConversion.png(max_width=1920, max_height=1920),
         ),
         container_max_inline_size=layout.MAIN_COLUMN_MAX_INLINE_SIZE,
         container_padding_inline=layout.MAIN_COLUMN_PADDING_INLINE,
