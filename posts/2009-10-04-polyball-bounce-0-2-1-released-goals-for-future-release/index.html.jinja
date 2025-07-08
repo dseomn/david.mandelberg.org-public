@@ -1,0 +1,13 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+
+{% call article.post() %}
+  <p>I just released an update to <a href="http://david.mandelberg.org/computers/polyball-bounce/">Polyball Bounce</a>. This release only makes minor changes, including making the paddles curved for better control.</p>
+
+  <p>For the next release, I plan to work on separating the game into a client and server, allowing multiplayer games over the network. I'm also considering switching from <a href="http://www.pygtk.org/">pygtk</a> to <a href="http://ocemp.sourceforge.net/gui.html">OcempGUI</a> for the configuration window.</p>
+{% endcall %}
