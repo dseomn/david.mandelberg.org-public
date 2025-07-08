@@ -1,0 +1,21 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+
+{% call article.post() %}
+  <p>First, a bit of background info: I'm currently the primary administrator for xenon, an old server that I inherited from former members of <a href="http://cog.brandeis.edu/">COG</a>. Xenon used to run a bunch of important things, but it currently only runs the <a href="http://union.brandeis.edu/">Student Union website</a> and some very low profile and unused personal and club sites. I've been pushing for the Union to move to something more manageable on a newer and better maintained server, and <a href="http://yalespector.com/">Yale Spector</a> has been doing a lot of work to that effect. The new site is Almost There&trade;, but we had to run another round of elections on xenon. Unfortunately, everybody who knew how to set up elections on the old site has left Brandeis.</p>
+
+  <p>After some effort, mostly on Yale's part, to figure out the election system, everything seemed to be working. If there were any random crashes, they were fixed automatically by a script I wrote after problems with last year's elections going down.</p>
+
+  <p>Towards the end of the election's time window, the list of candidates disappeared from the website and admins couldn't stay logged in. Fun times. Nobody could figure it out and I was unreachable, swing dancing and then hanging out with a friend in the gym, which has bad cell reception. I got back to my dorm to see some interesting messages.</p>
+
+  <p>After some digging around, I found that the relevant code for listing candidates does something like <code>SELECT * FROM candidates WHERE election=12345 ORDER BY RAND()</code>, which gave <samp>ERROR 1030: Got error 28 from table handler</samp>. When I removed the <code>ORDER BY</code> clause it worked fine, so I was about to accept non-random ordering of candidates until I could find out what's wrong or randomize the order in PHP instead.</p>
+
+  <p>Since I'm not familiar with the code, I decided to make an in-place backup copy before changing the relevant file. When I tried that, I got the dreaded <samp>no space left on device</samp>. Duh. MySQL must have been trying to use disk space to "sort" the table. The admin interface must have been trying to insert rows into MySQL or otherwise write session information to disk.</p>
+
+  <p>After a minute or two with <code>du</code> and <code>sort</code>, I found what looked like a safe file to delete. Magic, people can view candidates and make an informed decision before voting.</p>
+{% endcall %}

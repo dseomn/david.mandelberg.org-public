@@ -30,6 +30,7 @@ templates = [
   "errors/404/index.html.jinja",
   "htaccess.jinja",
   "posts/2009-06-16-hello-world/index.html.jinja",
+  "posts/2009-09-16-student-union-elections-server-side/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",
