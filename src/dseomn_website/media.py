@@ -58,6 +58,8 @@ class ImageConversion:
                     '"$in"',
                     f"-resize '{max_width}x{max_height}>'",
                     '"$out"',
+                    "&&",
+                    'optipng -quiet "$out"',
                 )
             ),
         )

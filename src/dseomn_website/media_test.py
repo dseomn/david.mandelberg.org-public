@@ -34,7 +34,7 @@ from dseomn_website import media
                 suffix="64x48.png",
                 sh_command=(
                     """magick -define png:exclude-chunk=date,tIME "$in" """
-                    '''-resize '64x48>' "$out"'''
+                    '''-resize '64x48>' "$out" && optipng -quiet "$out"'''
                 ),
             ),
         ),
