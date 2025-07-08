@@ -16,6 +16,37 @@ import pytest
 from dseomn_website import media
 
 
+@pytest.mark.parametrize(
+    "actual,expected",
+    (
+        (
+            media.ImageConversion.jpeg(max_width=64, max_height=48, quality=90),
+            media.ImageConversion(
+                suffix="64x48q90.jpg",
+                sh_command=(
+                    '''magick "$in" -resize '64x48>' -quality 90 "$out"'''
+                ),
+            ),
+        ),
+        (
+            media.ImageConversion.png(max_width=64, max_height=48),
+            media.ImageConversion(
+                suffix="64x48.png",
+                sh_command=(
+                    """magick -define png:exclude-chunk=date,tIME "$in" """
+                    '''-resize '64x48>' "$out"'''
+                ),
+            ),
+        ),
+    ),
+)
+def test_image_conversion(
+    actual: media.ImageConversion,
+    expected: media.ImageConversion,
+) -> None:
+    assert actual == expected
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize(
     "conversion",
@@ -32,13 +63,23 @@ def test_image_conversion_deterministic(
     output_2 = tmp_path / f"2-{conversion.suffix}"
 
     subprocess.run(
-        ("magick", str(media.FAVICON), *conversion.magick_args, str(output_1)),
+        conversion.sh_command,
+        shell=True,
         check=True,
+        env={
+            "in": str(media.FAVICON),
+            "out": str(output_1),
+        },
     )
     time.sleep(1.01)  # Catch changes to second-resolution timestamps.
     subprocess.run(
-        ("magick", str(media.FAVICON), *conversion.magick_args, str(output_2)),
+        conversion.sh_command,
+        shell=True,
         check=True,
+        env={
+            "in": str(media.FAVICON),
+            "out": str(output_2),
+        },
     )
 
     assert output_1.read_bytes() == output_2.read_bytes()

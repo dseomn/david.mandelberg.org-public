@@ -19,7 +19,7 @@ from dseomn_website import paths
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class ImageConversion:
     suffix: str
-    magick_args: Sequence[str]
+    sh_command: str
 
     @classmethod
     def jpeg(
@@ -31,11 +31,14 @@ class ImageConversion:
     ) -> Self:
         return cls(
             suffix=f"{max_width}x{max_height}q{quality}.jpg",
-            magick_args=(
-                "-resize",
-                f"{max_width}x{max_height}>",
-                "-quality",
-                str(quality),
+            sh_command=" ".join(
+                (
+                    "magick",
+                    '"$in"',
+                    f"-resize '{max_width}x{max_height}>'",
+                    f"-quality {quality}",
+                    '"$out"',
+                )
             ),
         )
 
@@ -48,11 +51,14 @@ class ImageConversion:
     ) -> Self:
         return cls(
             suffix=f"{max_width}x{max_height}.png",
-            magick_args=(
-                "-define",
-                "png:exclude-chunk=date,tIME",
-                "-resize",
-                f"{max_width}x{max_height}>",
+            sh_command=" ".join(
+                (
+                    "magick",
+                    "-define png:exclude-chunk=date,tIME",
+                    '"$in"',
+                    f"-resize '{max_width}x{max_height}>'",
+                    '"$out"',
+                )
             ),
         )
 

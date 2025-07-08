@@ -11,7 +11,7 @@
 {{ cache_buster.rules }}
 
 rule image_convert
-  command = magick $in $args $out
+  command = in=$in; out=$out; $conversion_command
   description = CONVERT $in ($conversion)
 
 rule image_metadata
@@ -24,11 +24,9 @@ build $
     : $
     image_convert $
     {{ ginjarator.to_ninja(image_output.source) }}
-  args = {{ ginjarator.to_ninja(
-    image_output.conversion.magick_args,
-    escape_shell=true,
-  ) }}
   conversion = {{ ginjarator.to_ninja(image_output.conversion.suffix) }}
+  conversion_command = $
+    {{ ginjarator.to_ninja(image_output.conversion.sh_command) }}
 build $
     {{ ginjarator.to_ninja(image_output.metadata_path) }} $
     : $
