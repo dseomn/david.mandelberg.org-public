@@ -221,14 +221,14 @@ IMAGE_PROFILES = {
     # Images that take the full width of an article.
     "main": NormalImageProfile(
         lossy_conversions=(
-            ImageConversion.jpeg(max_width=960, max_height=960, quality=90),
-            ImageConversion.jpeg(max_width=480, max_height=480, quality=90),
-            ImageConversion.jpeg(max_width=1920, max_height=1920, quality=90),
+            ImageConversion.jpeg(max_width=960, max_height=1920, quality=90),
+            ImageConversion.jpeg(max_width=480, max_height=960, quality=90),
+            ImageConversion.jpeg(max_width=1920, max_height=3840, quality=90),
         ),
         lossless_conversions=(
-            ImageConversion.png(max_width=960, max_height=960),
-            ImageConversion.png(max_width=480, max_height=480),
-            ImageConversion.png(max_width=1920, max_height=1920),
+            ImageConversion.png(max_width=960, max_height=1920),
+            ImageConversion.png(max_width=480, max_height=960),
+            ImageConversion.png(max_width=1920, max_height=3840),
         ),
         container_max_inline_size=layout.MAIN_COLUMN_MAX_INLINE_SIZE,
         container_padding_inline=layout.MAIN_COLUMN_PADDING_INLINE,
