@@ -233,7 +233,7 @@ IMAGE_PROFILES = {
         max_width=480,
         max_height=960,
         jpeg_quality=90,
-        factors=(2, 1, 4),
+        factors=(4, 2, 1),
         inline_size=layout.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
     ),
 }
