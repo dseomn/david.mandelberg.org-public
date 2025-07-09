@@ -154,21 +154,38 @@ class NormalImageProfile(ImageProfile):
     def __init__(
         self,
         *,
-        lossy_conversions: Sequence[ImageConversion],
-        lossless_conversions: Sequence[ImageConversion],
+        max_width: int,
+        max_height: int,
+        jpeg_quality: int,
+        factors: Sequence[int],
         inline_size: str,
     ) -> None:
         """Initializer.
 
         Args:
-            lossy_conversions: Conversions to use for lossy sources. First item
-                is the primary one.
-            lossless_conversions: Conversions to use for lossless sources. First
-                item is the primary one.
+            max_width: Max width of the smallest output.
+            max_height: Max height of the smallest output.
+            jpeg_quality: JPEG quality.
+            factors: Max width/height multipliers. First one is for the primary
+                output.
             inline_size: CSS inline size of the image.
         """
-        self._lossy_conversions = lossy_conversions
-        self._lossless_conversions = lossless_conversions
+        self._lossy_conversions = []
+        self._lossless_conversions = []
+        for factor in factors:
+            self._lossy_conversions.append(
+                ImageConversion.jpeg(
+                    max_width=max_width * factor,
+                    max_height=max_height * factor,
+                    quality=jpeg_quality,
+                )
+            )
+            self._lossless_conversions.append(
+                ImageConversion.png(
+                    max_width=max_width * factor,
+                    max_height=max_height * factor,
+                )
+            )
         self._inline_size = inline_size
 
     def _conversions(
@@ -213,16 +230,10 @@ IMAGE_PROFILES = {
     "favicon": FaviconProfile(),
     # Images that take the full width of an article.
     "main": NormalImageProfile(
-        lossy_conversions=(
-            ImageConversion.jpeg(max_width=960, max_height=1920, quality=90),
-            ImageConversion.jpeg(max_width=480, max_height=960, quality=90),
-            ImageConversion.jpeg(max_width=1920, max_height=3840, quality=90),
-        ),
-        lossless_conversions=(
-            ImageConversion.png(max_width=960, max_height=1920),
-            ImageConversion.png(max_width=480, max_height=960),
-            ImageConversion.png(max_width=1920, max_height=3840),
-        ),
+        max_width=480,
+        max_height=960,
+        jpeg_quality=90,
+        factors=(2, 1, 4),
         inline_size=layout.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
     ),
 }

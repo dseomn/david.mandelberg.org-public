@@ -162,24 +162,41 @@ def test_favicon_profile_responsive_sizes() -> None:
         media.FaviconProfile().responsive_sizes()
 
 
-@pytest.mark.parametrize("lossy", (True, False))
-def test_normal_image_profile_outputs(lossy: bool) -> None:
-    primary_conversion = media.ImageConversion.jpeg(
-        max_width=960, max_height=960, quality=90
-    )
-    other_conversion = media.ImageConversion.jpeg(
-        max_width=480, max_height=480, quality=90
-    )
+@pytest.mark.parametrize(
+    "source,primary_conversion,other_conversion",
+    (
+        (
+            ginjarator.paths.Filesystem("foo.jpg"),
+            media.ImageConversion.jpeg(
+                max_width=960,
+                max_height=960,
+                quality=90,
+            ),
+            media.ImageConversion.jpeg(
+                max_width=480,
+                max_height=480,
+                quality=90,
+            ),
+        ),
+        (
+            ginjarator.paths.Filesystem("foo.png"),
+            media.ImageConversion.png(max_width=960, max_height=960),
+            media.ImageConversion.png(max_width=480, max_height=480),
+        ),
+    ),
+)
+def test_normal_image_profile_outputs(
+    source: ginjarator.paths.Filesystem,
+    primary_conversion: media.ImageConversion,
+    other_conversion: media.ImageConversion,
+) -> None:
     profile = media.NormalImageProfile(
-        lossy_conversions=(
-            (primary_conversion, other_conversion) if lossy else ()
-        ),
-        lossless_conversions=(
-            () if lossy else (primary_conversion, other_conversion)
-        ),
+        max_width=480,
+        max_height=480,
+        jpeg_quality=90,
+        factors=(2, 1),
         inline_size="60em",
     )
-    source = ginjarator.paths.Filesystem("foo.jpg" if lossy else "foo.png")
 
     assert collections.Counter(profile.outputs(source)) == collections.Counter(
         (
@@ -195,8 +212,10 @@ def test_normal_image_profile_outputs(lossy: bool) -> None:
 
 def test_normal_image_profile_outputs_unknown_extension() -> None:
     profile = media.NormalImageProfile(
-        lossy_conversions=(),
-        lossless_conversions=(),
+        max_width=16,
+        max_height=16,
+        jpeg_quality=100,
+        factors=(1,),
         inline_size="60em",
     )
     source = ginjarator.paths.Filesystem("foo.txt")
@@ -209,8 +228,10 @@ def test_normal_image_profile_outputs_unknown_extension() -> None:
 
 def test_normal_image_profile_responsive_sizes() -> None:
     profile = media.NormalImageProfile(
-        lossy_conversions=(),
-        lossless_conversions=(),
+        max_width=16,
+        max_height=16,
+        jpeg_quality=100,
+        factors=(1,),
         inline_size="60em",
     )
 
