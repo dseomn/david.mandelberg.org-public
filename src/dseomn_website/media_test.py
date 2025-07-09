@@ -177,8 +177,7 @@ def test_normal_image_profile_outputs(lossy: bool) -> None:
         lossless_conversions=(
             () if lossy else (primary_conversion, other_conversion)
         ),
-        container_max_inline_size="",
-        container_padding_inline="",
+        inline_size="60em",
     )
     source = ginjarator.paths.Filesystem("foo.jpg" if lossy else "foo.png")
 
@@ -198,8 +197,7 @@ def test_normal_image_profile_outputs_unknown_extension() -> None:
     profile = media.NormalImageProfile(
         lossy_conversions=(),
         lossless_conversions=(),
-        container_max_inline_size="",
-        container_padding_inline="",
+        inline_size="60em",
     )
     source = ginjarator.paths.Filesystem("foo.txt")
 
@@ -213,11 +211,10 @@ def test_normal_image_profile_responsive_sizes() -> None:
     profile = media.NormalImageProfile(
         lossy_conversions=(),
         lossless_conversions=(),
-        container_max_inline_size="60em",
-        container_padding_inline="1em",
+        inline_size="60em",
     )
 
-    assert profile.responsive_sizes() == "calc(min(100vi, 60em) - 2 * 1em)"
+    assert profile.responsive_sizes() == "60em"
 
 
 def test_all_image_outputs() -> None:

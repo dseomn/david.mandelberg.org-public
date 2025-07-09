@@ -6,3 +6,9 @@
 # changing too.
 MAIN_COLUMN_MAX_INLINE_SIZE = "60em"
 MAIN_COLUMN_PADDING_INLINE = "1em"
+MAIN_COLUMN_CONTENTS_INLINE_SIZE = (
+    "calc("
+    f"min(100vi, {MAIN_COLUMN_MAX_INLINE_SIZE}) "
+    f"- 2 * {MAIN_COLUMN_PADDING_INLINE}"
+    ")"
+)

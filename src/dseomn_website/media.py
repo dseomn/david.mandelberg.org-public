@@ -156,8 +156,7 @@ class NormalImageProfile(ImageProfile):
         *,
         lossy_conversions: Sequence[ImageConversion],
         lossless_conversions: Sequence[ImageConversion],
-        container_max_inline_size: str,
-        container_padding_inline: str,
+        inline_size: str,
     ) -> None:
         """Initializer.
 
@@ -166,13 +165,11 @@ class NormalImageProfile(ImageProfile):
                 is the primary one.
             lossless_conversions: Conversions to use for lossless sources. First
                 item is the primary one.
-            container_max_inline_size: The image's container's max-inline-size.
-            container_padding_inline: The image's container's padding-inline.
+            inline_size: CSS inline size of the image.
         """
         self._lossy_conversions = lossy_conversions
         self._lossless_conversions = lossless_conversions
-        self._container_max_inline_size = container_max_inline_size
-        self._container_padding_inline = container_padding_inline
+        self._inline_size = inline_size
 
     def _conversions(
         self,
@@ -209,11 +206,7 @@ class NormalImageProfile(ImageProfile):
 
     @override
     def responsive_sizes(self) -> str:
-        container_inline_size = f"min(100vi, {self._container_max_inline_size})"
-        return (
-            f"calc({container_inline_size} - "
-            f"2 * {self._container_padding_inline})"
-        )
+        return self._inline_size
 
 
 IMAGE_PROFILES = {
@@ -230,8 +223,7 @@ IMAGE_PROFILES = {
             ImageConversion.png(max_width=480, max_height=960),
             ImageConversion.png(max_width=1920, max_height=3840),
         ),
-        container_max_inline_size=layout.MAIN_COLUMN_MAX_INLINE_SIZE,
-        container_padding_inline=layout.MAIN_COLUMN_PADDING_INLINE,
+        inline_size=layout.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
     ),
 }
 
