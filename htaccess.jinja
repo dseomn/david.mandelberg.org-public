@@ -37,13 +37,11 @@ Redirect permanent "{{ url_path_alias }}" "{{ post.url_path }}"
 {%- endfor %}
 {%- endfor %}
 
+AddType application/atom+xml .atom
 AddType image/jpeg .jpg
 AddType image/png .png
 AddType text/css .css
 AddType text/html .html
-<If "%{REQUEST_FILENAME} -strmatch '*/feed/index.xml'">
-  ForceType application/atom+xml
-</If>
 AddCharset utf-8 .css .html
 
 {% for error_metadata in metadata.Error.all() %}

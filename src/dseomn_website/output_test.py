@@ -54,7 +54,7 @@ def test_ok(url_path: str) -> None:
     (
         ("/index.html", "/"),
         ("/about/index.html", "/about/"),
-        ("/feed/index.xml", "/feed/"),
+        ("/feed/index.atom", "/feed/"),
         ("/2025/04/01/placeholder/", "/2025/04/02/placeholder/"),
     ),
 )

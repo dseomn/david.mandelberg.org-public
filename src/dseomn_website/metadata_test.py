@@ -273,8 +273,7 @@ def test_comment_load(
         assert actual == expected
         assert actual.contents == "<p>kumquat"
         assert actual.atom_fragment_path == ginjarator.paths.Filesystem(
-            "work/comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc/"
-            "atom-fragment.xml"
+            "work/comments/6c60576a-33eb-4b8c-89d1-f6ab5c5b6ebc/fragment.atom"
         )
         assert actual.pseudo_title == expected_pseudo_title
 
@@ -891,7 +890,7 @@ def test_post_load(
         "work/posts/2025-06-27-foo/include-fragment.html"
     )
     assert post_metadata.atom_fragment_path == ginjarator.paths.Filesystem(
-        "work/posts/2025-06-27-foo/atom-fragment.xml"
+        "work/posts/2025-06-27-foo/fragment.atom"
     )
     assert post_metadata.comments_section == metadata.Fragment(
         url_path="/2025/06/27/foo/#2025-06-27-foo-comments",

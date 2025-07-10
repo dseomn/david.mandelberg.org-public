@@ -27,6 +27,6 @@ htmlproofer \
   --check-opengraph \
   --disable-external \
   --empty-alt-ignore \
-  --url-swap '/feed/\Z:/feed/index.xml,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
+  --url-swap '/feed/\Z:/feed/index.atom,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
   output
 pytest -m 'output and not slow' --no-cov

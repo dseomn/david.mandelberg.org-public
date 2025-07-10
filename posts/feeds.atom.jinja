@@ -28,7 +28,7 @@
     </feed>
   {% endset %}
   {% do ginjarator.fs.write_text(
-    paths.from_url_path(list_metadata.feed.url_path, dir_index="index.xml"),
+    paths.from_url_path(list_metadata.feed.url_path, dir_index="index.atom"),
     minify.xml(feed),
   ) %}
 
@@ -53,7 +53,7 @@
   {% do ginjarator.fs.write_text(
     paths.from_url_path(
       list_metadata.comments_feed.url_path,
-      dir_index="index.xml",
+      dir_index="index.atom",
     ),
     minify.xml(comments_feed),
   ) %}

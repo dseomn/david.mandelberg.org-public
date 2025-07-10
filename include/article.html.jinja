@@ -259,7 +259,7 @@
   {% do ginjarator.fs.write_text(
     paths.from_url_path(
       post_metadata.comments_feed.url_path,
-      dir_index="index.xml",
+      dir_index="index.atom",
     ),
     minify.xml(comments_feed),
   ) %}

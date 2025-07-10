@@ -221,7 +221,7 @@ class Comment(Fragment):
 
     @functools.cached_property
     def atom_fragment_path(self) -> ginjarator.paths.Filesystem:
-        return paths.WORK / f"comments/{self.uuid}/atom-fragment.xml"
+        return paths.WORK / f"comments/{self.uuid}/fragment.atom"
 
     @functools.cached_property
     def pseudo_title(self) -> str:
@@ -463,7 +463,7 @@ class Post(Page):
 
     @property
     def atom_fragment_path(self) -> ginjarator.paths.Filesystem:
-        return self.work_path / "atom-fragment.xml"
+        return self.work_path / "fragment.atom"
 
     @functools.cached_property
     def comments_section(self) -> Fragment:
