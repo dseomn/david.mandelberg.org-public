@@ -236,6 +236,13 @@ IMAGE_PROFILES = {
         factors=(4, 2, 1),
         inline_size=layout.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
     ),
+    "float": NormalImageProfile(
+        max_width=160,
+        max_height=320,
+        jpeg_quality=90,
+        factors=(4, 2, 1),
+        inline_size=layout.FLOAT_CONTENTS_INLINE_SIZE,
+    ),
 }
 
 FAVICON = ginjarator.paths.Filesystem(

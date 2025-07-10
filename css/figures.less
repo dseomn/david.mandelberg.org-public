@@ -8,3 +8,27 @@
   margin-inline: auto;
   max-inline-size: max-content;
 }
+
+@float-margin-inline-start: 1em;
+@float-margin-inline-end: 0;
+@float-parent-min-inline-size: (
+  15em +
+  @float-margin-inline-start +
+  @float-max-inline-size +
+  @float-margin-inline-end
+);
+
+.figure-float {
+  clear: both;
+  margin-block: 1em;
+  margin-inline: auto;
+  max-inline-size: @float-max-inline-size;
+}
+
+@container (inline-size >= @float-parent-min-inline-size) {
+  .figure-float {
+    clear: inline-end;
+    float: inline-end;
+    margin-inline: @float-margin-inline-start @float-margin-inline-end;
+  }
+}
