@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "20f3533c-5530-4701-9754-b56739e3d1d5"
+published = 2010-10-09 01:16:52-04:00
+title = "Department of Survival"
+comments = [
+  "e08abd9a-8319-4c50-a56b-775f8d184946",
+  "5fd66385-75da-45c0-b622-cf9962132cf3",
+]
+
+[media.images]
+float = [
+  "../private/posts/2010-10-09-department-of-survival/Mt__Monadnock_2_by_dseomn-400x300.jpg",
+  "../private/posts/2010-10-09-department-of-survival/Snowy_Stream_by_dseomn-400x300.jpg",
+]
