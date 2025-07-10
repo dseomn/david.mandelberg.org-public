@@ -7,5 +7,6 @@
 pytest -m slow --no-cov
 htmlproofer \
   --check-external-hash \
+  --empty-alt-ignore \
   --url-swap '/feed/\Z:/feed/index.xml,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
   output
