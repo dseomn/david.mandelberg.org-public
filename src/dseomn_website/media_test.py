@@ -97,14 +97,6 @@ def test_image_output_scan() -> None:
         assert image_output.work_path == ginjarator.paths.Filesystem(
             "work/media/P1230630-raw-crop-square-16x16.png"
         )
-        assert image_output.cache_buster_path == ginjarator.paths.Filesystem(
-            "work/media/P1230630-raw-crop-square-16x16.png.cache-buster"
-        )
-        assert (
-            image_output.cache_buster_prefix
-            == "output/assets/P1230630-raw-crop-square-16x16-"
-        )
-        assert image_output.cache_buster_suffix == ".png"
         assert image_output.url_path is None
         assert image_output.metadata_path == ginjarator.paths.Filesystem(
             "work/media/P1230630-raw-crop-square-16x16.png.json"
@@ -122,9 +114,9 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
         )
     )
     (tmp_path / "work/media").mkdir(parents=True)
-    (tmp_path / "work/media/foo-16x16.png.cache-buster").write_text(
-        "output/media/foo-16x16-some-hash.png"
-    )
+    (
+        tmp_path / "work/media/foo-16x16.png.cache-buster-output-filename"
+    ).write_text("output/media/foo-16x16-some-hash.png")
     (tmp_path / "work/media/foo-16x16.png.json").write_text(
         json.dumps([dict(image=dict(kumquat=42))])
     )
@@ -132,7 +124,7 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
     with ginjarator.testing.api_for_render(
         root_path=tmp_path,
         dependencies=(
-            "work/media/foo-16x16.png.cache-buster",
+            "work/media/foo-16x16.png.cache-buster-output-filename",
             "work/media/foo-16x16.png.json",
         ),
     ):

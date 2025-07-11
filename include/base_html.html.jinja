@@ -44,7 +44,7 @@
         <meta property="og:title" content="{{ page_metadata.title | e }}">
         <meta property="og:url" content="{{ page_metadata.url | e }}">
         {% set main_css = ginjarator.fs.read_text(
-          "work/css/main.css.cache-buster"
+          "work/css/main.css.cache-buster-output-filename"
         ) %}
         {% if main_css is not none %}
           <link rel="stylesheet" href="{{ paths.to_url_path(main_css) | e }}">

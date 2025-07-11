@@ -2,41 +2,47 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from collections.abc import Generator
+import contextlib
 import pathlib
+
+import pytest
 
 from dseomn_website import cache_buster
 
 
-def test_main(tmp_path: pathlib.Path) -> None:
-    (tmp_path / "src").mkdir()
-    (tmp_path / "work").mkdir()
-    (tmp_path / "output").mkdir()
-    original_path = tmp_path / "src/some-file.txt"
-    original_path.write_text("kumquat")
-    dyndep_path = tmp_path / "work/dyndep"
-    filename_path = tmp_path / "work/filename"
-    copy_stamp_path = tmp_path / "work/filename.copy-stamp"
-    output_path = tmp_path / "output/some-file-bq8UGvsFuv-F1FnQBRj4UA==.txt"
+@pytest.fixture(autouse=True)
+def _root_path(tmp_path: pathlib.Path) -> Generator[None, None, None]:
+    with contextlib.chdir(tmp_path):
+        yield
 
+
+def test_main() -> None:
+    src_path = pathlib.Path("src")
+    src_path.mkdir()
+    work_path = pathlib.Path("work")
+    work_path.mkdir()
+    assets_path = pathlib.Path("output/assets")
+    assets_path.mkdir(parents=True)
+    input_path = src_path / "some-file.txt"
+    input_path.write_text("kumquat")
+    filename_path = work_path / "some-file.txt.cache-buster-output-filename"
+    dyndep_path = work_path / "dyndep"
+    output_path = assets_path / "some-file-bq8UGvsFuv-F1FnQBRj4UA==.txt"
+    copy_stamp_path = work_path / "some-file.txt.cache-buster-copy-stamp"
+
+    cache_buster.main(args=(f"--work-dir={work_path}", "hash", str(input_path)))
     cache_buster.main(
         args=(
-            "hash",
+            f"--work-dir={work_path}",
+            "dyndep",
             f"--dyndep={dyndep_path}",
-            f"--write-filename={filename_path}",
-            f"--prefix={tmp_path}/output/some-file-",
-            "--suffix=.txt",
-            str(original_path),
+            str(input_path),
         ),
     )
-    cache_buster.main(
-        args=(
-            "copy",
-            f"--read-filename={filename_path}",
-            str(original_path),
-        ),
-    )
+    cache_buster.main(args=(f"--work-dir={work_path}", "copy", str(input_path)))
 
-    assert dyndep_path.exists()
     assert filename_path.read_text() == str(output_path)
-    assert copy_stamp_path.exists()
+    assert dyndep_path.exists()
     assert output_path.read_text() == "kumquat"
+    assert copy_stamp_path.exists()

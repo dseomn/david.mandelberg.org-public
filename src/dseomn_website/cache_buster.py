@@ -30,12 +30,46 @@ def _ninja_escape(value: str) -> str:
     )
 
 
+def _output_filename_path(
+    *,
+    work_dir: pathlib.Path,
+    input_file: pathlib.Path,
+) -> pathlib.Path:
+    return work_dir / f"{input_file.name}.cache-buster-output-filename"
+
+
+def _copy_stamp_path(
+    *,
+    work_dir: pathlib.Path,
+    input_file: pathlib.Path,
+) -> pathlib.Path:
+    return work_dir / f"{input_file.name}.cache-buster-copy-stamp"
+
+
 def _hash(args: argparse.Namespace) -> None:
     file_hash = base64.urlsafe_b64encode(
-        hashlib.sha256(args.file.read_bytes()).digest()[:16]
+        hashlib.sha256(args.input_file.read_bytes()).digest()[:16]
     ).decode()
-    filename = "".join((args.prefix, file_hash, args.suffix))
-    copy_stamp = f"{args.write_filename}.copy-stamp"
+    _output_filename_path(
+        work_dir=args.work_dir,
+        input_file=args.input_file,
+    ).write_text(
+        "output/assets/"
+        f"{args.input_file.stem}-{file_hash}{args.input_file.suffix}"
+    )
+
+
+def _dyndep(args: argparse.Namespace) -> None:
+    output_filename = _output_filename_path(
+        work_dir=args.work_dir,
+        input_file=args.input_file,
+    ).read_text()
+    copy_stamp = str(
+        _copy_stamp_path(
+            work_dir=args.work_dir,
+            input_file=args.input_file,
+        )
+    )
     args.dyndep.write_text(
         textwrap.dedent(
             f"""\
@@ -43,19 +77,27 @@ def _hash(args: argparse.Namespace) -> None:
             build $
                     {_ninja_escape(copy_stamp)} $
                     | $
-                    {_ninja_escape(filename)} $
+                    {_ninja_escape(output_filename)} $
                     : $
                     dyndep
             """
         )
     )
-    args.write_filename.write_text(filename)
 
 
 def _copy(args: argparse.Namespace) -> None:
-    copy_path = pathlib.Path(args.read_filename.read_text())
-    copy_path.write_bytes(args.file.read_bytes())
-    pathlib.Path(f"{args.read_filename}.copy-stamp").write_text("")
+    output_path = pathlib.Path(
+        _output_filename_path(
+            work_dir=args.work_dir,
+            input_file=args.input_file,
+        ).read_text()
+    )
+    copy_stamp_path = _copy_stamp_path(
+        work_dir=args.work_dir,
+        input_file=args.input_file,
+    )
+    output_path.write_bytes(args.input_file.read_bytes())
+    copy_stamp_path.write_text("")
 
 
 def main(
@@ -63,6 +105,12 @@ def main(
     args: Sequence[str] = sys.argv[1:],
 ) -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--work-dir",
+        type=pathlib.Path,
+        required=True,
+        help="Directory to keep work files in.",
+    )
     parser.set_defaults(subcommand=lambda args: parser.print_help())
     subparsers = parser.add_subparsers()
 
@@ -72,31 +120,26 @@ def main(
     )
     hash_parser.set_defaults(subcommand=_hash)
     hash_parser.add_argument(
+        "input_file",
+        type=pathlib.Path,
+        help="File to hash and copy.",
+    )
+
+    dyndep_parser = subparsers.add_parser(
+        "dyndep",
+        help="Write a dyndep file for the copy subcommand.",
+    )
+    dyndep_parser.set_defaults(subcommand=_dyndep)
+    dyndep_parser.add_argument(
         "--dyndep",
         type=pathlib.Path,
         required=True,
         help="Ninja dyndep file to write.",
     )
-    hash_parser.add_argument(
-        "--write-filename",
+    dyndep_parser.add_argument(
+        "input_file",
         type=pathlib.Path,
-        required=True,
-        help="File to write the filename with the hash to.",
-    )
-    hash_parser.add_argument(
-        "--prefix",
-        required=True,
-        help="Part of the resulting path, before the hash.",
-    )
-    hash_parser.add_argument(
-        "--suffix",
-        required=True,
-        help="Part of the resulting path, after the hash.",
-    )
-    hash_parser.add_argument(
-        "file",
-        type=pathlib.Path,
-        help="File to hash.",
+        help="File to hash and copy.",
     )
 
     copy_parser = subparsers.add_parser(
@@ -105,15 +148,9 @@ def main(
     )
     copy_parser.set_defaults(subcommand=_copy)
     copy_parser.add_argument(
-        "--read-filename",
+        "input_file",
         type=pathlib.Path,
-        required=True,
-        help="File to read the filename from.",
-    )
-    copy_parser.add_argument(
-        "file",
-        type=pathlib.Path,
-        help="File to copy.",
+        help="File to hash and copy.",
     )
 
     parsed_args = parser.parse_args(args)

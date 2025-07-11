@@ -33,9 +33,8 @@ build $
     image_metadata $
     {{ ginjarator.to_ninja(image_output.work_path) }}
 {{ cache_buster.build(
-  to_hash=image_output.work_path,
-  work_prefix=image_output.cache_buster_path,
-  prefix=image_output.cache_buster_prefix,
-  suffix=image_output.cache_buster_suffix,
+  input_dir=image_output.work_path.parent | string,
+  input_filename=image_output.work_path.name,
+  work_dir=image_output.work_path.parent | string,
 ) }}
 {% endfor %}

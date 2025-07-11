@@ -80,22 +80,12 @@ class ImageOutput:
         )
 
     @functools.cached_property
-    def cache_buster_path(self) -> ginjarator.paths.Filesystem:
-        return self.work_path.with_suffix(
-            f"{self.work_path.suffix}.cache-buster"
-        )
-
-    @functools.cached_property
-    def cache_buster_prefix(self) -> str:
-        return str(paths.ASSETS / f"{self.work_path.stem}-")
-
-    @functools.cached_property
-    def cache_buster_suffix(self) -> str:
-        return self.work_path.suffix
-
-    @functools.cached_property
     def url_path(self) -> str | None:
-        output_path = ginjarator.api().fs.read_text(self.cache_buster_path)
+        output_path = ginjarator.api().fs.read_text(
+            self.work_path.with_suffix(
+                f"{self.work_path.suffix}.cache-buster-output-filename"
+            )
+        )
         if output_path is None:
             return None
         return paths.to_url_path(output_path)

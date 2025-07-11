@@ -5,7 +5,6 @@
  #}
 
 {% set layout = ginjarator.py.import_("dseomn_website.layout") %}
-{% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
 {% import "include/cache_buster.ninja.jinja" as cache_buster %}
 
@@ -44,8 +43,7 @@ build work/css/compiled.css | work/css/compiled.css.d: lessc css/main.less
 build work/css/postcss.css: postcss work/css/compiled.css | css/postcss.config.js
 build work/css/main.css: minify work/css/postcss.css
 {{ cache_buster.build(
-  to_hash="work/css/main.css",
-  work_prefix="work/css/main.css.cache-buster",
-  prefix=paths.ASSETS / "main-",
-  suffix=".css",
+  input_dir="work/css",
+  input_filename="main.css",
+  work_dir="work/css",
 ) }}
