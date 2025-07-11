@@ -33,7 +33,26 @@ rule cache_buster_copy
   description = COPY $in
 {% endset %}
 
-{% macro build(
+{% macro hash(
+  input_dir,
+  input_filename,
+  work_dir
+) %}
+{% set input_file = input_dir + "/" + input_filename %}
+{% set output_filename_path = (
+  work_dir + "/" + input_filename + ".cache-buster-output-filename"
+) %}
+build $
+    {{ ginjarator.to_ninja(output_filename_path) }} $
+    : $
+    cache_buster_hash $
+    {{ ginjarator.to_ninja(input_file) }} $
+    | $
+    src/dseomn_website/cache_buster.py
+  work_dir = {{ ginjarator.to_ninja(work_dir, escape_shell=true) }}
+{% endmacro %}
+
+{% macro copy(
   input_dir,
   input_filenames,
   work_dir,
@@ -45,22 +64,11 @@ rule cache_buster_copy
 {% set copy_stamp_path = (
   work_dir + "/" + work_filename_base + ".cache-buster-copy-stamp"
 ) %}
-
 {% for input_filename in input_filenames %}
-{% set input_file = input_dir + "/" + input_filename %}
-{% do input_files.append(input_file) %}
-{% set output_filename_path = (
+{% do input_files.append(input_dir + "/" + input_filename) %}
+{% do output_filename_paths.append(
   work_dir + "/" + input_filename + ".cache-buster-output-filename"
 ) %}
-{% do output_filename_paths.append(output_filename_path) %}
-build $
-    {{ ginjarator.to_ninja(output_filename_path) }} $
-    : $
-    cache_buster_hash $
-    {{ ginjarator.to_ninja(input_file) }} $
-    | $
-    src/dseomn_website/cache_buster.py
-  work_dir = {{ ginjarator.to_ninja(work_dir, escape_shell=true) }}
 {% endfor %}
 
 build $

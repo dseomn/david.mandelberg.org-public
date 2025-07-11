@@ -38,9 +38,14 @@ build $
     : $
     image_metadata $
     {{ ginjarator.to_ninja(image_output.work_path) }}
+{{ cache_buster.hash(
+  input_dir=work_dir | string,
+  input_filename=image_output.work_path.name,
+  work_dir=work_dir | string,
+) }}
 {% endfor %}
 
-{{ cache_buster.build(
+{{ cache_buster.copy(
   input_dir=work_dir | string,
   input_filenames=converted_filenames,
   work_dir=work_dir | string,

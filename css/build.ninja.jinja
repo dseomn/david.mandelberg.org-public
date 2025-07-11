@@ -42,7 +42,12 @@ rule minify
 build work/css/compiled.css | work/css/compiled.css.d: lessc css/main.less
 build work/css/postcss.css: postcss work/css/compiled.css | css/postcss.config.js
 build work/css/main.css: minify work/css/postcss.css
-{{ cache_buster.build(
+{{ cache_buster.hash(
+  input_dir="work/css",
+  input_filename="main.css",
+  work_dir="work/css",
+) }}
+{{ cache_buster.copy(
   input_dir="work/css",
   input_filenames=("main.css",),
   work_dir="work/css",
