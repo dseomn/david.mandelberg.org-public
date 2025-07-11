@@ -37,10 +37,18 @@ def test_main() -> None:
             f"--work-dir={work_path}",
             "dyndep",
             f"--dyndep={dyndep_path}",
+            f"--copy-stamp={copy_stamp_path}",
             str(input_path),
         ),
     )
-    cache_buster.main(args=(f"--work-dir={work_path}", "copy", str(input_path)))
+    cache_buster.main(
+        args=(
+            f"--work-dir={work_path}",
+            "copy",
+            f"--copy-stamp={copy_stamp_path}",
+            str(input_path),
+        )
+    )
 
     assert filename_path.read_text() == str(output_path)
     assert dyndep_path.exists()

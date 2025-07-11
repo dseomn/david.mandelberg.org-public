@@ -19,6 +19,7 @@ rule cache_buster_dyndep
     --work-dir=$work_dir $
     dyndep $
     --dyndep=$dyndep_path $
+    --copy-stamp=$copy_stamp_path $
     $in
   description = DYNDEP $in
 
@@ -27,6 +28,7 @@ rule cache_buster_copy
     ./src/dseomn_website/cache_buster.py $
     --work-dir=$work_dir $
     copy $
+    --copy-stamp=$out $
     $in
   description = COPY $in
 {% endset %}
@@ -64,6 +66,9 @@ build $
     src/dseomn_website/cache_buster.py
   work_dir = {{ ginjarator.to_ninja(work_dir, escape_shell=true) }}
   dyndep_path = {{ ginjarator.to_ninja(dyndep_path, escape_shell=true) }}
+  copy_stamp_path = {{
+    ginjarator.to_ninja(copy_stamp_path, escape_shell=true)
+  }}
 
 build $
     {{ ginjarator.to_ninja(copy_stamp_path) }} $

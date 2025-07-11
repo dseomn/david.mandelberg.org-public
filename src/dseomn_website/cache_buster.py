@@ -38,14 +38,6 @@ def _output_filename_path(
     return work_dir / f"{input_file.name}.cache-buster-output-filename"
 
 
-def _copy_stamp_path(
-    *,
-    work_dir: pathlib.Path,
-    input_file: pathlib.Path,
-) -> pathlib.Path:
-    return work_dir / f"{input_file.name}.cache-buster-copy-stamp"
-
-
 def _hash(args: argparse.Namespace) -> None:
     file_hash = base64.urlsafe_b64encode(
         hashlib.sha256(args.input_file.read_bytes()).digest()[:16]
@@ -64,18 +56,12 @@ def _dyndep(args: argparse.Namespace) -> None:
         work_dir=args.work_dir,
         input_file=args.input_file,
     ).read_text()
-    copy_stamp = str(
-        _copy_stamp_path(
-            work_dir=args.work_dir,
-            input_file=args.input_file,
-        )
-    )
     args.dyndep.write_text(
         textwrap.dedent(
             f"""\
             ninja_dyndep_version = 1
             build $
-                    {_ninja_escape(copy_stamp)} $
+                    {_ninja_escape(str(args.copy_stamp))} $
                     | $
                     {_ninja_escape(output_filename)} $
                     : $
@@ -92,12 +78,8 @@ def _copy(args: argparse.Namespace) -> None:
             input_file=args.input_file,
         ).read_text()
     )
-    copy_stamp_path = _copy_stamp_path(
-        work_dir=args.work_dir,
-        input_file=args.input_file,
-    )
     output_path.write_bytes(args.input_file.read_bytes())
-    copy_stamp_path.write_text("")
+    args.copy_stamp.write_text("")
 
 
 def main(
@@ -137,6 +119,12 @@ def main(
         help="Ninja dyndep file to write.",
     )
     dyndep_parser.add_argument(
+        "--copy-stamp",
+        type=pathlib.Path,
+        required=True,
+        help="Stamp file for the copy subcommand.",
+    )
+    dyndep_parser.add_argument(
         "input_file",
         type=pathlib.Path,
         help="File to hash and copy.",
@@ -147,6 +135,12 @@ def main(
         help="Create a copy containing the hash in the filename.",
     )
     copy_parser.set_defaults(subcommand=_copy)
+    copy_parser.add_argument(
+        "--copy-stamp",
+        type=pathlib.Path,
+        required=True,
+        help="Stamp file for the copy subcommand.",
+    )
     copy_parser.add_argument(
         "input_file",
         type=pathlib.Path,
