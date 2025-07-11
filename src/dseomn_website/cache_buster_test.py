@@ -75,10 +75,17 @@ def test_main() -> None:
     input_path.write_text("kumquat")
     filename_path = work_path / "some-file.txt.cache-buster-output-filename"
     dyndep_path = work_path / "dyndep"
-    output_path = assets_path / "some-file-bq8UGvsFuv-F1FnQBRj4UA==.txt"
+    output_path = assets_path / "some-file-renamed-bq8UGvsFuv-F1FnQBRj4UA==.txt"
     copy_stamp_path = work_path / "some-file.txt.cache-buster-copy-stamp"
 
-    cache_buster.main(args=(f"--work-dir={work_path}", "hash", str(input_path)))
+    cache_buster.main(
+        args=(
+            f"--work-dir={work_path}",
+            "hash",
+            "--output-filename-base=some-file-renamed.txt",
+            str(input_path),
+        )
+    )
     cache_buster.main(
         args=(
             f"--work-dir={work_path}",

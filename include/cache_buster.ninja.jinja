@@ -10,6 +10,7 @@ rule cache_buster_hash
     ./src/dseomn_website/cache_buster.py $
     --work-dir=$work_dir $
     hash $
+    --output-filename-base=$output_filename_base $
     $in
   description = HASH $in
 
@@ -36,7 +37,8 @@ rule cache_buster_copy
 {% macro hash(
   input_dir,
   input_filename,
-  work_dir
+  work_dir,
+  output_filename_base=none
 ) %}
 {% set input_file = input_dir + "/" + input_filename %}
 {% set output_filename_path = (
@@ -50,6 +52,10 @@ build $
     | $
     src/dseomn_website/cache_buster.py
   work_dir = {{ ginjarator.to_ninja(work_dir, escape_shell=true) }}
+  output_filename_base = {{ ginjarator.to_ninja(
+    (input_filename if output_filename_base is none else output_filename_base),
+    escape_shell=true,
+  ) }}
 {% endmacro %}
 
 {% macro copy(

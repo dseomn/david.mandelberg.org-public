@@ -46,8 +46,8 @@ def _hash(args: argparse.Namespace) -> None:
         work_dir=args.work_dir,
         input_file=args.input_file,
     ).write_text(
-        "output/assets/"
-        f"{args.input_file.stem}-{file_hash}{args.input_file.suffix}"
+        f"output/assets/{args.output_filename_base.stem}-{file_hash}"
+        f"{args.output_filename_base.suffix}"
     )
 
 
@@ -114,6 +114,12 @@ def main(
         help="Hash a file for cache busting.",
     )
     hash_parser.set_defaults(subcommand=_hash)
+    hash_parser.add_argument(
+        "--output-filename-base",
+        type=pathlib.PurePath,
+        required=True,
+        help="Output filename, without directory or hash.",
+    )
     hash_parser.add_argument(
         "input_file",
         type=pathlib.Path,
