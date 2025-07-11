@@ -34,7 +34,8 @@ build $
     {{ ginjarator.to_ninja(image_output.work_path) }}
 {{ cache_buster.build(
   input_dir=image_output.work_path.parent | string,
-  input_filename=image_output.work_path.name,
+  input_filenames=(image_output.work_path.name,),
   work_dir=image_output.work_path.parent | string,
+  work_filename_base=image_output.work_path.name,
 ) }}
 {% endfor %}

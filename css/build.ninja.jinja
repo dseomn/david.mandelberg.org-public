@@ -44,6 +44,7 @@ build work/css/postcss.css: postcss work/css/compiled.css | css/postcss.config.j
 build work/css/main.css: minify work/css/postcss.css
 {{ cache_buster.build(
   input_dir="work/css",
-  input_filename="main.css",
+  input_filenames=("main.css",),
   work_dir="work/css",
+  work_filename_base="main.css",
 ) }}
