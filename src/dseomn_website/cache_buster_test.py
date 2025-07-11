@@ -64,6 +64,27 @@ def test_hash_image() -> None:
     )
 
 
+def test_dyndep() -> None:
+    work_path = pathlib.Path("work")
+    work_path.mkdir()
+    dyndep_path = work_path / "dyndep"
+    (work_path / "some-file.txt.cache-buster-output-filename").write_text(
+        "work/out"
+    )
+
+    cache_buster.main(
+        args=(
+            f"--work-dir={work_path}",
+            "dyndep",
+            f"--dyndep={dyndep_path}",
+            f"--copy-stamp=work/some-copy-stamp",
+            "work/some-file.txt",
+        ),
+    )
+
+    assert dyndep_path.exists()
+
+
 def test_copy_conflict() -> None:
     work_path = pathlib.Path("work")
     work_path.mkdir()
@@ -108,50 +129,4 @@ def test_copy_multiple() -> None:
 
     assert (work_path / "out1").read_text() == "kumquat"
     assert (work_path / "out2").read_text() == "pomelo"
-    assert copy_stamp_path.exists()
-
-
-def test_main() -> None:
-    src_path = pathlib.Path("src")
-    src_path.mkdir()
-    work_path = pathlib.Path("work")
-    work_path.mkdir()
-    assets_path = pathlib.Path("output/assets")
-    assets_path.mkdir(parents=True)
-    input_path = src_path / "some-file.txt"
-    input_path.write_text("kumquat")
-    filename_path = work_path / "some-file.txt.cache-buster-output-filename"
-    dyndep_path = work_path / "dyndep"
-    output_path = assets_path / "some-file-renamed-bq8UGvsFuv-F1FnQBRj4UA==.txt"
-    copy_stamp_path = work_path / "some-file.txt.cache-buster-copy-stamp"
-
-    cache_buster.main(
-        args=(
-            f"--work-dir={work_path}",
-            "hash",
-            "--output-filename-base=some-file-renamed.txt",
-            str(input_path),
-        )
-    )
-    cache_buster.main(
-        args=(
-            f"--work-dir={work_path}",
-            "dyndep",
-            f"--dyndep={dyndep_path}",
-            f"--copy-stamp={copy_stamp_path}",
-            str(input_path),
-        ),
-    )
-    cache_buster.main(
-        args=(
-            f"--work-dir={work_path}",
-            "copy",
-            f"--copy-stamp={copy_stamp_path}",
-            str(input_path),
-        )
-    )
-
-    assert filename_path.read_text() == str(output_path)
-    assert dyndep_path.exists()
-    assert output_path.read_text() == "kumquat"
     assert copy_stamp_path.exists()
