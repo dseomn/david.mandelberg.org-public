@@ -18,7 +18,23 @@ def _root_path(tmp_path: pathlib.Path) -> Generator[None, None, None]:
         yield
 
 
-def test_hash_normal() -> None:
+@pytest.mark.parametrize(
+    "output_filename_base,expected_output_path",
+    (
+        (
+            "some-file-renamed.txt",
+            "output/assets/some-file-renamed-bq8UGvsFuv-F1FnQBRj4UA==.txt",
+        ),
+        (
+            "some-file-renamed",
+            "output/assets/some-file-renamed-bq8UGvsFuv-F1FnQBRj4UA==",
+        ),
+    ),
+)
+def test_hash_normal(
+    output_filename_base: str,
+    expected_output_path: str,
+) -> None:
     work_path = pathlib.Path("work")
     work_path.mkdir()
     (work_path / "some-file.txt").write_text("kumquat")
@@ -27,16 +43,14 @@ def test_hash_normal() -> None:
         args=(
             f"--work-dir={work_path}",
             "hash",
-            "--output-filename-base=some-file-renamed.txt",
+            f"--output-filename-base={output_filename_base}",
             "work/some-file.txt",
         )
     )
 
     assert (
         work_path / "some-file.txt.cache-buster-output-filename"
-    ).read_text() == (
-        "output/assets/some-file-renamed-bq8UGvsFuv-F1FnQBRj4UA==.txt"
-    )
+    ).read_text() == expected_output_path
 
 
 def test_hash_image() -> None:
