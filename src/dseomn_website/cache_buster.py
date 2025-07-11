@@ -52,10 +52,13 @@ def _hash(args: argparse.Namespace) -> None:
 
 
 def _dyndep(args: argparse.Namespace) -> None:
-    output_filename = _output_filename_path(
-        work_dir=args.work_dir,
-        input_file=args.input_file,
-    ).read_text()
+    output_filenames = frozenset(
+        _output_filename_path(
+            work_dir=args.work_dir,
+            input_file=input_file,
+        ).read_text()
+        for input_file in args.input_file
+    )
     args.dyndep.write_text(
         textwrap.dedent(
             f"""\
@@ -63,7 +66,7 @@ def _dyndep(args: argparse.Namespace) -> None:
             build $
                     {_ninja_escape(str(args.copy_stamp))} $
                     | $
-                    {_ninja_escape(output_filename)} $
+                    {" ".join(map(_ninja_escape, output_filenames))} $
                     : $
                     dyndep
             """
@@ -72,13 +75,23 @@ def _dyndep(args: argparse.Namespace) -> None:
 
 
 def _copy(args: argparse.Namespace) -> None:
-    output_path = pathlib.Path(
-        _output_filename_path(
-            work_dir=args.work_dir,
-            input_file=args.input_file,
-        ).read_text()
-    )
-    output_path.write_bytes(args.input_file.read_bytes())
+    written = set[pathlib.Path]()
+    for input_file in args.input_file:
+        output_path = pathlib.Path(
+            _output_filename_path(
+                work_dir=args.work_dir,
+                input_file=input_file,
+            ).read_text()
+        )
+        if output_path in written:
+            if input_file.read_bytes() != output_path.read_bytes():
+                raise ValueError(
+                    "Multiple files with different contents hash to "
+                    f"{str(output_path)!r}"
+                )
+        else:
+            output_path.write_bytes(input_file.read_bytes())
+            written.add(output_path)
     args.copy_stamp.write_text("")
 
 
@@ -126,6 +139,7 @@ def main(
     )
     dyndep_parser.add_argument(
         "input_file",
+        nargs="+",
         type=pathlib.Path,
         help="File to hash and copy.",
     )
@@ -143,6 +157,7 @@ def main(
     )
     copy_parser.add_argument(
         "input_file",
+        nargs="+",
         type=pathlib.Path,
         help="File to hash and copy.",
     )

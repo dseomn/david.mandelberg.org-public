@@ -17,6 +17,53 @@ def _root_path(tmp_path: pathlib.Path) -> Generator[None, None, None]:
         yield
 
 
+def test_copy_conflict() -> None:
+    work_path = pathlib.Path("work")
+    work_path.mkdir()
+    (work_path / "file1").write_text("kumquat")
+    (work_path / "file1.cache-buster-output-filename").write_text("work/out")
+    (work_path / "file2").write_text("pomelo")
+    (work_path / "file2.cache-buster-output-filename").write_text("work/out")
+
+    with pytest.raises(ValueError, match=r"different contents"):
+        cache_buster.main(
+            args=(
+                f"--work-dir={work_path}",
+                "copy",
+                f"--copy-stamp=work/copy-stamp",
+                "work/file1",
+                "work/file2",
+            )
+        )
+
+
+def test_copy_multiple() -> None:
+    work_path = pathlib.Path("work")
+    work_path.mkdir()
+    (work_path / "file1a").write_text("kumquat")
+    (work_path / "file1a.cache-buster-output-filename").write_text("work/out1")
+    (work_path / "file1b").write_text("kumquat")
+    (work_path / "file1b.cache-buster-output-filename").write_text("work/out1")
+    (work_path / "file2").write_text("pomelo")
+    (work_path / "file2.cache-buster-output-filename").write_text("work/out2")
+    copy_stamp_path = work_path / "copy-stamp"
+
+    cache_buster.main(
+        args=(
+            f"--work-dir={work_path}",
+            "copy",
+            f"--copy-stamp={copy_stamp_path}",
+            "work/file1a",
+            "work/file1b",
+            "work/file2",
+        )
+    )
+
+    assert (work_path / "out1").read_text() == "kumquat"
+    assert (work_path / "out2").read_text() == "pomelo"
+    assert copy_stamp_path.exists()
+
+
 def test_main() -> None:
     src_path = pathlib.Path("src")
     src_path.mkdir()
