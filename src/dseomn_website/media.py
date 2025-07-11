@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import abc
-from collections.abc import Collection, Sequence
+import collections
+from collections.abc import Collection, Mapping, Sequence
 import dataclasses
 import functools
 import json
@@ -240,11 +241,17 @@ FAVICON = ginjarator.paths.Filesystem(
 )
 
 
-def all_image_outputs() -> Collection[ImageOutput]:
-    outputs = set[ImageOutput]()
-    outputs.update(IMAGE_PROFILES["favicon"].outputs(FAVICON))
+def image_outputs_by_source() -> (
+    Mapping[ginjarator.paths.Filesystem, Collection[ImageOutput]]
+):
+    outputs = collections.defaultdict[
+        ginjarator.paths.Filesystem, set[ImageOutput]
+    ](set)
+    outputs[FAVICON].update(IMAGE_PROFILES["favicon"].outputs(FAVICON))
     for page in metadata.Page.all():
         for source, profile_names in page.media.profile_names_by_image.items():
             for profile_name in profile_names:
-                outputs.update(IMAGE_PROFILES[profile_name].outputs(source))
+                outputs[source].update(
+                    IMAGE_PROFILES[profile_name].outputs(source)
+                )
     return outputs

@@ -18,12 +18,18 @@ rule image_metadata
   command = magick -define json:version=1.0 $in $out
   description = METADATA $in
 
-{% for image_output in media.all_image_outputs() %}
+{% for source, image_outputs in media.image_outputs_by_source().items() %}
+{% set work_dir = (image_outputs | first).work_path.parent %}
+{% set converted_filenames = [] %}
+
+{% for image_output in image_outputs %}
+{% do ginjarator.py.assert_(image_output.work_path.parent == work_dir) %}
+{% do converted_filenames.append(image_output.work_path.name) %}
 build $
     {{ ginjarator.to_ninja(image_output.work_path) }} $
     : $
     image_convert $
-    {{ ginjarator.to_ninja(image_output.source) }}
+    {{ ginjarator.to_ninja(source) }}
   conversion = {{ ginjarator.to_ninja(image_output.conversion.suffix) }}
   conversion_command = $
     {{ ginjarator.to_ninja(image_output.conversion.sh_command) }}
@@ -32,10 +38,12 @@ build $
     : $
     image_metadata $
     {{ ginjarator.to_ninja(image_output.work_path) }}
+{% endfor %}
+
 {{ cache_buster.build(
-  input_dir=image_output.work_path.parent | string,
-  input_filenames=(image_output.work_path.name,),
-  work_dir=image_output.work_path.parent | string,
-  work_filename_base=image_output.work_path.name,
+  input_dir=work_dir | string,
+  input_filenames=converted_filenames,
+  work_dir=work_dir | string,
+  work_filename_base=source.name,
 ) }}
 {% endfor %}

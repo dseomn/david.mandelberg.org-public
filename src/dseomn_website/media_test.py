@@ -230,11 +230,13 @@ def test_normal_image_profile_responsive_sizes() -> None:
     assert profile.responsive_sizes() == "60em"
 
 
-def test_all_image_outputs() -> None:
+def test_image_outputs_by_source() -> None:
     with ginjarator.testing.api_for_scan():
-        assert {output.source for output in media.all_image_outputs()} >= {
-            media.FAVICON,
-            ginjarator.paths.Filesystem(
-                "../private/errors/404/P1250746-raw-unsharp.jpg"
-            ),
-        }
+        outputs_by_source = media.image_outputs_by_source()
+
+    assert outputs_by_source[media.FAVICON]
+    assert outputs_by_source[
+        ginjarator.paths.Filesystem(
+            "../private/errors/404/P1250746-raw-unsharp.jpg"
+        )
+    ]
