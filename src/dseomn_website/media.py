@@ -19,7 +19,8 @@ from dseomn_website import paths
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class ImageConversion:
-    suffix: str
+    work_suffix: str
+    output_suffix: str
     sh_command: str
 
     @classmethod
@@ -31,7 +32,8 @@ class ImageConversion:
         quality: int,
     ) -> Self:
         return cls(
-            suffix=f"{max_width}x{max_height}q{quality}.jpg",
+            work_suffix=f"-{max_width}x{max_height}q{quality}.jpg",
+            output_suffix=f"-q{quality}.jpg",
             sh_command=" ".join(
                 (
                     "magick",
@@ -51,7 +53,8 @@ class ImageConversion:
         max_height: int,
     ) -> Self:
         return cls(
-            suffix=f"{max_width}x{max_height}.png",
+            work_suffix=f"-{max_width}x{max_height}.png",
+            output_suffix=f".png",
             sh_command=" ".join(
                 (
                     "magick",
@@ -77,8 +80,12 @@ class ImageOutput:
     def work_path(self) -> ginjarator.paths.Filesystem:
         return (
             paths.work(self.source.parent)
-            / f"{self.source.stem}-{self.conversion.suffix}"
+            / f"{self.source.stem}{self.conversion.work_suffix}"
         )
+
+    @functools.cached_property
+    def output_filename_base(self) -> str:
+        return f"{self.source.stem}{self.conversion.output_suffix}"
 
     @functools.cached_property
     def url_path(self) -> str | None:

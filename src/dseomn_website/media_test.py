@@ -22,7 +22,8 @@ from dseomn_website import media
         (
             media.ImageConversion.jpeg(max_width=64, max_height=48, quality=90),
             media.ImageConversion(
-                suffix="64x48q90.jpg",
+                work_suffix="-64x48q90.jpg",
+                output_suffix="-q90.jpg",
                 sh_command=(
                     '''magick "$in" -resize '64x48>' -quality 90 "$out"'''
                 ),
@@ -31,7 +32,8 @@ from dseomn_website import media
         (
             media.ImageConversion.png(max_width=64, max_height=48),
             media.ImageConversion(
-                suffix="64x48.png",
+                work_suffix="-64x48.png",
+                output_suffix=".png",
                 sh_command=(
                     """magick -define png:exclude-chunk=date,tIME "$in" """
                     '''-resize '64x48>' "$out" && optipng -quiet "$out"'''
@@ -59,8 +61,8 @@ def test_image_conversion_deterministic(
     conversion: media.ImageConversion,
     tmp_path: pathlib.Path,
 ) -> None:
-    output_1 = tmp_path / f"1-{conversion.suffix}"
-    output_2 = tmp_path / f"2-{conversion.suffix}"
+    output_1 = tmp_path / f"1{conversion.work_suffix}"
+    output_2 = tmp_path / f"2{conversion.work_suffix}"
 
     subprocess.run(
         conversion.sh_command,
@@ -96,6 +98,9 @@ def test_image_output_scan() -> None:
 
         assert image_output.work_path == ginjarator.paths.Filesystem(
             "work/media/P1230630-raw-crop-square-16x16.png"
+        )
+        assert image_output.output_filename_base == (
+            "P1230630-raw-crop-square.png"
         )
         assert image_output.url_path is None
         assert image_output.metadata_path == ginjarator.paths.Filesystem(

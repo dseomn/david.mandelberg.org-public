@@ -4,6 +4,7 @@
 
 from collections.abc import Generator
 import contextlib
+import json
 import pathlib
 
 import pytest
@@ -15,6 +16,52 @@ from dseomn_website import cache_buster
 def _root_path(tmp_path: pathlib.Path) -> Generator[None, None, None]:
     with contextlib.chdir(tmp_path):
         yield
+
+
+def test_hash_normal() -> None:
+    work_path = pathlib.Path("work")
+    work_path.mkdir()
+    (work_path / "some-file.txt").write_text("kumquat")
+
+    cache_buster.main(
+        args=(
+            f"--work-dir={work_path}",
+            "hash",
+            "--output-filename-base=some-file-renamed.txt",
+            "work/some-file.txt",
+        )
+    )
+
+    assert (
+        work_path / "some-file.txt.cache-buster-output-filename"
+    ).read_text() == (
+        "output/assets/some-file-renamed-bq8UGvsFuv-F1FnQBRj4UA==.txt"
+    )
+
+
+def test_hash_image() -> None:
+    work_path = pathlib.Path("work")
+    work_path.mkdir()
+    (work_path / "some-file.txt").write_text("kumquat")
+    (work_path / "some-file.txt.json").write_text(
+        json.dumps([{"image": {"geometry": {"width": 42, "height": 17}}}])
+    )
+
+    cache_buster.main(
+        args=(
+            f"--work-dir={work_path}",
+            "hash",
+            "--output-filename-base=some-file-renamed.txt",
+            "--image-size-from-metadata=work/some-file.txt.json",
+            "work/some-file.txt",
+        )
+    )
+
+    assert (
+        work_path / "some-file.txt.cache-buster-output-filename"
+    ).read_text() == (
+        "output/assets/some-file-renamed-42x17-bq8UGvsFuv-F1FnQBRj4UA==.txt"
+    )
 
 
 def test_copy_conflict() -> None:

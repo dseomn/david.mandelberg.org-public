@@ -11,6 +11,7 @@ import argparse
 import base64
 from collections.abc import Sequence
 import hashlib
+import json
 import pathlib
 import sys
 import textwrap
@@ -42,12 +43,21 @@ def _hash(args: argparse.Namespace) -> None:
     file_hash = base64.urlsafe_b64encode(
         hashlib.sha256(args.input_file.read_bytes()).digest()[:16]
     ).decode()
+    if args.image_size_from_metadata is None:
+        output_filename_extra = ""
+    else:
+        image_metadata = json.loads(args.image_size_from_metadata.read_text())[
+            0
+        ]["image"]
+        image_width = image_metadata["geometry"]["width"]
+        image_height = image_metadata["geometry"]["height"]
+        output_filename_extra = f"-{image_width}x{image_height}"
     _output_filename_path(
         work_dir=args.work_dir,
         input_file=args.input_file,
     ).write_text(
-        f"output/assets/{args.output_filename_base.stem}-{file_hash}"
-        f"{args.output_filename_base.suffix}"
+        f"output/assets/{args.output_filename_base.stem}{output_filename_extra}"
+        f"-{file_hash}{args.output_filename_base.suffix}"
     )
 
 
@@ -119,6 +129,15 @@ def main(
         type=pathlib.PurePath,
         required=True,
         help="Output filename, without directory or hash.",
+    )
+    hash_parser.add_argument(
+        "--image-size-from-metadata",
+        default=None,
+        type=pathlib.Path,
+        help=(
+            "Image metadata file to get the size from to add to the output "
+            "filename."
+        ),
     )
     hash_parser.add_argument(
         "input_file",

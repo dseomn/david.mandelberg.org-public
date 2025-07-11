@@ -30,7 +30,9 @@ build $
     : $
     image_convert $
     {{ ginjarator.to_ninja(source) }}
-  conversion = {{ ginjarator.to_ninja(image_output.conversion.suffix) }}
+  conversion = {{
+    ginjarator.to_ninja(image_output.conversion.work_suffix.lstrip("-"))
+  }}
   conversion_command = $
     {{ ginjarator.to_ninja(image_output.conversion.sh_command) }}
 build $
@@ -42,6 +44,8 @@ build $
   input_dir=work_dir | string,
   input_filename=image_output.work_path.name,
   work_dir=work_dir | string,
+  output_filename_base=image_output.output_filename_base,
+  image_size_from_metadata=image_output.metadata_path,
 ) }}
 {% endfor %}
 
