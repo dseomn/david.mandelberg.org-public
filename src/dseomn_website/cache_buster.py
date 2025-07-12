@@ -40,9 +40,11 @@ def _output_filename_path(
 
 
 def _hash(args: argparse.Namespace) -> None:
+    # This is truncated to a multiple of 3 to avoid base64 padding.
     file_hash = base64.urlsafe_b64encode(
-        hashlib.sha256(args.input_file.read_bytes()).digest()[:16]
+        hashlib.sha256(args.input_file.read_bytes()).digest()[:18]
     ).decode()
+    assert "=" not in file_hash
     if args.image_size_from_metadata is None:
         output_filename_extra = ""
     else:

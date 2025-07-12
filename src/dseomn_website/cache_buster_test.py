@@ -23,11 +23,11 @@ def _root_path(tmp_path: pathlib.Path) -> Generator[None, None, None]:
     (
         (
             "some-file-renamed.txt",
-            "output/assets/some-file-renamed-bq8UGvsFuv-F1FnQBRj4UA==.txt",
+            "output/assets/some-file-renamed-bq8UGvsFuv-F1FnQBRj4UDpo.txt",
         ),
         (
             "some-file-renamed",
-            "output/assets/some-file-renamed-bq8UGvsFuv-F1FnQBRj4UA==",
+            "output/assets/some-file-renamed-bq8UGvsFuv-F1FnQBRj4UDpo",
         ),
     ),
 )
@@ -74,7 +74,7 @@ def test_hash_image() -> None:
     assert (
         work_path / "some-file.txt.cache-buster-output-filename"
     ).read_text() == (
-        "output/assets/some-file-renamed-42x17-bq8UGvsFuv-F1FnQBRj4UA==.txt"
+        "output/assets/some-file-renamed-42x17-bq8UGvsFuv-F1FnQBRj4UDpo.txt"
     )
 
 
