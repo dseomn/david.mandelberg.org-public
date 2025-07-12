@@ -120,6 +120,19 @@ class ImageProfile(abc.ABC):
     ) -> Collection[ImageOutput]:
         """Returns the source image's outputs."""
 
+    def unique_outputs(
+        self,
+        source: ginjarator.paths.Filesystem | str,
+    ) -> Collection[ImageOutput]:
+        """Returns the outputs with duplicate url_paths filtered out."""
+        outputs = []
+        url_paths = set()
+        for output in self.outputs(source):
+            if output.url_path is None or output.url_path not in url_paths:
+                outputs.append(output)
+                url_paths.add(output.url_path)
+        return outputs
+
     def primary_output(
         self,
         source: ginjarator.paths.Filesystem | str,

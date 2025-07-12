@@ -9,7 +9,7 @@
 {% macro image(source, profile_name, class="") -%}
   {%- set profile = media.IMAGE_PROFILES[profile_name] -%}
   {%- set primary_output = profile.primary_output(source) -%}
-  {%- set outputs = profile.outputs(source) -%}
+  {%- set outputs = profile.unique_outputs(source) -%}
   <img
       sizes="{{ profile.responsive_sizes() | e }}"
       {% if none not in (primary_output.url_path, primary_output.metadata) %}

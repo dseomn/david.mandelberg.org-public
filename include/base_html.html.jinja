@@ -49,7 +49,7 @@
         {% if main_css is not none %}
           <link rel="stylesheet" href="{{ paths.to_url_path(main_css) | e }}">
         {% endif %}
-        {% for favicon_output in media.IMAGE_PROFILES.favicon.outputs(
+        {% for favicon_output in media.IMAGE_PROFILES.favicon.unique_outputs(
           media.FAVICON
         ) if none not in (favicon_output.url_path, favicon_output.metadata) %}
           {% set geometry = favicon_output.metadata.geometry %}

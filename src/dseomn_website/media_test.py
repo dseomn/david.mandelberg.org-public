@@ -142,6 +142,74 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
         assert image_output.metadata == dict(kumquat=42)
 
 
+def test_image_profile_unique_outputs_scan(tmp_path: pathlib.Path) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["media"]
+            build_paths = ["work"]
+            """
+        )
+    )
+    source = ginjarator.paths.Filesystem("foo.png")
+    profile = media.NormalImageProfile(
+        max_width=16,
+        max_height=16,
+        jpeg_quality=100,
+        factors=(1, 2, 4),
+        inline_size="",
+    )
+
+    with ginjarator.testing.api_for_scan():
+        assert tuple(profile.unique_outputs(source)) == tuple(
+            profile.outputs(source)
+        )
+
+
+def test_image_profile_unique_outputs_render(tmp_path: pathlib.Path) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["media"]
+            build_paths = ["work"]
+            """
+        )
+    )
+    source = ginjarator.paths.Filesystem("media/foo.png")
+    (tmp_path / "work/media").mkdir(parents=True)
+    (
+        tmp_path / "work/media/foo-16x16.png.cache-buster-output-filename"
+    ).write_text("output/assets/foo-16x16.png")
+    (
+        tmp_path / "work/media/foo-32x32.png.cache-buster-output-filename"
+    ).write_text("output/assets/foo-32x32.png")
+    (
+        tmp_path / "work/media/foo-64x64.png.cache-buster-output-filename"
+    ).write_text("output/assets/foo-32x32.png")
+    profile = media.NormalImageProfile(
+        max_width=16,
+        max_height=16,
+        jpeg_quality=100,
+        factors=(1, 2, 4),
+        inline_size="",
+    )
+
+    with ginjarator.testing.api_for_render(
+        root_path=tmp_path,
+        dependencies=(
+            "work/media/foo-16x16.png.cache-buster-output-filename",
+            "work/media/foo-32x32.png.cache-buster-output-filename",
+            "work/media/foo-64x64.png.cache-buster-output-filename",
+        ),
+    ):
+        assert tuple(
+            output.url_path for output in profile.unique_outputs(source)
+        ) == (
+            "/assets/foo-16x16.png",
+            "/assets/foo-32x32.png",
+        )
+
+
 def test_favicon_profile_outputs() -> None:
     assert media.ImageOutput(
         source=ginjarator.paths.Filesystem("foo"),
