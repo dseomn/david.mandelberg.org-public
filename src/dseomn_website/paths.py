@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from collections.abc import Collection
+import urllib.parse
 
 import ginjarator
 
@@ -36,16 +37,17 @@ def from_url_path(
     dir_index: str = "index.html",
 ) -> ginjarator.paths.Filesystem:
     """Returns an fs path from a url path."""
+    unquoted = urllib.parse.unquote(url_path)
     if dir_index not in DIR_INDEXES:
         raise ValueError(
             f"Invalid dir_index {dir_index!r}, allowed values are: "
             f"{DIR_INDEXES}"
         )
-    if not url_path.startswith("/"):
+    if not unquoted.startswith("/"):
         raise NotImplementedError("Relative url paths are not supported.")
-    elif url_path == "/":
+    elif unquoted == "/":
         return OUTPUT / dir_index
-    relative = url_path.removeprefix("/")
+    relative = unquoted.removeprefix("/")
     if relative.endswith("/"):
         return OUTPUT / relative / dir_index
     else:
@@ -60,8 +62,9 @@ def to_url_path(path: ginjarator.paths.Filesystem | str) -> str:
     relative = path.relative_to(OUTPUT)
     if relative.name in DIR_INDEXES:
         if len(relative.parts) == 1:
-            return "/"
+            unquoted = "/"
         else:
-            return f"/{relative.parent}/"
+            unquoted = f"/{relative.parent}/"
     else:
-        return f"/{relative}"
+        unquoted = f"/{relative}"
+    return urllib.parse.quote(unquoted)

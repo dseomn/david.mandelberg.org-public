@@ -42,6 +42,7 @@ def test_from_url_path_error(
         ("/", "output/index.html"),
         ("/foo/", "output/foo/index.html"),
         ("/foo", "output/foo"),
+        ("/foo%20bar", "output/foo bar"),
     ),
 )
 def test_from_url_path(url_path: str, expected: str) -> None:
@@ -61,6 +62,7 @@ def test_to_url_path_error() -> None:
         ("output/index.html", "/"),
         ("output/foo/index.html", "/foo/"),
         ("output/foo", "/foo"),
+        ("output/foo bar", "/foo%20bar"),
     ),
 )
 def test_to_url_path(path: str, expected: str) -> None:
