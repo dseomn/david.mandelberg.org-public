@@ -28,6 +28,7 @@
         {%- endfor -%}
       "
       class="image-{{ profile_name | e }} {{ class | e }}"
+      loading="lazy"
       {% for attribute, value in kwargs.items() %}
         {{ attribute }}="{{ value | e }}"
       {% endfor %}
