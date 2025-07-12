@@ -142,6 +142,7 @@ class ImageProfile(abc.ABC):
 
     def responsive_sizes(self) -> str:
         """Returns the img.sizes attribute."""
+        # TODO: https://caniuse.com/mdn-html_elements_img_sizes_auto - Use auto.
         raise NotImplementedError()
 
 
