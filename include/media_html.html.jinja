@@ -27,7 +27,7 @@
           {{ output.url_path | e }} {{ output.metadata.geometry.width | e }}w
         {%- endfor -%}
       "
-      class="image-{{ profile_name | e }} {{ class | e }}"
+      class="image-{{ profile_name.replace("_", "-") | e }} {{ class | e }}"
       loading="lazy"
       {% for attribute, value in kwargs.items() %}
         {{ attribute }}="{{ value | e }}"
