@@ -221,9 +221,9 @@ class NormalImageProfile(ImageProfile):
         self,
         source: ginjarator.paths.Filesystem,
     ) -> Sequence[ImageConversion]:
-        if source.name.endswith((".jpg",)):
+        if source.name.casefold().endswith((".jpg",)):
             return self._lossy_conversions
-        elif source.name.endswith((".png",)):
+        elif source.name.casefold().endswith((".png",)):
             return self._lossless_conversions
         else:
             raise NotImplementedError(f"{source.name=}")
