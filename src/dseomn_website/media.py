@@ -262,6 +262,13 @@ def _em_to_pixels_half(length_em: int) -> int:
 
 IMAGE_PROFILES = {
     "favicon": FaviconProfile(),
+    "float": NormalImageProfile(
+        max_width=_em_to_pixels_half(layout.FLOAT_MAX_INLINE_SIZE_EM),
+        max_height=_em_to_pixels_half(layout.FLOAT_MAX_INLINE_SIZE_EM * 2),
+        jpeg_quality=90,
+        factors=(4, 2, 1),
+        inline_size=layout.FLOAT_CONTENTS_INLINE_SIZE,
+    ),
     "main": NormalImageProfile(
         max_width=_em_to_pixels_half(layout.MAIN_COLUMN_MAX_INLINE_SIZE_EM),
         max_height=_em_to_pixels_half(
@@ -270,13 +277,6 @@ IMAGE_PROFILES = {
         jpeg_quality=90,
         factors=(4, 2, 1),
         inline_size=layout.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
-    ),
-    "float": NormalImageProfile(
-        max_width=_em_to_pixels_half(layout.FLOAT_MAX_INLINE_SIZE_EM),
-        max_height=_em_to_pixels_half(layout.FLOAT_MAX_INLINE_SIZE_EM * 2),
-        jpeg_quality=90,
-        factors=(4, 2, 1),
-        inline_size=layout.FLOAT_CONTENTS_INLINE_SIZE,
     ),
 }
 
