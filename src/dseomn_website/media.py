@@ -255,19 +255,25 @@ class NormalImageProfile(ImageProfile):
         return self._inline_size
 
 
+def _em_to_pixels_half(length_em: int) -> int:
+    """Returns a length in pixels, divided by 2 for half-resolution images."""
+    return length_em * layout.PIXELS_PER_EM // 2
+
+
 IMAGE_PROFILES = {
     "favicon": FaviconProfile(),
-    # Images that take the full width of an article.
     "main": NormalImageProfile(
-        max_width=480,
-        max_height=960,
+        max_width=_em_to_pixels_half(layout.MAIN_COLUMN_MAX_INLINE_SIZE_EM),
+        max_height=_em_to_pixels_half(
+            layout.MAIN_COLUMN_MAX_INLINE_SIZE_EM * 2
+        ),
         jpeg_quality=90,
         factors=(4, 2, 1),
         inline_size=layout.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
     ),
     "float": NormalImageProfile(
-        max_width=160,
-        max_height=320,
+        max_width=_em_to_pixels_half(layout.FLOAT_MAX_INLINE_SIZE_EM),
+        max_height=_em_to_pixels_half(layout.FLOAT_MAX_INLINE_SIZE_EM * 2),
         jpeg_quality=90,
         factors=(4, 2, 1),
         inline_size=layout.FLOAT_CONTENTS_INLINE_SIZE,
