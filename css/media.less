@@ -13,3 +13,20 @@
   display: block;
   max-inline-size: 100%;
 }
+
+.gallery {
+  clear: both;
+  display: flex;
+  flex-flow: wrap;
+  gap: 0.5em;
+  justify-content: safe center;
+  margin-block: 1em;
+}
+
+.image-gallery-thumbnail {
+  block-size: auto;
+  display: block;
+  inline-size: auto;
+  max-block-size: @gallery-item-max-block-size;
+  max-inline-size: 100%;
+}

@@ -144,6 +144,7 @@ def test_media_parse() -> None:
                 dict(
                     type="image",
                     source="foo.png",
+                    gallery="main",
                     opengraph=True,
                     alt="Foo?",
                     float=True,
@@ -160,6 +161,7 @@ def test_media_parse() -> None:
 
     foo = metadata.Image(
         source=ginjarator.paths.Filesystem("foo.png"),
+        gallery="main",
         opengraph=True,
         alt="Foo?",
         float_=True,
@@ -167,6 +169,7 @@ def test_media_parse() -> None:
     )
     bar = metadata.Image(
         source=ginjarator.paths.Filesystem("bar.jpg"),
+        gallery=None,
         opengraph=False,
         alt="Bar!",
         float_=False,

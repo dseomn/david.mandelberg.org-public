@@ -32,3 +32,26 @@
       alt="{{ image_metadata.alt | e }}"
       >
 {%- endmacro %}
+
+{% macro gallery(page_metadata, gallery_name) %}
+  <div class="gallery">
+    {% for media_item in page_metadata.media.item_by_source.values()
+      if media_item.gallery == gallery_name
+    %}
+      {% if media_item.type_ == "image" %}
+        {# TODO: dseomn - Show the full image in a better way. #}
+        <a
+            href="{{
+              media.IMAGE_PROFILES.full_screen.primary_output(
+                media_item.source
+              ).url_path | e
+            }}"
+            >
+          {{ image(media_item, "gallery_thumbnail") }}
+        </a>
+      {% else %}
+        {% do ginjarator.py.assert_(false) %}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endmacro %}

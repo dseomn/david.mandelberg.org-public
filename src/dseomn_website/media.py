@@ -252,6 +252,25 @@ IMAGE_PROFILES = {
         factors=(4, 2, 1),
         inline_size=layout.FLOAT_CONTENTS_INLINE_SIZE,
     ),
+    "full_screen": NormalImageProfile(
+        max_width=3840 // 4,
+        max_height=3840 // 4,
+        jpeg_quality=90,
+        factors=(4, 2, 1),
+        inline_size="100vi",
+    ),
+    "gallery_thumbnail": NormalImageProfile(
+        max_width=_em_to_pixels_half(layout.MAIN_COLUMN_MAX_INLINE_SIZE_EM),
+        max_height=_em_to_pixels_half(layout.GALLERY_ITEM_MAX_BLOCK_SIZE_EM),
+        jpeg_quality=80,
+        factors=(4, 2, 1),
+        # As of 2025-07-12, this isn't supported widely enough to use most
+        # places yet. However, calculating the width of a gallery thumbnail
+        # would be somewhat complicated because it depends (at least) on the
+        # aspect ratio. So this should work for browsers that support it, and
+        # hopefully not be too bad for others.
+        inline_size="auto",
+    ),
     "main": NormalImageProfile(
         max_width=_em_to_pixels_half(layout.MAIN_COLUMN_MAX_INLINE_SIZE_EM),
         max_height=_em_to_pixels_half(
@@ -286,7 +305,9 @@ def image_outputs_by_source() -> (
         for media_item in page.media.item_by_source.values():
             if not isinstance(media_item, metadata.Image):
                 continue
-            profile_names = set()
+            profile_names = set[str]()
+            if media_item.gallery is not None:
+                profile_names.update(("full_screen", "gallery_thumbnail"))
             if media_item.opengraph:
                 profile_names.add("opengraph")
             if media_item.float_:

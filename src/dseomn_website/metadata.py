@@ -148,6 +148,7 @@ class Fragment(Resource):
 class MediaItem:
     type_: str
     source: ginjarator.paths.Filesystem
+    gallery: str | None
     opengraph: bool
 
 
@@ -160,9 +161,10 @@ class Image(MediaItem):
 
 
 def _parse_media_item(raw: Any) -> MediaItem:
-    known_keys = {"type", "source", "opengraph"}
+    known_keys = {"type", "source", "gallery", "opengraph"}
     common_kwargs = dict(
         source=ginjarator.paths.Filesystem(raw["source"]),
+        gallery=raw.get("gallery"),
         opengraph=raw.get("opengraph", False),
     )
     match raw["type"]:
