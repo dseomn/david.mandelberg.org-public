@@ -124,7 +124,10 @@ class Resource:
 
     def fragment(self, id: str) -> "Fragment":
         return Fragment(
-            url_path=urllib.parse.urljoin(self.url_path, f"#{id}"),
+            url_path=urllib.parse.urljoin(
+                self.url_path,
+                f"#{urllib.parse.quote(id)}",
+            ),
         )
 
 
@@ -137,7 +140,9 @@ class Fragment(Resource):
 
     @functools.cached_property
     def id(self) -> str:
-        return urllib.parse.urlsplit(self.url_path).fragment
+        return urllib.parse.unquote(
+            urllib.parse.urlsplit(self.url_path).fragment
+        )
 
     @functools.cached_property
     def url_fragment(self) -> str:
@@ -239,7 +244,10 @@ class Comment(Fragment):
         }:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         return cls(
-            url_path=urllib.parse.urljoin(parent_url_path, f"#{comment_id}"),
+            url_path=urllib.parse.urljoin(
+                parent_url_path,
+                f"#{urllib.parse.quote(comment_id)}",
+            ),
             uuid=comment_uuid,
             published=_comment_datetime(raw["published"]),
             author=User.parse(raw["author"]),
@@ -317,7 +325,7 @@ class Error(Page):
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         status = http.HTTPStatus(int(template.parent.name))
         return cls(
-            url_path=f"/errors/{status.value}/",
+            url_path=urllib.parse.quote(f"/errors/{status.value}/"),
             title=f"{status.value} {status.phrase}",
             media=Media.parse(raw.get("media", {})),
             status=status,
@@ -346,7 +354,9 @@ class Standalone(Page):
         if unexpected_keys := raw.keys() - {"title", "media"}:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
         return cls(
-            url_path=f"/{template.relative_to("standalone").parent}/",
+            url_path=urllib.parse.quote(
+                f"/{template.relative_to("standalone").parent}/"
+            ),
             title=raw["title"],
             media=Media.parse(raw.get("media", {})),
         )
@@ -364,7 +374,7 @@ class Standalone(Page):
 
 
 def _post_url_path(published: datetime.datetime, slug: str) -> str:
-    return f"/{published.strftime("%Y/%m/%d")}/{slug}/"
+    return urllib.parse.quote(f"/{published.strftime("%Y/%m/%d")}/{slug}/")
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -588,7 +598,7 @@ class PostList(Page):
     @classmethod
     def tag(cls, tag: str) -> Self:
         return cls(
-            url_path=f"/tag/{tag}/",
+            url_path=urllib.parse.quote(f"/tag/{tag}/"),
             title=f"Tag: {tag}",
             filter=lambda post: tag in post.tags,
         )
@@ -640,7 +650,10 @@ class PostList(Page):
             for post in page.posts:
                 result.setdefault(
                     post.published.year,
-                    urllib.parse.urljoin(page.url_path, f"#{post.id}"),
+                    urllib.parse.urljoin(
+                        page.url_path,
+                        f"#{urllib.parse.quote(post.id)}",
+                    ),
                 )
         return result
 
