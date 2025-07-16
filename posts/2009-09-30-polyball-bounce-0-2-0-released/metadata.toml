@@ -10,9 +10,9 @@ tags = ["technology"]
 [[media.items]]
 type = "image"
 source = "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Polyball-Bounce-1.png"
+opengraph = true
 alt = "Polyball Bounce 0.2.0"
 main = true
-opengraph = true
 
 [[media.items]]
 type = "image"

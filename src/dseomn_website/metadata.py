@@ -148,6 +148,7 @@ class Fragment(Resource):
 class MediaItem:
     type_: str
     source: ginjarator.paths.Filesystem
+    opengraph: bool
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -156,21 +157,22 @@ class Image(MediaItem):
     alt: str
     float_: bool
     main: bool
-    opengraph: bool
 
 
 def _parse_media_item(raw: Any) -> MediaItem:
-    known_keys = {"type", "source"}
-    source = ginjarator.paths.Filesystem(raw["source"])
+    known_keys = {"type", "source", "opengraph"}
+    common_kwargs = dict(
+        source=ginjarator.paths.Filesystem(raw["source"]),
+        opengraph=raw.get("opengraph", False),
+    )
     match raw["type"]:
         case "image":
-            known_keys.update(("alt", "float", "main", "opengraph"))
+            known_keys.update(("alt", "float", "main"))
             item = Image(
-                source=source,
+                **common_kwargs,
                 alt=raw["alt"],
                 float_=raw.get("float", False),
                 main=raw.get("main", False),
-                opengraph=raw.get("opengraph", False),
             )
         case _:
             raise ValueError(f"Unknown media item type: {raw!r}")

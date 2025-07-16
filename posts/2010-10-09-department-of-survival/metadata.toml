@@ -13,9 +13,9 @@ comments = [
 [[media.items]]
 type = "image"
 source = "../private/posts/2010-10-09-department-of-survival/Mt__Monadnock_2_by_dseomn-400x300.jpg"
+opengraph = true
 alt = ""
 float = true
-opengraph = true
 
 [[media.items]]
 type = "image"

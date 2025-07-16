@@ -144,9 +144,9 @@ def test_media_parse() -> None:
                 dict(
                     type="image",
                     source="foo.png",
+                    opengraph=True,
                     alt="Foo?",
                     float=True,
-                    opengraph=True,
                 ),
                 dict(
                     type="image",
@@ -160,17 +160,17 @@ def test_media_parse() -> None:
 
     foo = metadata.Image(
         source=ginjarator.paths.Filesystem("foo.png"),
+        opengraph=True,
         alt="Foo?",
         float_=True,
         main=False,
-        opengraph=True,
     )
     bar = metadata.Image(
         source=ginjarator.paths.Filesystem("bar.jpg"),
+        opengraph=False,
         alt="Bar!",
         float_=False,
         main=True,
-        opengraph=False,
     )
     assert actual == metadata.Media(
         item_by_source={

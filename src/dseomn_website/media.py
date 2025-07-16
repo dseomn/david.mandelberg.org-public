@@ -287,12 +287,12 @@ def image_outputs_by_source() -> (
             if not isinstance(media_item, metadata.Image):
                 continue
             profile_names = set()
+            if media_item.opengraph:
+                profile_names.add("opengraph")
             if media_item.float_:
                 profile_names.add("float")
             if media_item.main:
                 profile_names.add("main")
-            if media_item.opengraph:
-                profile_names.add("opengraph")
             for profile_name in profile_names:
                 outputs[media_item.source].update(
                     IMAGE_PROFILES[profile_name].outputs(media_item.source)
