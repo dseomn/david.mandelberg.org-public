@@ -100,25 +100,82 @@ def test_fragment() -> None:
     assert fragment.url_fragment == "#bar"
 
 
-def test_media_parse_error() -> None:
-    with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
-        metadata.Media.parse(dict(invalid_key_kumquat=42))
+@pytest.mark.parametrize(
+    "raw,error_regex",
+    (
+        (dict(invalid_key_kumquat=42), r"invalid_key_kumquat"),
+        (
+            dict(items=[dict(type="invalid", source="foo")]),
+            r"Unknown media item type",
+        ),
+        (
+            dict(
+                items=[
+                    dict(
+                        type="image",
+                        source="foo",
+                        alt="",
+                        invalid_key_kumquat=42,
+                    ),
+                ],
+            ),
+            r"invalid_key_kumquat",
+        ),
+        (
+            dict(
+                items=[
+                    dict(type="image", source="foo", alt="alt-1"),
+                    dict(type="image", source="foo", alt="alt-2"),
+                ],
+            ),
+            r"Duplicate item source",
+        ),
+    ),
+)
+def test_media_parse_error(raw: Any, error_regex: str) -> None:
+    with pytest.raises(ValueError, match=error_regex):
+        metadata.Media.parse(raw)
 
 
 def test_media_parse() -> None:
-    assert metadata.Media.parse(
+    actual = metadata.Media.parse(
         dict(
-            images=dict(
-                figure=["foo.png"],
-                main=["foo.png", "bar.jpg"],
-            ),
-        ),
-    ) == metadata.Media(
-        profile_names_by_image={
-            ginjarator.paths.Filesystem("foo.png"): {"figure", "main"},
-            ginjarator.paths.Filesystem("bar.jpg"): {"main"},
+            items=[
+                dict(
+                    type="image",
+                    source="foo.png",
+                    alt="Foo?",
+                    float=True,
+                ),
+                dict(
+                    type="image",
+                    source="bar.jpg",
+                    alt="Bar!",
+                    main=True,
+                ),
+            ],
+        )
+    )
+
+    foo = metadata.Image(
+        source=ginjarator.paths.Filesystem("foo.png"),
+        alt="Foo?",
+        float_=True,
+        main=False,
+    )
+    bar = metadata.Image(
+        source=ginjarator.paths.Filesystem("bar.jpg"),
+        alt="Bar!",
+        float_=False,
+        main=True,
+    )
+    assert actual == metadata.Media(
+        item_by_source={
+            ginjarator.paths.Filesystem("foo.png"): foo,
+            ginjarator.paths.Filesystem("bar.jpg"): bar,
         },
     )
+    assert actual.item_by_source_str == {"foo.png": foo, "bar.jpg": bar}
 
 
 @pytest.mark.parametrize(

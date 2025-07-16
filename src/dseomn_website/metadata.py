@@ -145,26 +145,57 @@ class Fragment(Resource):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
+class MediaItem:
+    source: ginjarator.paths.Filesystem
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class Image(MediaItem):
+    alt: str
+    float_: bool
+    main: bool
+
+
+def _parse_media_item(raw: Any) -> MediaItem:
+    known_keys = {"type", "source"}
+    source = ginjarator.paths.Filesystem(raw["source"])
+    match raw["type"]:
+        case "image":
+            known_keys.update(("alt", "float", "main"))
+            item = Image(
+                source=source,
+                alt=raw["alt"],
+                float_=raw.get("float", False),
+                main=raw.get("main", False),
+            )
+        case _:
+            raise ValueError(f"Unknown media item type: {raw!r}")
+    if unexpected_keys := raw.keys() - known_keys:
+        raise ValueError(f"Unexpected keys: {unexpected_keys}")
+    return item
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class Media:
-    profile_names_by_image: Mapping[
-        ginjarator.paths.Filesystem, Collection[str]
-    ]
+    item_by_source: Mapping[ginjarator.paths.Filesystem, MediaItem]
 
     @classmethod
     def parse(cls, raw: Any) -> Self:
-        if unexpected_keys := raw.keys() - {"images"}:
+        if unexpected_keys := raw.keys() - {"items"}:
             raise ValueError(f"Unexpected keys: {unexpected_keys}")
-        profile_names_by_image = collections.defaultdict[
-            ginjarator.paths.Filesystem, set[str]
-        ](set)
-        for profile_name, sources in raw.get("images", {}).items():
-            for source in sources:
-                profile_names_by_image[ginjarator.paths.Filesystem(source)].add(
-                    profile_name
-                )
-        return cls(
-            profile_names_by_image=profile_names_by_image,
-        )
+        item_by_source = {}
+        for item_raw in raw.get("items", []):
+            item = _parse_media_item(item_raw)
+            if item.source in item_by_source:
+                raise ValueError(f"Duplicate item source: {item.source}")
+            item_by_source[item.source] = item
+        return cls(item_by_source=item_by_source)
+
+    @functools.cached_property
+    def item_by_source_str(self) -> Mapping[str, MediaItem]:
+        return {
+            str(source): item for source, item in self.item_by_source.items()
+        }
 
 
 _COMMENTS_PER_FEED = 50

@@ -6,10 +6,10 @@
 
 {% set media = ginjarator.py.import_("dseomn_website.media") %}
 
-{% macro image(source, profile_name, class="") -%}
+{% macro image(image_metadata, profile_name) -%}
   {%- set profile = media.IMAGE_PROFILES[profile_name] -%}
-  {%- set primary_output = profile.primary_output(source) -%}
-  {%- set outputs = profile.unique_outputs(source) -%}
+  {%- set primary_output = profile.primary_output(image_metadata.source) -%}
+  {%- set outputs = profile.unique_outputs(image_metadata.source) -%}
   <img
       sizes="{{ profile.responsive_sizes() | e }}"
       {% if none not in (primary_output.url_path, primary_output.metadata) %}
@@ -27,10 +27,8 @@
           {{ output.url_path | e }} {{ output.metadata.geometry.width | e }}w
         {%- endfor -%}
       "
-      class="image-{{ profile_name.replace("_", "-") | e }} {{ class | e }}"
+      class="image-{{ profile_name.replace("_", "-") | e }}"
       loading="lazy"
-      {% for attribute, value in kwargs.items() %}
-        {{ attribute }}="{{ value | e }}"
-      {% endfor %}
+      alt="{{ image_metadata.alt | e }}"
       >
 {%- endmacro %}

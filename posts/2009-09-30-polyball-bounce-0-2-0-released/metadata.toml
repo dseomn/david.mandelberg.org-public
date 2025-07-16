@@ -7,8 +7,14 @@ published = 2009-09-29 23:23:28-04:00
 title = "Polyball Bounce 0.2.0 Released"
 tags = ["technology"]
 
-[media.images]
-main = [
-  "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Polyball-Bounce-1.png",
-  "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Configure-Polyball-Bounce.png",
-]
+[[media.items]]
+type = "image"
+source = "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Polyball-Bounce-1.png"
+alt = "Polyball Bounce 0.2.0"
+main = true
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Configure-Polyball-Bounce.png"
+alt = "Polyball Bounce 0.2.0: Configure"
+main = true

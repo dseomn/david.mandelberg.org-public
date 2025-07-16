@@ -293,9 +293,16 @@ def image_outputs_by_source() -> (
     ](set)
     outputs[FAVICON].update(IMAGE_PROFILES["favicon"].outputs(FAVICON))
     for page in metadata.Page.all():
-        for source, profile_names in page.media.profile_names_by_image.items():
+        for media_item in page.media.item_by_source.values():
+            if not isinstance(media_item, metadata.Image):
+                continue
+            profile_names = set()
+            if media_item.float_:
+                profile_names.add("float")
+            if media_item.main:
+                profile_names.add("main")
             for profile_name in profile_names:
-                outputs[source].update(
-                    IMAGE_PROFILES[profile_name].outputs(source)
+                outputs[media_item.source].update(
+                    IMAGE_PROFILES[profile_name].outputs(media_item.source)
                 )
     return outputs

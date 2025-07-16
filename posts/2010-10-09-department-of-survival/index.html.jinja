@@ -4,16 +4,21 @@
  # SPDX-License-Identifier: CC-BY-4.0
  #}
 
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
+
 {% import "include/article.html.jinja" as article %}
 {% import "include/media_html.html.jinja" as media_html %}
 
 {% call article.post() %}
+  {% set post_metadata = metadata.Post.load(ginjarator.current_template) %}
+
   <div class="figure-float">
     <a href="http://dseomn.deviantart.com/art/Mt-Monadnock-2-134483093">
       {{ media_html.image(
-        "../private/posts/2010-10-09-department-of-survival/Mt__Monadnock_2_by_dseomn-400x300.jpg",
+        post_metadata.media.item_by_source_str[
+          "../private/posts/2010-10-09-department-of-survival/Mt__Monadnock_2_by_dseomn-400x300.jpg"
+        ],
         "float",
-        alt="",
       ) }}
     </a>
   </div>
@@ -21,9 +26,10 @@
   <div class="figure-float">
     <a href="http://dseomn.deviantart.com/art/Snowy-Stream-48044184">
       {{ media_html.image(
-        "../private/posts/2010-10-09-department-of-survival/Snowy_Stream_by_dseomn-400x300.jpg",
+        post_metadata.media.item_by_source_str[
+          "../private/posts/2010-10-09-department-of-survival/Snowy_Stream_by_dseomn-400x300.jpg"
+        ],
         "float",
-        alt="",
       ) }}
     </a>
   </div>

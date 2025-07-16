@@ -10,8 +10,14 @@ comments = [
   "5fd66385-75da-45c0-b622-cf9962132cf3",
 ]
 
-[media.images]
-float = [
-  "../private/posts/2010-10-09-department-of-survival/Mt__Monadnock_2_by_dseomn-400x300.jpg",
-  "../private/posts/2010-10-09-department-of-survival/Snowy_Stream_by_dseomn-400x300.jpg",
-]
+[[media.items]]
+type = "image"
+source = "../private/posts/2010-10-09-department-of-survival/Mt__Monadnock_2_by_dseomn-400x300.jpg"
+alt = ""
+float = true
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2010-10-09-department-of-survival/Snowy_Stream_by_dseomn-400x300.jpg"
+alt = ""
+float = true

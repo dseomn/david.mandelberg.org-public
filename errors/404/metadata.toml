@@ -2,7 +2,12 @@
 #
 # SPDX-License-Identifier: CC-BY-4.0
 
-[media.images]
-main = [
-  "../private/errors/404/P1250746-raw-unsharp.jpg",
-]
+[[media.items]]
+type = "image"
+source = "../private/errors/404/P1250746-raw-unsharp.jpg"
+alt = """\
+  Vuvuzela held by a plastic truss, with a balloon over the mouthpiece. Coming \
+  out of the other end of the balloon is a tube. The other end of that tube is \
+  duct taped to a pink plastic box.\
+"""
+main = true
