@@ -36,6 +36,35 @@
         <meta charset="utf-8">
         <title>{{ page_metadata.full_title | e }}</title>
         <meta name="viewport" content="width=device-width">
+        {% for media_item in page_metadata.media.item_by_source.values()
+          if media_item.opengraph
+        %}
+          {% for opengraph_output
+            in media.IMAGE_PROFILES.opengraph.unique_outputs(media_item.source)
+            if none not in (
+              opengraph_output.url_path,
+              opengraph_output.metadata,
+            )
+          %}
+            <meta
+                property="og:image"
+                content="{{ opengraph_output.url_path | e }}"
+                >
+            <meta
+                property="og:image:type"
+                content="{{ opengraph_output.metadata.mimeType | e }}"
+                >
+            <meta
+                property="og:image:width"
+                content="{{ opengraph_output.metadata.geometry.width | e }}"
+                >
+            <meta
+                property="og:image:height"
+                content="{{ opengraph_output.metadata.geometry.height | e }}"
+                >
+            <meta property="og:image:alt" content="{{ media_item.alt | e }}">
+          {% endfor %}
+        {% endfor %}
         <meta
             property="og:locale"
             content="{{ metadata.SITE.language.replace("-", "_") | e }}"

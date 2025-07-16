@@ -261,6 +261,13 @@ IMAGE_PROFILES = {
         factors=(4, 2, 1),
         inline_size=layout.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
     ),
+    "opengraph": NormalImageProfile(
+        max_width=1920,
+        max_height=1920,
+        jpeg_quality=90,
+        factors=(1,),
+        inline_size="auto",  # Unused.
+    ),
 }
 
 FAVICON = ginjarator.paths.Filesystem(
@@ -284,6 +291,8 @@ def image_outputs_by_source() -> (
                 profile_names.add("float")
             if media_item.main:
                 profile_names.add("main")
+            if media_item.opengraph:
+                profile_names.add("opengraph")
             for profile_name in profile_names:
                 outputs[media_item.source].update(
                     IMAGE_PROFILES[profile_name].outputs(media_item.source)

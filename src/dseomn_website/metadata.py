@@ -154,6 +154,7 @@ class Image(MediaItem):
     alt: str
     float_: bool
     main: bool
+    opengraph: bool
 
 
 def _parse_media_item(raw: Any) -> MediaItem:
@@ -161,12 +162,13 @@ def _parse_media_item(raw: Any) -> MediaItem:
     source = ginjarator.paths.Filesystem(raw["source"])
     match raw["type"]:
         case "image":
-            known_keys.update(("alt", "float", "main"))
+            known_keys.update(("alt", "float", "main", "opengraph"))
             item = Image(
                 source=source,
                 alt=raw["alt"],
                 float_=raw.get("float", False),
                 main=raw.get("main", False),
+                opengraph=raw.get("opengraph", False),
             )
         case _:
             raise ValueError(f"Unknown media item type: {raw!r}")
