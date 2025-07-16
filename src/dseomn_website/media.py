@@ -312,6 +312,8 @@ def image_outputs_by_source() -> (
                 profile_names.add("opengraph")
             if media_item.float_:
                 profile_names.add("float")
+            if media_item.full_screen:
+                profile_names.add("full_screen")
             if media_item.main:
                 profile_names.add("main")
             for profile_name in profile_names:

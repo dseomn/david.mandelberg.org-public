@@ -148,6 +148,7 @@ def test_media_parse() -> None:
                     opengraph=True,
                     alt="Foo?",
                     float=True,
+                    full_screen=True,
                 ),
                 dict(
                     type="image",
@@ -165,6 +166,7 @@ def test_media_parse() -> None:
         opengraph=True,
         alt="Foo?",
         float_=True,
+        full_screen=True,
         main=False,
     )
     bar = metadata.Image(
@@ -173,6 +175,7 @@ def test_media_parse() -> None:
         opengraph=False,
         alt="Bar!",
         float_=False,
+        full_screen=False,
         main=True,
     )
     assert actual == metadata.Media(

@@ -162,6 +162,7 @@ class Image(MediaItem):
     type_: Literal["image"] = "image"
     alt: str
     float_: bool
+    full_screen: bool
     main: bool
 
 
@@ -174,11 +175,12 @@ def _parse_media_item(raw: Any) -> MediaItem:
     )
     match raw["type"]:
         case "image":
-            known_keys.update(("alt", "float", "main"))
+            known_keys.update(("alt", "float", "full_screen", "main"))
             item = Image(
                 **common_kwargs,
                 alt=raw["alt"],
                 float_=raw.get("float", False),
+                full_screen=raw.get("full_screen", False),
                 main=raw.get("main", False),
             )
         case _:
