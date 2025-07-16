@@ -12,7 +12,7 @@ import functools
 import http
 import itertools
 import tomllib
-from typing import Any, final, override, Self
+from typing import Any, final, Literal, override, Self
 import urllib.parse
 import uuid as uuid_
 
@@ -146,11 +146,13 @@ class Fragment(Resource):
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class MediaItem:
+    type_: str
     source: ginjarator.paths.Filesystem
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Image(MediaItem):
+    type_: Literal["image"] = "image"
     alt: str
     float_: bool
     main: bool
