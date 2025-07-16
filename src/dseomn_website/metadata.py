@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import abc
 import collections
 from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 import dataclasses
@@ -150,11 +151,16 @@ class Fragment(Resource):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class MediaItem:
+class MediaItem(abc.ABC):
     type_: str
     source: ginjarator.paths.Filesystem
     gallery: str | None
     opengraph: bool
+
+    @abc.abstractmethod
+    def details_page_item(self) -> Self:
+        """Returns a version of self for use on a MediaItemDetails page."""
+        raise NotImplementedError()
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -164,6 +170,18 @@ class Image(MediaItem):
     float_: bool
     full_screen: bool
     main: bool
+
+    @override
+    def details_page_item(self) -> Self:
+        return type(self)(
+            source=self.source,
+            gallery=None,
+            opengraph=True,
+            alt=self.alt,
+            float_=False,
+            full_screen=True,
+            main=False,
+        )
 
 
 def _parse_media_item(raw: Any) -> MediaItem:
@@ -309,6 +327,61 @@ class Page(Resource):
     @property
     def full_title(self) -> str:
         return _title_join(parent=SITE.title, child=self.title)
+
+    @functools.cached_property
+    def media_item_details_by_source(
+        self,
+    ) -> Mapping[ginjarator.paths.Filesystem, "MediaItemDetails"]:
+        result = {}
+        for media_item in self.media.item_by_source.values():
+            if media_item.gallery is not None:
+                result[media_item.source] = MediaItemDetails.create(
+                    self,
+                    media_item.source,
+                )
+        return result
+
+
+@final
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class MediaItemDetails(Page):
+
+    def __post_init__(self) -> None:
+        # MediaItemDetails pages can't be recursive, and MediaItemDetails.all()
+        # relies on that.
+        assert not self.media_item_details_by_source
+
+    @classmethod
+    def create(
+        cls,
+        parent: Page,
+        media_item_source: ginjarator.paths.Filesystem,
+    ) -> Self:
+        media_item = parent.media.item_by_source[media_item_source]
+        return cls(
+            url_path=urllib.parse.urljoin(
+                parent.url_path,
+                urllib.parse.quote(f"{media_item.source.stem}/"),
+            ),
+            title=media_item.source.name,
+            media=Media(
+                item_by_source={
+                    media_item.source: media_item.details_page_item(),
+                },
+            ),
+        )
+
+    @override
+    @classmethod
+    def all(cls) -> Collection[Self]:
+        result = list[Self]()
+        for page in itertools.chain.from_iterable(
+            subclass.all()
+            for subclass in Page.__subclasses__()
+            if not issubclass(subclass, MediaItemDetails)
+        ):
+            result.extend(page.media_item_details_by_source.values())
+        return tuple(result)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)

@@ -100,6 +100,26 @@ def test_fragment() -> None:
     assert fragment.url_fragment == "#bar"
 
 
+def test_image_details_page_item() -> None:
+    assert metadata.Image(
+        source=ginjarator.paths.Filesystem("foo.png"),
+        gallery="main",
+        opengraph=False,
+        alt="Foo?",
+        float_=True,
+        full_screen=False,
+        main=True,
+    ).details_page_item() == metadata.Image(
+        source=ginjarator.paths.Filesystem("foo.png"),
+        gallery=None,
+        opengraph=True,
+        alt="Foo?",
+        float_=False,
+        full_screen=True,
+        main=False,
+    )
+
+
 @pytest.mark.parametrize(
     "raw,error_regex",
     (
@@ -401,6 +421,85 @@ def test_page_full_title() -> None:
         metadata.Page(url_path="/foo/", title="Foo").full_title
         == "Foo — David Mandelberg"
     )
+
+
+def test_page_media_item_details_by_source() -> None:
+    page = metadata.Page(
+        url_path="/foo/",
+        title="Foo",
+        media=metadata.Media.parse(
+            dict(
+                items=[
+                    dict(
+                        type="image",
+                        source="foo.png",
+                        alt="Foo?",
+                        gallery="main",
+                    ),
+                    dict(
+                        type="image",
+                        source="bar.jpg",
+                        alt="Bar!",
+                        main=True,
+                    ),
+                ],
+            )
+        ),
+    )
+
+    assert page.media_item_details_by_source.keys() == {
+        ginjarator.paths.Filesystem("foo.png"),
+    }
+
+
+def test_media_item_details_create() -> None:
+    parent = metadata.Page(
+        url_path="/foo/",
+        title="Foo",
+        media=metadata.Media.parse(
+            dict(
+                items=[
+                    dict(
+                        type="image",
+                        source="bar.jpg",
+                        alt="Bar!",
+                        gallery="main",
+                    ),
+                ],
+            )
+        ),
+    )
+
+    media_item_details = metadata.MediaItemDetails.create(
+        parent,
+        ginjarator.paths.Filesystem("bar.jpg"),
+    )
+
+    assert media_item_details == metadata.MediaItemDetails(
+        url_path="/foo/bar/",
+        title="bar.jpg",
+        media=metadata.Media.parse(
+            dict(
+                items=[
+                    dict(
+                        type="image",
+                        source="bar.jpg",
+                        alt="Bar!",
+                        opengraph=True,
+                        full_screen=True,
+                    ),
+                ],
+            )
+        ),
+    )
+
+
+@pytest.mark.xfail(
+    reason="TODO: dseomn - Enable after adding some gallery images.",
+)
+def test_media_item_details_all() -> None:
+    with ginjarator.testing.api_for_scan():
+        assert metadata.MediaItemDetails.all()
 
 
 def test_error_load_error(tmp_path: pathlib.Path) -> None:

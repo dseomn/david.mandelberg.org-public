@@ -307,7 +307,7 @@ def image_outputs_by_source() -> (
                 continue
             profile_names = set[str]()
             if media_item.gallery is not None:
-                profile_names.update(("full_screen", "gallery_thumbnail"))
+                profile_names.add("gallery_thumbnail")
             if media_item.opengraph:
                 profile_names.add("opengraph")
             if media_item.float_:
