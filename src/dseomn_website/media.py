@@ -7,7 +7,6 @@ import collections
 from collections.abc import Collection, Mapping, Sequence
 import dataclasses
 import functools
-import itertools
 import json
 from typing import Any, override, Self
 
@@ -145,22 +144,6 @@ class ImageProfile(abc.ABC):
         """Returns the img.sizes attribute."""
         # TODO: https://caniuse.com/mdn-html_elements_img_sizes_auto - Use auto.
         raise NotImplementedError()
-
-
-class UnionImageProfile(ImageProfile):
-    def __init__(self, *profiles: ImageProfile) -> None:
-        self._profiles = profiles
-
-    @override
-    def outputs(
-        self,
-        source: ginjarator.paths.Filesystem | str,
-    ) -> Collection[ImageOutput]:
-        return frozenset(
-            itertools.chain.from_iterable(
-                profile.outputs(source) for profile in self._profiles
-            )
-        )
 
 
 class FaviconProfile(ImageProfile):

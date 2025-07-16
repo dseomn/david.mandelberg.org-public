@@ -210,37 +210,6 @@ def test_image_profile_unique_outputs_render(tmp_path: pathlib.Path) -> None:
         )
 
 
-def test_union_image_profile() -> None:
-    profile = media.UnionImageProfile(
-        media.NormalImageProfile(
-            max_width=17,
-            max_height=17,
-            jpeg_quality=90,
-            factors=(1,),
-            inline_size="",
-        ),
-        media.NormalImageProfile(
-            max_width=42,
-            max_height=42,
-            jpeg_quality=90,
-            factors=(1,),
-            inline_size="",
-        ),
-    )
-    source = ginjarator.paths.Filesystem("foo.png")
-
-    assert set(profile.outputs(source)) == {
-        media.ImageOutput(
-            source=source,
-            conversion=media.ImageConversion.png(max_width=17, max_height=17),
-        ),
-        media.ImageOutput(
-            source=source,
-            conversion=media.ImageConversion.png(max_width=42, max_height=42),
-        ),
-    }
-
-
 def test_favicon_profile_outputs() -> None:
     assert media.ImageOutput(
         source=ginjarator.paths.Filesystem("foo"),
