@@ -738,10 +738,7 @@ class PostList(Page):
             for post in page.posts:
                 result.setdefault(
                     post.published.year,
-                    urllib.parse.urljoin(
-                        page.url_path,
-                        f"#{urllib.parse.quote(post.id)}",
-                    ),
+                    page.fragment(post.id).url_path,
                 )
         return result
 
