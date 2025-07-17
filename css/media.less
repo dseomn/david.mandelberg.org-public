@@ -46,7 +46,8 @@
   display: block;
   inline-size: auto;
   margin-inline: auto;
-  max-block-size: 100vb;
+  // Give some extra space for .media-item-details-nav to fit on the page.
+  max-block-size: calc(100vb - 4em);
   max-inline-size: 100%;
 }
 
