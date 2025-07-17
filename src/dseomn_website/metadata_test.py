@@ -1050,6 +1050,7 @@ def test_post_load(
         post_metadata = metadata.Post.load(ginjarator.api().current_template)
 
     assert post_metadata == expected
+    assert post_metadata.fragment("bar").id == "2025-06-27-foo-bar"
     assert post_metadata.work_path == ginjarator.paths.Filesystem(
         "work/posts/2025-06-27-foo"
     )

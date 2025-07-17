@@ -590,6 +590,10 @@ class Post(Page):
             )
         return posts
 
+    @override
+    def fragment(self, id: str) -> Fragment:
+        return super().fragment(f"{self.id}-{id}")
+
     @property
     def work_path(self) -> ginjarator.paths.Filesystem:
         return paths.WORK / "posts" / self.id
@@ -604,7 +608,7 @@ class Post(Page):
 
     @functools.cached_property
     def comments_section(self) -> Fragment:
-        return self.fragment(f"{self.id}-comments")
+        return self.fragment("comments")
 
     @functools.cached_property
     def comment_by_uuid(self) -> Mapping[uuid_.UUID, Comment]:
