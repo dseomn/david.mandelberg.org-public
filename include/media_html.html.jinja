@@ -8,11 +8,14 @@
 
 {% import "include/base_html.html.jinja" as base_html %}
 
-{% macro image(image_metadata, profile_name) -%}
+{% macro image(image_metadata, profile_name, id=none) -%}
   {%- set profile = media.IMAGE_PROFILES[profile_name] -%}
   {%- set primary_output = profile.primary_output(image_metadata.source) -%}
   {%- set outputs = profile.unique_outputs(image_metadata.source) -%}
   <img
+      {% if id is not none %}
+        id="{{ id | e }}"
+      {% endif %}
       sizes="{{ profile.responsive_sizes() | e }}"
       {% if none not in (primary_output.url_path, primary_output.metadata) %}
         src="{{ primary_output.url_path | e }}"
@@ -43,6 +46,9 @@
       {% set media_item_details_metadata = (
         page_metadata.media_item_details_by_source[media_item.source]
       ) %}
+      {% set media_item_details_fragment = media_item_details_metadata.fragment(
+        media_item.source.name
+      ) %}
       {% if media_item.type_ == "image" %}
         {% call base_html.write(
           page_metadata=media_item_details_metadata,
@@ -51,7 +57,11 @@
             <header class="media-item-details-header">
               <h1 class="h1">{{ media_item_details_metadata.title | e }}</h1>
             </header>
-            {{ image(media_item, "full_screen") }}
+            {{ image(
+              media_item,
+              "full_screen",
+              id=media_item_details_fragment.id,
+            ) }}
             <div class="media-item-details-text">
               {% if media_item.description_template is not none %}
                 {#
@@ -63,7 +73,7 @@
             </div>
           </section>
         {% endcall %}
-        <a href="{{ media_item_details_metadata.url_path | e }}">
+        <a href="{{ media_item_details_fragment.url_path | e }}">
           {{ image(media_item, "gallery_thumbnail") }}
         </a>
       {% else %}
