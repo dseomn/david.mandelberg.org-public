@@ -156,6 +156,7 @@ class MediaItem(abc.ABC):
     source: ginjarator.paths.Filesystem
     gallery: str | None
     opengraph: bool
+    description_template: ginjarator.paths.Filesystem | None
 
     @abc.abstractmethod
     def details_page_item(self) -> Self:
@@ -177,6 +178,7 @@ class Image(MediaItem):
             source=self.source,
             gallery=None,
             opengraph=True,
+            description_template=self.description_template,
             alt=self.alt,
             float_=False,
             full_screen=True,
@@ -185,11 +187,22 @@ class Image(MediaItem):
 
 
 def _parse_media_item(raw: Any) -> MediaItem:
-    known_keys = {"type", "source", "gallery", "opengraph"}
+    known_keys = {
+        "type",
+        "source",
+        "gallery",
+        "opengraph",
+        "description_template",
+    }
     common_kwargs = dict(
         source=ginjarator.paths.Filesystem(raw["source"]),
         gallery=raw.get("gallery"),
         opengraph=raw.get("opengraph", False),
+        description_template=(
+            ginjarator.paths.Filesystem(raw["description_template"])
+            if "description_template" in raw
+            else None
+        ),
     )
     match raw["type"]:
         case "image":
