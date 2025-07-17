@@ -44,6 +44,9 @@
       in page_metadata.media_item_details_by_source.values()
       if media_item_details_metadata.item.gallery == gallery_name
     %}
+      {% set thumbnail_fragment = page_metadata.fragment(
+        media_item_details_metadata.item.source.name
+      ) %}
       {% if media_item_details_metadata.item.type_ == "image" %}
         {% call base_html.write(
           page_metadata=media_item_details_metadata,
@@ -83,6 +86,14 @@
                       </a>
                     </li>
                   {% endif %}
+                  <li>
+                    <a
+                        class="pagination-item pagination-item-other"
+                        href="{{ thumbnail_fragment.url_path | e }}"
+                        >
+                      Back to gallery
+                    </a>
+                  </li>
                   {% set next_contents %}
                     <span aria-label="next gallery item" role="img">→</span>
                   {% endset %}
@@ -124,7 +135,11 @@
           </section>
         {% endcall %}
         <a href="{{ media_item_details_metadata.item_fragment.url_path | e }}">
-          {{ image(media_item_details_metadata.item, "gallery_thumbnail") }}
+          {{ image(
+            media_item_details_metadata.item,
+            "gallery_thumbnail",
+            id=thumbnail_fragment.id,
+          ) }}
         </a>
       {% else %}
         {% do ginjarator.py.assert_(false) %}
