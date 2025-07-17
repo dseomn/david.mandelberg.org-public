@@ -58,6 +58,56 @@
               id=media_item_details_metadata.item_fragment.id,
             ) }}
             <div class="media-item-details-text">
+              <nav class="media-item-details-nav">
+                <ul class="pagination-items">
+                  {% set prev_contents %}
+                    <span aria-label="previous gallery item" role="img">←</span>
+                  {% endset %}
+                  {% if loop.first %}
+                    <li
+                        class="pagination-item-box-prev
+                               pagination-item-box-hidden"
+                        >
+                      <span class="pagination-item pagination-item-page">
+                        {{ prev_contents }}
+                      </span>
+                    </li>
+                  {% else %}
+                    <li class="pagination-item-box-prev">
+                      <a
+                          class="pagination-item pagination-item-page"
+                          href="{{ loop.previtem.item_fragment.url_path | e }}"
+                          rel="prev"
+                          >
+                        {{ prev_contents }}
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% set next_contents %}
+                    <span aria-label="next gallery item" role="img">→</span>
+                  {% endset %}
+                  {% if loop.last %}
+                    <li
+                        class="pagination-item-box-next
+                               pagination-item-box-hidden"
+                        >
+                      <span class="pagination-item pagination-item-page">
+                        {{ next_contents }}
+                      </span>
+                    </li>
+                  {% else %}
+                    <li class="pagination-item-box-next">
+                      <a
+                          class="pagination-item pagination-item-page"
+                          href="{{ loop.nextitem.item_fragment.url_path | e }}"
+                          rel="next"
+                          >
+                        {{ next_contents }}
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
               {% if media_item_details_metadata.item.description_template
                 is not none
               %}
