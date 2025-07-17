@@ -499,9 +499,6 @@ def test_media_item_details_create() -> None:
     )
 
 
-@pytest.mark.xfail(
-    reason="TODO: dseomn - Enable after adding some gallery images.",
-)
 def test_media_item_details_all() -> None:
     with ginjarator.testing.api_for_scan():
         assert metadata.MediaItemDetails.all()
