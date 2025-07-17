@@ -30,3 +30,28 @@
   max-block-size: @gallery-item-max-block-size;
   max-inline-size: 100%;
 }
+
+.media-item-details {
+  .section-outer();
+}
+
+.media-item-details-header {
+  .section-inner();
+  padding-block-end: 0;
+  text-align: center;
+}
+
+.image-full-screen {
+  block-size: auto;
+  display: block;
+  inline-size: auto;
+  margin-inline: auto;
+  // The 4em makes scrolling to fit the whole image on screen easier.
+  max-block-size: calc(100vb - 4em);
+  max-inline-size: 100%;
+}
+
+.media-item-details-text {
+  .section-inner();
+  padding-block-start: 0;
+}

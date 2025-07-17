@@ -6,6 +6,8 @@
 
 {% set media = ginjarator.py.import_("dseomn_website.media") %}
 
+{% import "include/base_html.html.jinja" as base_html %}
+
 {% macro image(image_metadata, profile_name) -%}
   {%- set profile = media.IMAGE_PROFILES[profile_name] -%}
   {%- set primary_output = profile.primary_output(image_metadata.source) -%}
@@ -38,15 +40,30 @@
     {% for media_item in page_metadata.media.item_by_source.values()
       if media_item.gallery == gallery_name
     %}
+      {% set media_item_details_metadata = (
+        page_metadata.media_item_details_by_source[media_item.source]
+      ) %}
       {% if media_item.type_ == "image" %}
-        {# TODO: dseomn - Show the full image in a better way. #}
-        <a
-            href="{{
-              media.IMAGE_PROFILES.full_screen.primary_output(
-                media_item.source
-              ).url_path | e
-            }}"
-            >
+        {% call base_html.write(
+          page_metadata=media_item_details_metadata,
+        ) %}
+          <section class="media-item-details">
+            <header class="media-item-details-header">
+              <h1 class="h1">{{ media_item_details_metadata.title | e }}</h1>
+            </header>
+            {{ image(media_item, "full_screen") }}
+            <div class="media-item-details-text">
+              {% if media_item.description_template is not none %}
+                {#
+                 # TODO: https://github.com/pallets/jinja/issues/2108 - Add
+                 # `without context`
+                 #}
+                {% include (media_item.description_template | string) %}
+              {% endif %}
+            </div>
+          </section>
+        {% endcall %}
+        <a href="{{ media_item_details_metadata.url_path | e }}">
           {{ image(media_item, "gallery_thumbnail") }}
         </a>
       {% else %}
