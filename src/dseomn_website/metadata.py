@@ -358,6 +358,7 @@ class Page(Resource):
 @final
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class MediaItemDetails(Page):
+    item: MediaItem
 
     def __post_init__(self) -> None:
         # MediaItemDetails pages can't be recursive, and MediaItemDetails.all()
@@ -382,6 +383,7 @@ class MediaItemDetails(Page):
                     media_item.source: media_item.details_page_item(),
                 },
             ),
+            item=media_item,
         )
 
     @override
@@ -395,6 +397,10 @@ class MediaItemDetails(Page):
         ):
             result.extend(page.media_item_details_by_source.values())
         return tuple(result)
+
+    @functools.cached_property
+    def item_fragment(self) -> Fragment:
+        return self.fragment(self.item.source.name)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)

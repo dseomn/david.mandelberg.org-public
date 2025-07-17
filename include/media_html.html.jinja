@@ -46,9 +46,6 @@
       {% set media_item_details_metadata = (
         page_metadata.media_item_details_by_source[media_item.source]
       ) %}
-      {% set media_item_details_fragment = media_item_details_metadata.fragment(
-        media_item.source.name
-      ) %}
       {% if media_item.type_ == "image" %}
         {% call base_html.write(
           page_metadata=media_item_details_metadata,
@@ -60,7 +57,7 @@
             {{ image(
               media_item,
               "full_screen",
-              id=media_item_details_fragment.id,
+              id=media_item_details_metadata.item_fragment.id,
             ) }}
             <div class="media-item-details-text">
               {% if media_item.description_template is not none %}
@@ -73,7 +70,7 @@
             </div>
           </section>
         {% endcall %}
-        <a href="{{ media_item_details_fragment.url_path | e }}">
+        <a href="{{ media_item_details_metadata.item_fragment.url_path | e }}">
           {{ image(media_item, "gallery_thumbnail") }}
         </a>
       {% else %}

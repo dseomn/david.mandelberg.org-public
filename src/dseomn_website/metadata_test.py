@@ -496,7 +496,9 @@ def test_media_item_details_create() -> None:
                 ],
             )
         ),
+        item=parent.media.item_by_source_str["bar.jpg"],
     )
+    assert media_item_details.item_fragment.url_path == "/foo/bar/#bar.jpg"
 
 
 def test_media_item_details_all() -> None:
