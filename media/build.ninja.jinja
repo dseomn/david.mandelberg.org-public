@@ -14,10 +14,6 @@ rule image_convert
   command = in=$in; out=$out; $conversion_command
   description = CONVERT $in ($conversion)
 
-rule image_metadata
-  command = magick -define json:version=1.0 $in $out
-  description = METADATA $in
-
 {% for source, image_outputs in media.image_outputs_by_source().items() %}
 {% set work_dir = (image_outputs | first).work_path.parent %}
 {% set converted_filenames = [] %}
@@ -35,11 +31,6 @@ build $
   }}
   conversion_command = $
     {{ ginjarator.to_ninja(image_output.conversion.sh_command) }}
-build $
-    {{ ginjarator.to_ninja(image_output.metadata_path) }} $
-    : $
-    image_metadata $
-    {{ ginjarator.to_ninja(image_output.work_path) }}
 {{ cache_buster.hash(
   input_dir=work_dir | string,
   input_filename=image_output.work_path.name,

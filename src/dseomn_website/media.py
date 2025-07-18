@@ -7,10 +7,10 @@ import collections
 from collections.abc import Collection, Mapping, Sequence
 import dataclasses
 import functools
-import json
 from typing import Any, override, Self
 
 import ginjarator
+import wand.image
 
 from dseomn_website import layout
 from dseomn_website import metadata
@@ -70,6 +70,13 @@ class ImageConversion:
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
+class ImageOutputMetadata:
+    width: int
+    height: int
+    mime_type: str
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class ImageOutput:
     """Result of applying an ImageConversion to an image."""
 
@@ -99,15 +106,17 @@ class ImageOutput:
         return paths.to_url_path(output_path)
 
     @functools.cached_property
-    def metadata_path(self) -> ginjarator.paths.Filesystem:
-        return self.work_path.with_suffix(f"{self.work_path.suffix}.json")
-
-    @functools.cached_property
-    def metadata(self) -> Any:
-        raw = ginjarator.api().fs.read_text(self.metadata_path)
-        if raw is None:
+    def metadata(self) -> ImageOutputMetadata | None:
+        if not ginjarator.api().fs.add_dependency(self.work_path):
             return None
-        return json.loads(raw)[0]["image"]
+        with wand.image.Image(
+            filename=ginjarator.api().fs.root / self.work_path,
+        ) as image:
+            return ImageOutputMetadata(
+                width=image.width,
+                height=image.height,
+                mime_type=image.mimetype,
+            )
 
 
 class ImageProfile(abc.ABC):

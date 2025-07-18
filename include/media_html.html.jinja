@@ -19,8 +19,8 @@
       sizes="{{ profile.responsive_sizes() | e }}"
       {% if none not in (primary_output.url_path, primary_output.metadata) %}
         src="{{ primary_output.url_path | e }}"
-        height="{{ primary_output.metadata.geometry.height | e }}"
-        width="{{ primary_output.metadata.geometry.width | e }}"
+        height="{{ primary_output.metadata.height | e }}"
+        width="{{ primary_output.metadata.width | e }}"
       {% endif %}
       srcset="
         {%- set srcset_joiner = joiner(", ") -%}
@@ -29,7 +29,7 @@
           output.metadata,
         ) -%}
           {{- srcset_joiner() -}}
-          {{ output.url_path | e }} {{ output.metadata.geometry.width | e }}w
+          {{ output.url_path | e }} {{ output.metadata.width | e }}w
         {%- endfor -%}
       "
       class="image-{{ profile_name.replace("_", "-") | e }}"

@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import collections
-import json
 import pathlib
 import subprocess
 import textwrap
@@ -103,9 +102,6 @@ def test_image_output_scan() -> None:
             "P1230630-raw-crop-square.png"
         )
         assert image_output.url_path is None
-        assert image_output.metadata_path == ginjarator.paths.Filesystem(
-            "work/media/P1230630-raw-crop-square-16x16.png.json"
-        )
         assert image_output.metadata is None
 
 
@@ -119,18 +115,20 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
         )
     )
     (tmp_path / "work/media").mkdir(parents=True)
+    (tmp_path / "work/media/foo-16x16.png").write_text(
+        # This is a bit of a hack, using an SVG file for what should be a PNG,
+        # but it makes the metadata easier.
+        '<svg width="16" height="12"/>'
+    )
     (
         tmp_path / "work/media/foo-16x16.png.cache-buster-output-filename"
     ).write_text("output/media/foo-16x16-some-hash.png")
-    (tmp_path / "work/media/foo-16x16.png.json").write_text(
-        json.dumps([dict(image=dict(kumquat=42))])
-    )
 
     with ginjarator.testing.api_for_render(
         root_path=tmp_path,
         dependencies=(
+            "work/media/foo-16x16.png",
             "work/media/foo-16x16.png.cache-buster-output-filename",
-            "work/media/foo-16x16.png.json",
         ),
     ):
         image_output = media.ImageOutput(
@@ -139,7 +137,11 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
         )
 
         assert image_output.url_path == "/media/foo-16x16-some-hash.png"
-        assert image_output.metadata == dict(kumquat=42)
+        assert image_output.metadata == media.ImageOutputMetadata(
+            width=16,
+            height=12,
+            mime_type="image/svg+xml",
+        )
 
 
 def test_image_profile_unique_outputs_scan(tmp_path: pathlib.Path) -> None:
