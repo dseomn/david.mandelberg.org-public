@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euxo pipefail
+
+# See https://github.com/ninja-build/ninja/issues/2610 for why `ninja -t clean`
+# doesn't work.
+rm -rf .ginjarator build.ninja output work
