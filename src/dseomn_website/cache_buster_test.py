@@ -4,7 +4,6 @@
 
 from collections.abc import Generator
 import contextlib
-import json
 import pathlib
 
 import pytest
@@ -56,25 +55,22 @@ def test_hash_normal(
 def test_hash_image() -> None:
     work_path = pathlib.Path("work")
     work_path.mkdir()
-    (work_path / "some-file.txt").write_text("kumquat")
-    (work_path / "some-file.txt.json").write_text(
-        json.dumps([{"image": {"geometry": {"width": 42, "height": 17}}}])
-    )
+    (work_path / "some-file.svg").write_text('<svg width="42" height="17"/>')
 
     cache_buster.main(
         args=(
             f"--work-dir={work_path}",
             "hash",
-            "--output-filename-base=some-file-renamed.txt",
-            "--image-size-from-metadata=work/some-file.txt.json",
-            "work/some-file.txt",
+            "--output-filename-base=some-file-renamed.svg",
+            "--image",
+            "work/some-file.svg",
         )
     )
 
     assert (
-        work_path / "some-file.txt.cache-buster-output-filename"
+        work_path / "some-file.svg.cache-buster-output-filename"
     ).read_text() == (
-        "output/assets/some-file-renamed-42x17-bq8UGvsFuv-F1FnQBRj4UDpo.txt"
+        "output/assets/some-file-renamed-42x17-ixwb6m7S9vQRwWEn9uGL-wm9.svg"
     )
 
 

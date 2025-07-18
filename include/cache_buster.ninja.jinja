@@ -39,23 +39,19 @@ rule cache_buster_copy
   input_filename,
   work_dir,
   output_filename_base=none,
-  image_size_from_metadata=none
+  image=false
 ) %}
 {% set input_file = input_dir + "/" + input_filename %}
 {% set output_filename_path = (
   work_dir + "/" + input_filename + ".cache-buster-output-filename"
 ) %}
 {% set args = [] %}
-{% set extra_deps = [] %}
 {% do args.append(
   "--output-filename-base=" +
   (input_filename if output_filename_base is none else output_filename_base)
 ) %}
-{% if image_size_from_metadata is not none %}
-{% do args.append(
-  "--image-size-from-metadata=" + image_size_from_metadata | string
-) %}
-{% do extra_deps.append(image_size_from_metadata) %}
+{% if image %}
+{% do args.append("--image") %}
 {% endif %}
 build $
     {{ ginjarator.to_ninja(output_filename_path) }} $
@@ -63,7 +59,6 @@ build $
     cache_buster_hash $
     {{ ginjarator.to_ninja(input_file) }} $
     | $
-    {{ ginjarator.to_ninja(extra_deps) }} $
     src/dseomn_website/cache_buster.py
   work_dir = {{ ginjarator.to_ninja(work_dir, escape_shell=true) }}
   args = {{ ginjarator.to_ninja(args, escape_shell=true) }}
