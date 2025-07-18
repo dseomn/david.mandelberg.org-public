@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import collections
+import importlib.resources
 import pathlib
 import subprocess
 import textwrap
@@ -115,10 +116,8 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
         )
     )
     (tmp_path / "work/media").mkdir(parents=True)
-    (tmp_path / "work/media/foo-16x16.png").write_text(
-        # This is a bit of a hack, using an SVG file for what should be a PNG,
-        # but it makes the metadata easier.
-        '<svg width="16" height="12"/>'
+    (tmp_path / "work/media/foo-16x16.png").write_bytes(
+        (importlib.resources.files() / "test-16x12.png").read_bytes()
     )
     (
         tmp_path / "work/media/foo-16x16.png.cache-buster-output-filename"
@@ -140,7 +139,7 @@ def test_image_output_render(tmp_path: pathlib.Path) -> None:
         assert image_output.metadata == media.ImageOutputMetadata(
             width=16,
             height=12,
-            mime_type="image/svg+xml",
+            mime_type="image/png",
         )
 
 
