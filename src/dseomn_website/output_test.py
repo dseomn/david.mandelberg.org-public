@@ -12,11 +12,20 @@ import ginjarator
 import pytest
 import requests
 
+from dseomn_website import metadata
 from dseomn_website import paths
 
 _BASE = "http://localhost:19265"
 
 pytestmark = pytest.mark.output
+
+
+def test_pages_match_metadata() -> None:
+    with ginjarator.testing.api_for_scan():
+        assert {
+            paths.to_url_path(ginjarator.paths.Filesystem(path))
+            for path in pathlib.Path(paths.OUTPUT).glob("**/*.html")
+        } == {page.url_path for page in metadata.Page.all()}
 
 
 @pytest.mark.parametrize(
