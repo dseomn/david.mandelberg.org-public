@@ -15,7 +15,7 @@ import pathlib
 import sys
 import textwrap
 
-import wand.image
+import PIL.Image
 
 
 def _ninja_escape(value: str) -> str:
@@ -47,7 +47,7 @@ def _hash(args: argparse.Namespace) -> None:
     ).decode()
     assert "=" not in file_hash
     if args.image:
-        with wand.image.Image(filename=args.input_file) as image:
+        with PIL.Image.open(args.input_file) as image:
             output_filename_extra = f"-{image.width}x{image.height}"
     else:
         output_filename_extra = ""

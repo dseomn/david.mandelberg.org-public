@@ -10,7 +10,7 @@ import functools
 from typing import Any, override, Self
 
 import ginjarator
-import wand.image
+import PIL.Image
 
 from dseomn_website import layout
 from dseomn_website import metadata
@@ -109,13 +109,11 @@ class ImageOutput:
     def metadata(self) -> ImageOutputMetadata | None:
         if not ginjarator.api().fs.add_dependency(self.work_path):
             return None
-        with wand.image.Image(
-            filename=ginjarator.api().fs.root / self.work_path,
-        ) as image:
+        with PIL.Image.open(ginjarator.api().fs.root / self.work_path) as image:
             return ImageOutputMetadata(
                 width=image.width,
                 height=image.height,
-                mime_type=image.mimetype,
+                mime_type=image.get_format_mimetype(),
             )
 
 
