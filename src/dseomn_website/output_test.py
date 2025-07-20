@@ -2,16 +2,24 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import collections
+from collections.abc import Sequence
 from email import headerregistry
 import http
+import itertools
+import json
 import pathlib
+import subprocess
 from typing import cast
 import urllib.parse
 
 import ginjarator
+import icu
+import lxml.html
 import pytest
 import requests
 
+from dseomn_website import css_constants
 from dseomn_website import metadata
 from dseomn_website import paths
 
@@ -93,3 +101,53 @@ def test_error(url_path: str, expected: http.HTTPStatus) -> None:
             paths.OUTPUT / f"errors/{expected.value}/index.html"
         ).read_text()
     )
+
+
+@pytest.mark.parametrize(
+    "fonts_configured",
+    css_constants.ALL_FONT_FAMILY_SEQUENCES,
+)
+def test_font_coverage(
+    fonts_configured: Sequence[str],
+    tmp_path: pathlib.Path,
+) -> None:
+    grapheme_clusters = set()
+    for html_path in pathlib.Path(paths.OUTPUT).glob("**/*.html"):
+        html_text_icu = icu.UnicodeString(
+            lxml.html.document_fromstring(html_path.read_text()).text_content()
+        )
+        grapheme_cluster_iter = icu.BreakIterator.createCharacterInstance(
+            icu.Locale.getRoot()
+        )
+        grapheme_cluster_iter.setText(html_text_icu)
+        for start, end in itertools.pairwise(
+            itertools.chain((0,), grapheme_cluster_iter)
+        ):
+            grapheme_clusters.add(str(html_text_icu[start:end]))
+    pango_json_path = tmp_path / "pango.json"
+    pango_font_description = ",".join(fonts_configured) + " 12"
+    subprocess.run(
+        (
+            "pango-view",
+            "--no-display",
+            f"--font={pango_font_description}",
+            f"--language={metadata.SITE.language}",
+            f"--text={''.join(sorted(grapheme_clusters))}",
+            f"--serialize-to={pango_json_path}",
+        ),
+        check=True,
+    )
+    pango_serialized = json.loads(pango_json_path.read_text())
+
+    texts_by_font_used = collections.defaultdict[str, list[str]](list)
+    for line in pango_serialized["output"]["lines"]:
+        for run in line["runs"]:
+            font_used = run["font"]["description"].removesuffix(" 12")
+            texts_by_font_used[font_used].append(run["text"])
+
+    assert texts_by_font_used
+    assert not {
+        font_used: "".join(texts)
+        for font_used, texts in texts_by_font_used.items()
+        if font_used not in fonts_configured
+    }

@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from collections.abc import Sequence
+
 # https://developer.mozilla.org/en-US/docs/Web/CSS/font-size says "by default
 # 1em is equivalent to 16px". The purpose of this constant is not to override
 # that, but to give default conversions from em to px for resizing images that
@@ -27,3 +29,29 @@ FLOAT_CONTENTS_INLINE_SIZE = (
 
 GALLERY_ITEM_MAX_BLOCK_SIZE_EM = 12
 GALLERY_ITEM_MAX_BLOCK_SIZE = f"{GALLERY_ITEM_MAX_BLOCK_SIZE_EM}em"
+
+
+def _font_families_to_css(font_families: Sequence[str], generic: str) -> str:
+    return ", ".join(
+        (
+            *(f'"{font_family}"' for font_family in font_families),
+            generic,
+        )
+    )
+
+
+SERIF_FONT_FAMILIES = (
+    "Noto Serif",
+    "Noto Sans Math",
+    "Noto Color Emoji",
+)
+SERIF_FONT_FAMILIES_CSS = _font_families_to_css(SERIF_FONT_FAMILIES, "serif")
+MONOSPACE_FONT_FAMILIES = (
+    "Noto Sans Mono",
+    "Noto Color Emoji",
+)
+MONOSPACE_FONT_FAMILIES_CSS = _font_families_to_css(
+    MONOSPACE_FONT_FAMILIES,
+    "monospace",
+)
+ALL_FONT_FAMILY_SEQUENCES = (SERIF_FONT_FAMILIES, MONOSPACE_FONT_FAMILIES)
