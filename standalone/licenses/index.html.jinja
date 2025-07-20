@@ -1,0 +1,41 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% set css_constants = ginjarator.py.import_("dseomn_website.css_constants") %}
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
+{% set paths = ginjarator.py.import_("dseomn_website.paths") %}
+
+{% import "include/article.html.jinja" as article %}
+
+{% set standalone_metadata = metadata.Standalone.load(
+  ginjarator.current_template
+) %}
+
+{% call article.standalone() %}
+  <h2>Third-party</h2>
+  <ul>
+    {% for font_family in css_constants.ALL_FONT_FAMILIES %}
+      {% set font_family_filename = font_family.replace(" ", "_") %}
+      {% set font_family_license = ginjarator.fs.read_text(
+        "../private/third_party/" + font_family_filename + "/OFL.txt",
+      ) %}
+      {% set font_family_license_url_path = (
+        standalone_metadata.url_path + font_family_filename + "_OFL.txt"
+      ) %}
+      {% if font_family_license is not none %}
+        {% do ginjarator.fs.write_text(
+          paths.from_url_path(font_family_license_url_path),
+          font_family_license,
+        ) %}
+      {% endif %}
+      <li>
+        <a href="{{ font_family_license_url_path | e }}">
+          {{ font_family | e }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endcall %}

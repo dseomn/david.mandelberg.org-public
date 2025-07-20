@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from collections.abc import Sequence
+import itertools
 
 # https://developer.mozilla.org/en-US/docs/Web/CSS/font-size says "by default
 # 1em is equivalent to 16px". The purpose of this constant is not to override
@@ -55,3 +56,6 @@ MONOSPACE_FONT_FAMILIES_CSS = _font_families_to_css(
     "monospace",
 )
 ALL_FONT_FAMILY_SEQUENCES = (SERIF_FONT_FAMILIES, MONOSPACE_FONT_FAMILIES)
+ALL_FONT_FAMILIES = tuple(
+    sorted(set(itertools.chain.from_iterable(ALL_FONT_FAMILY_SEQUENCES)))
+)

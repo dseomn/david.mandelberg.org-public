@@ -5,6 +5,7 @@
 source_paths = [
   "../private/media",
   "../private/posts",
+  "../private/third_party",
   "css",
   "errors",
   "htaccess.jinja",
@@ -52,4 +53,5 @@ templates = [
   "posts/feeds.atom.jinja",
   "posts/lists.html.jinja",
   "standalone/about/index.html.jinja",
+  "standalone/licenses/index.html.jinja",
 ]

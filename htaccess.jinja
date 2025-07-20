@@ -42,7 +42,8 @@ AddType image/jpeg .jpg
 AddType image/png .png
 AddType text/css .css
 AddType text/html .html
-AddCharset utf-8 .css .html
+AddType text/plain .txt
+AddCharset utf-8 .css .html .txt
 
 {% for error_metadata in metadata.Error.all() %}
 ErrorDocument {{ error_metadata.status.value }} {{ error_metadata.url_path }}

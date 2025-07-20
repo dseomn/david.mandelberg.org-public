@@ -435,6 +435,20 @@ class Error(Page):
         )
 
 
+_STANDALONE_MAIN_NAV = tuple(
+    map(
+        ginjarator.paths.Filesystem,
+        ("standalone/about/index.html.jinja",),
+    )
+)
+_STANDALONE_OTHER = tuple(
+    map(
+        ginjarator.paths.Filesystem,
+        ("standalone/licenses/index.html.jinja",),
+    )
+)
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Standalone(Page):
     @classmethod
@@ -461,10 +475,7 @@ class Standalone(Page):
         # This method is called by all pages for the nav links, so avoid
         # read_config() to prevent re-rendering all pages when the list of
         # templates changes. Also, the order is important for the nav links.
-        return tuple(
-            cls.load(ginjarator.paths.Filesystem(template))
-            for template in ("standalone/about/index.html.jinja",)
-        )
+        return tuple(map(cls.load, (*_STANDALONE_MAIN_NAV, *_STANDALONE_OTHER)))
 
 
 def _post_url_path(published: datetime.datetime, slug: str) -> str:
@@ -797,5 +808,5 @@ class PostList(Page):
 def main_nav() -> Sequence[Page]:
     return (
         PostList.main(),
-        *Standalone.all(),
+        *map(Standalone.load, _STANDALONE_MAIN_NAV),
     )
