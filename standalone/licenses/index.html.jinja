@@ -11,7 +11,7 @@
 {% import "include/article.html.jinja" as article %}
 
 {% set standalone_metadata = metadata.Standalone.load(
-  ginjarator.current_template
+  ginjarator.paths.current_template
 ) %}
 
 {% call article.standalone() %}

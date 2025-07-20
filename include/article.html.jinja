@@ -29,7 +29,7 @@
   extra_head=""
 ) %}
   {% set standalone_metadata = metadata.Standalone.load(
-    ginjarator.current_template
+    ginjarator.paths.current_template
   ) %}
   {% set fragment %}
     <article class="article">
@@ -174,7 +174,9 @@
 {% endmacro %}
 
 {% macro post() %}
-  {% set post_metadata = metadata.Post.load(ginjarator.current_template) %}
+  {% set post_metadata = metadata.Post.load(
+    ginjarator.paths.current_template
+  ) %}
   {% set extra_head %}
     <meta
         property="article:published_time"

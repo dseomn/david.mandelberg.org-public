@@ -10,7 +10,9 @@
 {% import "include/media_html.html.jinja" as media_html %}
 
 {% call error.page() %}
-  {% set error_metadata = metadata.Error.load(ginjarator.current_template) %}
+  {% set error_metadata = metadata.Error.load(
+    ginjarator.paths.current_template
+  ) %}
 
   <p>
     Unfortunately, I couldn’t find the page you were looking for. I found this

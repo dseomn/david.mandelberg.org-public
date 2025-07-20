@@ -9,7 +9,9 @@
 {% import "include/base_html.html.jinja" as base_html %}
 
 {% macro page() %}
-  {% set error_metadata = metadata.Error.load(ginjarator.current_template) %}
+  {% set error_metadata = metadata.Error.load(
+    ginjarator.paths.current_template
+  ) %}
   {% set contents = caller() %}
   {% call base_html.write(page_metadata=error_metadata) %}
     <div class="site-error">

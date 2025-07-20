@@ -577,7 +577,7 @@ def test_standalone_load_error(tmp_path: pathlib.Path) -> None:
         root_path=tmp_path,
     ):
         with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
-            metadata.Standalone.load(ginjarator.api().current_template)
+            metadata.Standalone.load(ginjarator.api().paths.current_template)
 
 
 def test_standalone_load(tmp_path: pathlib.Path) -> None:
@@ -604,7 +604,7 @@ def test_standalone_load(tmp_path: pathlib.Path) -> None:
         root_path=tmp_path,
     ):
         standalone_metadata = metadata.Standalone.load(
-            ginjarator.api().current_template
+            ginjarator.api().paths.current_template
         )
 
     assert standalone_metadata.url_path == "/foo/"
@@ -812,7 +812,7 @@ def test_post_load_error(
         root_path=(tmp_path / "public"),
     ):
         with pytest.raises(ValueError, match=error_regex):
-            metadata.Post.load(ginjarator.api().current_template)
+            metadata.Post.load(ginjarator.api().paths.current_template)
 
 
 @pytest.mark.parametrize(
@@ -1049,7 +1049,9 @@ def test_post_load(
         current_template="posts/2025-06-27-foo/index.html.jinja",
         root_path=(tmp_path / "public"),
     ):
-        post_metadata = metadata.Post.load(ginjarator.api().current_template)
+        post_metadata = metadata.Post.load(
+            ginjarator.api().paths.current_template
+        )
 
     assert post_metadata == expected
     assert post_metadata.fragment("bar").id == "2025-06-27-foo-bar"
