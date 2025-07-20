@@ -12,7 +12,7 @@ from typing import Any, override, Self
 import ginjarator
 import PIL.Image
 
-from dseomn_website import layout
+from dseomn_website import css_constants
 from dseomn_website import metadata
 from dseomn_website import paths
 
@@ -247,17 +247,19 @@ class NormalImageProfile(ImageProfile):
 
 def _em_to_pixels_half(length_em: int) -> int:
     """Returns a length in pixels, divided by 2 for half-resolution images."""
-    return length_em * layout.PIXELS_PER_EM // 2
+    return length_em * css_constants.PIXELS_PER_EM // 2
 
 
 IMAGE_PROFILES = {
     "favicon": FaviconProfile(),
     "float": NormalImageProfile(
-        max_width=_em_to_pixels_half(layout.FLOAT_MAX_INLINE_SIZE_EM),
-        max_height=_em_to_pixels_half(layout.FLOAT_MAX_INLINE_SIZE_EM * 2),
+        max_width=_em_to_pixels_half(css_constants.FLOAT_MAX_INLINE_SIZE_EM),
+        max_height=_em_to_pixels_half(
+            css_constants.FLOAT_MAX_INLINE_SIZE_EM * 2
+        ),
         jpeg_quality=90,
         factors=(4, 2, 1),
-        inline_size=layout.FLOAT_CONTENTS_INLINE_SIZE,
+        inline_size=css_constants.FLOAT_CONTENTS_INLINE_SIZE,
     ),
     "full_screen": NormalImageProfile(
         max_width=3840 // 4,
@@ -267,8 +269,12 @@ IMAGE_PROFILES = {
         inline_size="100vi",
     ),
     "gallery_thumbnail": NormalImageProfile(
-        max_width=_em_to_pixels_half(layout.MAIN_COLUMN_MAX_INLINE_SIZE_EM),
-        max_height=_em_to_pixels_half(layout.GALLERY_ITEM_MAX_BLOCK_SIZE_EM),
+        max_width=_em_to_pixels_half(
+            css_constants.MAIN_COLUMN_MAX_INLINE_SIZE_EM
+        ),
+        max_height=_em_to_pixels_half(
+            css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE_EM
+        ),
         jpeg_quality=80,
         factors=(4, 2, 1),
         # As of 2025-07-12, this isn't supported widely enough to use most
@@ -279,13 +285,15 @@ IMAGE_PROFILES = {
         inline_size="auto",
     ),
     "main": NormalImageProfile(
-        max_width=_em_to_pixels_half(layout.MAIN_COLUMN_MAX_INLINE_SIZE_EM),
+        max_width=_em_to_pixels_half(
+            css_constants.MAIN_COLUMN_MAX_INLINE_SIZE_EM
+        ),
         max_height=_em_to_pixels_half(
-            layout.MAIN_COLUMN_MAX_INLINE_SIZE_EM * 2
+            css_constants.MAIN_COLUMN_MAX_INLINE_SIZE_EM * 2
         ),
         jpeg_quality=90,
         factors=(4, 2, 1),
-        inline_size=layout.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
+        inline_size=css_constants.MAIN_COLUMN_CONTENTS_INLINE_SIZE,
     ),
     "opengraph": NormalImageProfile(
         max_width=1920,

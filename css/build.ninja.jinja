@@ -4,7 +4,7 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
-{% set layout = ginjarator.py.import_("dseomn_website.layout") %}
+{% set css_constants = ginjarator.py.import_("dseomn_website.css_constants") %}
 
 {% import "include/cache_buster.ninja.jinja" as cache_buster %}
 
@@ -15,16 +15,16 @@
     "lessc",
     (
       "--global-var=main-column-max-inline-size=" +
-      layout.MAIN_COLUMN_MAX_INLINE_SIZE
+      css_constants.MAIN_COLUMN_MAX_INLINE_SIZE
     ),
     (
       "--global-var=main-column-padding-inline=" +
-      layout.MAIN_COLUMN_PADDING_INLINE
+      css_constants.MAIN_COLUMN_PADDING_INLINE
     ),
-    "--global-var=float-max-inline-size=" + layout.FLOAT_MAX_INLINE_SIZE,
+    "--global-var=float-max-inline-size=" + css_constants.FLOAT_MAX_INLINE_SIZE,
     (
       "--global-var=gallery-item-max-block-size=" +
-      layout.GALLERY_ITEM_MAX_BLOCK_SIZE
+      css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE
     ),
   ],
   escape_shell=true,
