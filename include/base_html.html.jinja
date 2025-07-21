@@ -34,6 +34,24 @@
         >
       <head>
         <meta charset="utf-8">
+        {% set main_css = ginjarator.fs.read_text(
+          "work/css/main.css.cache-buster-output-filename"
+        ) %}
+        {% if main_css is not none %}
+          <link rel="stylesheet" href="{{ paths.to_url_path(main_css) | e }}">
+        {% endif %}
+        {% for favicon_output in media.IMAGE_PROFILES.favicon.unique_outputs(
+          media.FAVICON
+        ) if none not in (favicon_output.url_path, favicon_output.metadata) %}
+          <link
+              rel="icon"
+              href="{{ favicon_output.url_path | e }}"
+              type="{{ favicon_output.metadata.mime_type | e }}"
+              sizes="{{ favicon_output.metadata.width -}}
+                     x
+                     {{- favicon_output.metadata.height }}"
+              >
+        {% endfor %}
         <title>{{ page_metadata.full_title | e }}</title>
         <meta name="viewport" content="width=device-width">
         {% for media_item in page_metadata.media.item_by_source.values()
@@ -77,24 +95,6 @@
         <meta property="og:site_name" content="{{ metadata.SITE.title | e }}">
         <meta property="og:title" content="{{ page_metadata.title | e }}">
         <meta property="og:url" content="{{ page_metadata.url | e }}">
-        {% set main_css = ginjarator.fs.read_text(
-          "work/css/main.css.cache-buster-output-filename"
-        ) %}
-        {% if main_css is not none %}
-          <link rel="stylesheet" href="{{ paths.to_url_path(main_css) | e }}">
-        {% endif %}
-        {% for favicon_output in media.IMAGE_PROFILES.favicon.unique_outputs(
-          media.FAVICON
-        ) if none not in (favicon_output.url_path, favicon_output.metadata) %}
-          <link
-              rel="icon"
-              href="{{ favicon_output.url_path | e }}"
-              type="{{ favicon_output.metadata.mime_type | e }}"
-              sizes="{{ favicon_output.metadata.width -}}
-                     x
-                     {{- favicon_output.metadata.height }}"
-              >
-        {% endfor %}
         {{ extra_head }}
       </head>
       <body>
