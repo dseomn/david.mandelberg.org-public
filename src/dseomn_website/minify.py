@@ -7,7 +7,7 @@ import subprocess
 
 def html(document_or_fragments: str) -> str:
     return subprocess.run(
-        ("minify", "--type=html"),
+        ("minify", "--quiet", "--type=html"),
         input=document_or_fragments,
         stdout=subprocess.PIPE,
         check=True,
@@ -17,7 +17,7 @@ def html(document_or_fragments: str) -> str:
 
 def xml(document_or_fragments: str) -> str:
     return subprocess.run(
-        ("minify", "--type=xml"),
+        ("minify", "--quiet", "--type=xml"),
         input=document_or_fragments,
         stdout=subprocess.PIPE,
         check=True,

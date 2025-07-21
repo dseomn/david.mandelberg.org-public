@@ -19,7 +19,7 @@ rule postcss
   description = POSTCSS $in
 
 rule minify
-  command = minify --output $out --type=css $in
+  command = minify --output $out --quiet --type=css $in
   description = MINIFY $in
 
 build work/css/compiled.css | work/css/compiled.css.d: lessc $
