@@ -1,0 +1,19 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% set css_constants = ginjarator.py.import_("dseomn_website.css_constants") %}
+
+{% call ginjarator.fs.write_text_macro("work/css/variables.less") %}
+  @main-column-max-inline-size: {{ css_constants.MAIN_COLUMN_MAX_INLINE_SIZE }};
+  @main-column-padding-inline: {{ css_constants.MAIN_COLUMN_PADDING_INLINE }};
+  @float-max-inline-size: {{ css_constants.FLOAT_MAX_INLINE_SIZE }};
+  @gallery-item-max-block-size: {{ css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE }};
+
+  @font-family-serif: {{ css_constants.SERIF_FONT_FAMILIES_CSS }};
+  @font-family-monospace: {{ css_constants.MONOSPACE_FONT_FAMILIES_CSS }};
+
+  @alternate-canvas: color-mix(in srgb, Canvas 95%, CanvasText);
+{% endcall %}

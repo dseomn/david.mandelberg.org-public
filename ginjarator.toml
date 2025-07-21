@@ -27,6 +27,7 @@ ninja_templates = [
   "media/build.ninja.jinja",
 ]
 templates = [
+  "css/variables.less.jinja",
   "errors/403/index.html.jinja",
   "errors/404/index.html.jinja",
   "htaccess.jinja",

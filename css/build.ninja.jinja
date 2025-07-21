@@ -4,39 +4,13 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
-{% set css_constants = ginjarator.py.import_("dseomn_website.css_constants") %}
-
 {% import "include/cache_buster.ninja.jinja" as cache_buster %}
 
 {{ cache_buster.rules }}
 
-{% set lessc = ginjarator.to_ninja(
-  [
-    "lessc",
-    (
-      "--global-var=main-column-max-inline-size=" +
-      css_constants.MAIN_COLUMN_MAX_INLINE_SIZE
-    ),
-    (
-      "--global-var=main-column-padding-inline=" +
-      css_constants.MAIN_COLUMN_PADDING_INLINE
-    ),
-    "--global-var=float-max-inline-size=" + css_constants.FLOAT_MAX_INLINE_SIZE,
-    (
-      "--global-var=gallery-item-max-block-size=" +
-      css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE
-    ),
-    "--global-var=font-family-serif=" + css_constants.SERIF_FONT_FAMILIES_CSS,
-    (
-      "--global-var=font-family-monospace=" +
-      css_constants.MONOSPACE_FONT_FAMILIES_CSS,
-    )
-  ],
-  escape_shell=true,
-) %}
 rule lessc
   # TODO: https://github.com/less/less.js/issues/2925 - Run lessc once.
-  command = {{ lessc }} --depends $in $out > $out.d && {{ lessc }} $in $out
+  command = lessc --depends $in $out > $out.d && lessc $in $out
   depfile = $out.d
   description = LESSC $in
 
@@ -48,7 +22,12 @@ rule minify
   command = minify --output $out --type=css $in
   description = MINIFY $in
 
-build work/css/compiled.css | work/css/compiled.css.d: lessc css/main.less
+build work/css/compiled.css | work/css/compiled.css.d: lessc $
+    css/main.less $
+    || $
+    {{ ginjarator.to_ninja(
+      ginjarator.paths.template_render_stamp("css/variables.less.jinja")
+    ) }}
 build work/css/postcss.css: postcss work/css/compiled.css | css/postcss.config.js
 build work/css/main.css: minify work/css/postcss.css
 {{ cache_buster.hash(
