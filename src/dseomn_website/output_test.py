@@ -19,7 +19,7 @@ import lxml.html
 import pytest
 import requests
 
-from dseomn_website import css_constants
+from dseomn_website import fonts
 from dseomn_website import metadata
 from dseomn_website import paths
 
@@ -103,10 +103,7 @@ def test_error(url_path: str, expected: http.HTTPStatus) -> None:
     )
 
 
-@pytest.mark.parametrize(
-    "fonts_configured",
-    css_constants.ALL_FONT_FAMILY_SEQUENCES,
-)
+@pytest.mark.parametrize("fonts_configured", fonts.ALL_FAMILY_SEQUENCES)
 def test_font_coverage(
     fonts_configured: Sequence[str],
     tmp_path: pathlib.Path,

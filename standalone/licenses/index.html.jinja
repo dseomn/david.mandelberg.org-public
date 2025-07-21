@@ -4,7 +4,7 @@
  # SPDX-License-Identifier: CC-BY-4.0
  #}
 
-{% set css_constants = ginjarator.py.import_("dseomn_website.css_constants") %}
+{% set fonts = ginjarator.py.import_("dseomn_website.fonts") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
 
@@ -17,7 +17,7 @@
 {% call article.standalone() %}
   <h2>Third-party</h2>
   <ul>
-    {% for font_family in css_constants.ALL_FONT_FAMILIES %}
+    {% for font_family in fonts.ALL_FAMILIES %}
       {% set font_family_filename = font_family.replace(" ", "_") %}
       {% set font_family_license = ginjarator.fs.read_text(
         "../private/third_party/" + font_family_filename + "/OFL.txt",

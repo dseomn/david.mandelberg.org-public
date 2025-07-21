@@ -5,6 +5,7 @@
  #}
 
 {% set css_constants = ginjarator.py.import_("dseomn_website.css_constants") %}
+{% set fonts = ginjarator.py.import_("dseomn_website.fonts") %}
 
 {% call ginjarator.fs.write_text_macro("work/css/common.less") %}
   @main-column-max-inline-size: {{ css_constants.MAIN_COLUMN_MAX_INLINE_SIZE }};
@@ -12,8 +13,8 @@
   @float-max-inline-size: {{ css_constants.FLOAT_MAX_INLINE_SIZE }};
   @gallery-item-max-block-size: {{ css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE }};
 
-  @font-family-serif: {{ css_constants.SERIF_FONT_FAMILIES_CSS }};
-  @font-family-monospace: {{ css_constants.MONOSPACE_FONT_FAMILIES_CSS }};
+  @font-family-serif: {{ fonts.SERIF_FAMILIES_CSS }};
+  @font-family-monospace: {{ fonts.MONOSPACE_FAMILIES_CSS }};
 
   @alternate-canvas: color-mix(in srgb, Canvas 95%, CanvasText);
 
