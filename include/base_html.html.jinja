@@ -4,6 +4,7 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% set fonts = ginjarator.py.import_("dseomn_website.fonts") %}
 {% set iri = ginjarator.py.import_("dseomn_website.iri") %}
 {% set lint = ginjarator.py.import_("dseomn_website.lint") %}
 {% set media = ginjarator.py.import_("dseomn_website.media") %}
@@ -40,6 +41,15 @@
         {% if main_css is not none %}
           <link rel="stylesheet" href="{{ paths.to_url_path(main_css) | e }}">
         {% endif %}
+        {% for font in fonts.FONTS if font.url_path is not none %}
+          <link
+              as="font"
+              crossorigin="anonymous"
+              href="{{ font.url_path | e }}"
+              rel="preload"
+              type="font/woff2"
+              >
+        {% endfor %}
         {% for favicon_output in media.IMAGE_PROFILES.favicon.unique_outputs(
           media.FAVICON
         ) if none not in (favicon_output.url_path, favicon_output.metadata) %}
