@@ -2,39 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-@import "work/css/variables.less";
-
-.section-outer() {
-  background: Canvas;
-  display: flow-root;
-  margin-block: 1em;
-}
-
-.section-inner() {
-  container-type: inline-size;
-  margin-inline: auto;
-  max-inline-size: @main-column-max-inline-size;
-  padding-block: 1em;
-  padding-inline: @main-column-padding-inline;
-}
-
-.section() {
-  .section-outer();
-  .section-inner();
-}
-
-.pseudo-section() {
-  .section();
-  background: unset;
-  padding-block: 0;
-}
-
-.pseudo-section-before-site-footer() {
-  .pseudo-section();
-  border-block-end: thin solid;
-  padding-block-end: 1em;
-}
-
+@import "work/css/common.less";
 @import "css/defaults.less";
 @import "css/site.less";
 @import "css/post-lists.less";

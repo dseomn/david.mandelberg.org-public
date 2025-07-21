@@ -26,7 +26,7 @@ build work/css/compiled.css | work/css/compiled.css.d: lessc $
     css/main.less $
     || $
     {{ ginjarator.to_ninja(
-      ginjarator.paths.template_render_stamp("css/variables.less.jinja")
+      ginjarator.paths.template_render_stamp("css/common.less.jinja")
     ) }}
 build work/css/postcss.css: postcss work/css/compiled.css | css/postcss.config.js
 build work/css/main.css: minify work/css/postcss.css

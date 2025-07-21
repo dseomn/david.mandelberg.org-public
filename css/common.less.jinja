@@ -6,7 +6,7 @@
 
 {% set css_constants = ginjarator.py.import_("dseomn_website.css_constants") %}
 
-{% call ginjarator.fs.write_text_macro("work/css/variables.less") %}
+{% call ginjarator.fs.write_text_macro("work/css/common.less") %}
   @main-column-max-inline-size: {{ css_constants.MAIN_COLUMN_MAX_INLINE_SIZE }};
   @main-column-padding-inline: {{ css_constants.MAIN_COLUMN_PADDING_INLINE }};
   @float-max-inline-size: {{ css_constants.FLOAT_MAX_INLINE_SIZE }};
@@ -16,4 +16,35 @@
   @font-family-monospace: {{ css_constants.MONOSPACE_FONT_FAMILIES_CSS }};
 
   @alternate-canvas: color-mix(in srgb, Canvas 95%, CanvasText);
+
+  .section-outer() {
+    background: Canvas;
+    display: flow-root;
+    margin-block: 1em;
+  }
+
+  .section-inner() {
+    container-type: inline-size;
+    margin-inline: auto;
+    max-inline-size: @main-column-max-inline-size;
+    padding-block: 1em;
+    padding-inline: @main-column-padding-inline;
+  }
+
+  .section() {
+    .section-outer();
+    .section-inner();
+  }
+
+  .pseudo-section() {
+    .section();
+    background: unset;
+    padding-block: 0;
+  }
+
+  .pseudo-section-before-site-footer() {
+    .pseudo-section();
+    border-block-end: thin solid;
+    padding-block-end: 1em;
+  }
 {% endcall %}
