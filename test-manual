@@ -6,7 +6,7 @@
 
 set -euxo pipefail
 
-pytest -m slow --no-cov
+pytest -m slow --no-cov --numprocesses=auto --dist=worksteal
 htmlproofer \
   --check-external-hash \
   --empty-alt-ignore \
