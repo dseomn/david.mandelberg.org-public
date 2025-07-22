@@ -19,6 +19,8 @@ from dseomn_website import paths
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class ImageConversion:
+    # When changing the commands, run slow tests.
+
     work_suffix: str
     output_suffix: str
     sh_command: str
