@@ -4,6 +4,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+set -euxo pipefail
+
 pytest -m slow --no-cov
 htmlproofer \
   --check-external-hash \
