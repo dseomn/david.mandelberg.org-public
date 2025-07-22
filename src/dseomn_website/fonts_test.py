@@ -2,12 +2,51 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from collections.abc import Sequence
+import io
+import itertools
 import pathlib
 import textwrap
 
+import fontTools.subset
 import ginjarator.testing
+import pytest
 
 from dseomn_website import fonts
+
+
+def test_code_points_is_sorted_and_unique() -> None:
+    assert list(fonts.CODE_POINTS) == sorted(set(fonts.CODE_POINTS))
+
+
+def test_code_points_are_code_points() -> None:
+    assert not {s for s in fonts.CODE_POINTS if len(s) != 1}
+
+
+@pytest.mark.parametrize("families", fonts.ALL_FAMILY_SEQUENCES)
+def test_code_points_covered_by_family_stack(
+    families: Sequence[str],
+) -> None:
+    coverage_not_necessary = {
+        "\n",
+        "\N{VARIATION SELECTOR-16}",
+    }
+    assert (
+        set(
+            itertools.chain.from_iterable(
+                fonts.CODE_POINTS_BY_FAMILY[family] for family in families
+            )
+        )
+        - coverage_not_necessary
+        == set(fonts.CODE_POINTS) - coverage_not_necessary
+    )
+
+
+@pytest.mark.parametrize("family", fonts.ALL_FAMILIES)
+def test_code_points_by_family_is_sorted_and_unique(family: str) -> None:
+    assert list(fonts.CODE_POINTS_BY_FAMILY[family]) == sorted(
+        set(fonts.CODE_POINTS_BY_FAMILY[family])
+    )
 
 
 def test_font_scan() -> None:
@@ -59,3 +98,42 @@ def test_font_render(tmp_path: pathlib.Path) -> None:
 
 def test_fonts_match_families() -> None:
     assert {font.family for font in fonts.FONTS} == set(fonts.ALL_FAMILIES)
+
+
+def _subset_font(
+    font: fonts.Font,
+    *,
+    options: fontTools.subset.Options,
+    text: str,
+) -> tuple[frozenset[str], bytes]:
+    subset = fontTools.subset.load_font(str(font.source), options=options)
+    subsetter = fontTools.subset.Subsetter(options=options)
+    subsetter.populate(text=text)
+    subsetter.subset(subset)
+    subset_io = io.BytesIO()
+    subset.save(subset_io)
+    return (
+        frozenset(map(chr, subset.getBestCmap())),
+        subset_io.getvalue(),
+    )
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("font", fonts.FONTS)
+def test_font_code_points(font: fonts.Font) -> None:
+    # If CODE_POINTS_BY_FAMILY has any code points that the font doesn't have,
+    # the ignore_missing_unicodes should catch that. If CODE_POINTS_BY_FAMILY is
+    # missing any code points that both CODE_POINTS and the font have, the two
+    # subsets should be different.
+    explicit_subset_code_points, explicit_subset_bytes = _subset_font(
+        font,
+        options=fontTools.subset.Options(ignore_missing_unicodes=False),
+        text="".join(fonts.CODE_POINTS_BY_FAMILY[font.family]),
+    )
+    implicit_subset_code_points, implicit_subset_bytes = _subset_font(
+        font,
+        options=fontTools.subset.Options(ignore_missing_unicodes=True),
+        text="".join(fonts.CODE_POINTS),
+    )
+    assert explicit_subset_code_points == implicit_subset_code_points
+    assert explicit_subset_bytes == implicit_subset_bytes

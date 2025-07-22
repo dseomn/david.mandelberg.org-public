@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 import dataclasses
 import functools
 import itertools
@@ -36,6 +36,140 @@ ALL_FAMILY_SEQUENCES = (SERIF_FAMILIES, MONOSPACE_FAMILIES)
 ALL_FAMILIES = tuple(
     sorted(set(itertools.chain.from_iterable(ALL_FAMILY_SEQUENCES)))
 )
+
+
+def _code_point_range(start: str, end: str) -> Iterable[str]:
+    yield from map(chr, range(ord(start), ord(end) + 1))
+
+
+# All code points that the fonts should cover. When changing this, run slow
+# tests.
+CODE_POINTS = (
+    "\n",
+    " ",
+    "!",
+    '"',
+    "'",
+    "(",
+    ")",
+    "*",
+    "+",
+    ",",
+    "-",
+    ".",
+    "/",
+    *_code_point_range("0", "9"),
+    ":",
+    "=",
+    "?",
+    "@",
+    *_code_point_range("A", "Z"),
+    "_",
+    *_code_point_range("a", "z"),
+    "—",
+    "’",
+    "…",
+    "™",
+    "←",
+    "→",
+    "\N{VARIATION SELECTOR-16}",
+    "🏷",
+    "👤",
+    "📅",
+)
+
+CODE_POINTS_BY_FAMILY = {
+    "Noto Color Emoji": (
+        " ",
+        "*",
+        *_code_point_range("0", "9"),
+        "™",
+        "🏷",
+        "👤",
+        "📅",
+    ),
+    "Noto Sans Math": (
+        " ",
+        "!",
+        '"',
+        "'",
+        "(",
+        ")",
+        "*",
+        "+",
+        ",",
+        "-",
+        ".",
+        "/",
+        *_code_point_range("0", "9"),
+        ":",
+        "=",
+        "?",
+        "@",
+        *_code_point_range("A", "Z"),
+        "_",
+        *_code_point_range("a", "z"),
+        "—",
+        "’",
+        "…",
+        "←",
+        "→",
+    ),
+    "Noto Sans Mono": (
+        " ",
+        "!",
+        '"',
+        "'",
+        "(",
+        ")",
+        "*",
+        "+",
+        ",",
+        "-",
+        ".",
+        "/",
+        *_code_point_range("0", "9"),
+        ":",
+        "=",
+        "?",
+        "@",
+        *_code_point_range("A", "Z"),
+        "_",
+        *_code_point_range("a", "z"),
+        "—",
+        "’",
+        "…",
+        "™",
+        "←",
+        "→",
+    ),
+    "Noto Serif": (
+        " ",
+        "!",
+        '"',
+        "'",
+        "(",
+        ")",
+        "*",
+        "+",
+        ",",
+        "-",
+        ".",
+        "/",
+        *_code_point_range("0", "9"),
+        ":",
+        "=",
+        "?",
+        "@",
+        *_code_point_range("A", "Z"),
+        "_",
+        *_code_point_range("a", "z"),
+        "—",
+        "’",
+        "…",
+        "™",
+    ),
+}
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
