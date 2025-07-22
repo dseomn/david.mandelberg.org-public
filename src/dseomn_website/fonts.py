@@ -180,10 +180,12 @@ class Font:
     weight: str
 
     @functools.cached_property
-    def work_path_copy(self) -> ginjarator.paths.Filesystem:
-        # woff2_compress doesn't seem to be able to write the output anywhere
-        # other than next to the input file.
-        return paths.work(self.source)
+    def unicodes(self) -> str:
+        """Value for passing to fonttools subset --unicodes."""
+        return ",".join(
+            f"{ord(code_point):x}"
+            for code_point in CODE_POINTS_BY_FAMILY[self.family]
+        )
 
     @functools.cached_property
     def work_path(self) -> ginjarator.paths.Filesystem:

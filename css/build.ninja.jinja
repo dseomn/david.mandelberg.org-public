@@ -10,19 +10,20 @@
 
 {{ cache_buster.rules }}
 
-rule copy
-  command = cp -- $in $out
-  description = COPY $in
-
-rule woff2
-  command = woff2_compress $in
-  description = WOFF2 $in
+rule font_subset
+  command = fonttools subset $
+    --unicodes=$unicodes $
+    --no-ignore-missing-unicodes $
+    --output-file=$out $
+    --flavor=woff2 $
+    --layout-features='*' $
+    $in
+  description = SUBSET $in
 
 {% for font in fonts.FONTS %}
-build {{ ginjarator.to_ninja(font.work_path_copy) }}: $
-    copy {{ ginjarator.to_ninja(font.source) }}
 build {{ ginjarator.to_ninja(font.work_path) }}: $
-    woff2 {{ ginjarator.to_ninja(font.work_path_copy) }}
+    font_subset {{ ginjarator.to_ninja(font.source) }}
+  unicodes = {{ ginjarator.to_ninja(font.unicodes, escape_shell=true) }}
 {{ cache_buster.hash(
   input_dir=font.work_path.parent | string,
   input_filename=font.work_path.name,

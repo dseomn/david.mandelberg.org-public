@@ -60,13 +60,18 @@ def test_font_scan() -> None:
     )
 
     with ginjarator.testing.api_for_scan():
-        assert font.work_path_copy == ginjarator.paths.Filesystem(
-            "work/third_party/foo/foo.ttf"
-        )
         assert font.work_path == ginjarator.paths.Filesystem(
             "work/third_party/foo/foo.woff2"
         )
         assert font.url_path is None
+
+
+def test_font_unicodes() -> None:
+    font = next(
+        iter(font for font in fonts.FONTS if font.family == "Noto Serif")
+    )
+    assert ord("a") == 0x61
+    assert "61" in font.unicodes.split(",")
 
 
 def test_font_render(tmp_path: pathlib.Path) -> None:
