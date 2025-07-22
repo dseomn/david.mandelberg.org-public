@@ -100,8 +100,12 @@ def test_error(url_path: str, expected: http.HTTPStatus) -> None:
 def test_font_coverage() -> None:
     actual_code_points = set()
     for html_path in pathlib.Path(paths.OUTPUT).glob("**/*.html"):
-        actual_code_points.update(
-            lxml.html.document_fromstring(html_path.read_text()).text_content()
-        )
+        document = lxml.html.document_fromstring(html_path.read_text())
+        actual_code_points.update(document.text_content())
+        for node in document.iter():
+            for attr_value in node.values():
+                # Most attribute values aren't rendered as text, but some like
+                # img.alt are.
+                actual_code_points.update(attr_value)
 
     assert set(fonts.CODE_POINTS) >= actual_code_points
