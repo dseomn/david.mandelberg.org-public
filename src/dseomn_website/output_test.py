@@ -107,5 +107,8 @@ def test_font_coverage() -> None:
                 # Most attribute values aren't rendered as text, but some like
                 # img.alt are.
                 actual_code_points.update(attr_value)
+    for css_path in pathlib.Path(paths.OUTPUT).glob("**/*.css"):
+        # The content property can produce text to be rendered.
+        actual_code_points.update(css_path.read_text())
 
     assert set(fonts.CODE_POINTS) >= actual_code_points
