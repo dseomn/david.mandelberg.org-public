@@ -3,11 +3,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @import 'work/css/common.less';
+
 @import 'css/defaults.less';
+
+// Containers, roughly sorted from largest (top-most in the DOM tree) to
+// smallest.
 @import 'css/site.less';
 @import 'css/post-lists.less';
 @import 'css/articles.less';
 @import 'css/comments.less';
 @import 'css/figures.less';
+
+// Objects that don't necessarily contain other styled objects, sorted
+// lexicographically.
 @import 'css/media.less';
 @import 'css/pagination.less';
