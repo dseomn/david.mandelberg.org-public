@@ -225,6 +225,8 @@ class Image(MediaItem):
             if camera_parts:
                 result["Camera"] = " ".join(camera_parts)
 
+            result["Resolution"] = f"{image.width} × {image.height}"
+
             if (
                 f_number := _exif_to_fraction(
                     exif_ifd.get(PIL.ExifTags.Base.FNumber)

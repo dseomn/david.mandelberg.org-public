@@ -148,6 +148,11 @@ def test_image_details_page_item() -> None:
         ),
         (
             "src/dseomn_website/test-16x12.png",
+            "Resolution",
+            "16 × 12",
+        ),
+        (
+            "src/dseomn_website/test-16x12.png",
             "Aperture",
             None,
         ),
