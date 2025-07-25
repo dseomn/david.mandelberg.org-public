@@ -202,19 +202,23 @@ class Image(MediaItem):
     @functools.cached_property
     def metadata(
         self,
-    ) -> Mapping[str | markupsafe.Markup, str | markupsafe.Markup]:
-        result = dict[str | markupsafe.Markup, str | markupsafe.Markup]()
+    ) -> Mapping[str | markupsafe.Markup, Sequence[str | markupsafe.Markup]]:
+        result = dict[
+            str | markupsafe.Markup, Sequence[str | markupsafe.Markup]
+        ]()
         ginjarator.api().fs.add_dependency(self.source, defer_ok=False)
         with PIL.Image.open(ginjarator.api().fs.root / self.source) as image:
             exif = image.getexif()
             exif_ifd = exif.get_ifd(PIL.ExifTags.IFD.Exif)
 
             if PIL.ExifTags.Base.DateTimeOriginal in exif_ifd:
-                result["Taken"] = markupsafe.Markup("<time>{}</time>").format(
-                    datetime.datetime.strptime(
-                        exif_ifd[PIL.ExifTags.Base.DateTimeOriginal],
-                        "%Y:%m:%d %H:%M:%S",
-                    ).isoformat(sep=" ")
+                result["Taken"] = (
+                    markupsafe.Markup("<time>{}</time>").format(
+                        datetime.datetime.strptime(
+                            exif_ifd[PIL.ExifTags.Base.DateTimeOriginal],
+                            "%Y:%m:%d %H:%M:%S",
+                        ).isoformat(sep=" ")
+                    ),
                 )
 
             camera_parts = []
@@ -223,9 +227,9 @@ class Image(MediaItem):
             if (camera_model := exif.get(PIL.ExifTags.Base.Model)) is not None:
                 camera_parts.append(camera_model)
             if camera_parts:
-                result["Camera"] = " ".join(camera_parts)
+                result["Camera"] = (" ".join(camera_parts),)
 
-            result["Resolution"] = f"{image.width} × {image.height}"
+            result["Resolution"] = (f"{image.width} × {image.height}",)
 
             if (
                 f_number := _exif_to_fraction(
@@ -233,8 +237,10 @@ class Image(MediaItem):
                 )
             ) is not None:
                 result["Aperture"] = (
-                    "\N{LATIN SMALL LETTER F WITH HOOK}\N{DIVISION SLASH}"
-                    f"{f_number:.2g}"
+                    (
+                        "\N{LATIN SMALL LETTER F WITH HOOK}\N{DIVISION SLASH}"
+                        f"{f_number:.2g}"
+                    ),
                 )
 
             if (
@@ -243,12 +249,14 @@ class Image(MediaItem):
                 )
             ) is not None:
                 result["Exposure time"] = (
-                    f"{exposure_time:.1f}\N{NO-BREAK SPACE}s"
-                    if exposure_time >= 1
-                    else (
-                        f"{exposure_time.numerator}\N{FRACTION SLASH}"
-                        f"{exposure_time.denominator}\N{NO-BREAK SPACE}s"
-                    )
+                    (
+                        f"{exposure_time:.1f}\N{NO-BREAK SPACE}s"
+                        if exposure_time >= 1
+                        else (
+                            f"{exposure_time.numerator}\N{FRACTION SLASH}"
+                            f"{exposure_time.denominator}\N{NO-BREAK SPACE}s"
+                        )
+                    ),
                 )
 
             focal_length_parts = []
@@ -268,12 +276,12 @@ class Image(MediaItem):
                     "(35\N{NO-BREAK SPACE}mm equivalent)"
                 )
             if focal_length_parts:
-                result["Focal length"] = " / ".join(focal_length_parts)
+                result["Focal length"] = tuple(focal_length_parts)
 
             if (
                 iso := exif_ifd.get(PIL.ExifTags.Base.ISOSpeedRatings)
             ) is not None:
-                result["ISO"] = str(iso)
+                result["ISO"] = (str(iso),)
 
         return result
 

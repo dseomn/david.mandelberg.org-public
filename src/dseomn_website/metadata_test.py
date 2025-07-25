@@ -124,7 +124,7 @@ def test_image_details_page_item() -> None:
 
 
 @pytest.mark.parametrize(
-    "source,key,expected_value",
+    "source,key,expected_values",
     (
         (
             "src/dseomn_website/test-16x12.png",
@@ -134,7 +134,7 @@ def test_image_details_page_item() -> None:
         (
             "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
             "Taken",
-            "<time>2013-02-08 16:18:16</time>",
+            ("<time>2013-02-08 16:18:16</time>",),
         ),
         (
             "src/dseomn_website/test-16x12.png",
@@ -144,12 +144,12 @@ def test_image_details_page_item() -> None:
         (
             "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
             "Camera",
-            "Panasonic DMC-GH2",
+            ("Panasonic DMC-GH2",),
         ),
         (
             "src/dseomn_website/test-16x12.png",
             "Resolution",
-            "16 × 12",
+            ("16 × 12",),
         ),
         (
             "src/dseomn_website/test-16x12.png",
@@ -159,12 +159,12 @@ def test_image_details_page_item() -> None:
         (
             "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
             "Aperture",
-            "ƒ∕8",
+            ("ƒ∕8",),
         ),
         (
             "../private/posts/2013-02-12-snow-photos/P1030256-raw.JPG",
             "Aperture",
-            "ƒ∕6.3",
+            ("ƒ∕6.3",),
         ),
         (
             "src/dseomn_website/test-16x12.png",
@@ -174,7 +174,7 @@ def test_image_details_page_item() -> None:
         (
             "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
             "Exposure time",
-            "1⁄80 s",
+            ("1⁄80 s",),
         ),
         (
             "src/dseomn_website/test-16x12.png",
@@ -184,7 +184,7 @@ def test_image_details_page_item() -> None:
         (
             "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
             "Focal length",
-            "42 mm / 84 mm (35 mm equivalent)",
+            ("42 mm", "84 mm (35 mm equivalent)"),
         ),
         (
             "src/dseomn_website/test-16x12.png",
@@ -194,14 +194,14 @@ def test_image_details_page_item() -> None:
         (
             "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
             "ISO",
-            "500",
+            ("500",),
         ),
     ),
 )
 def test_image_metadata(
     source: str,
     key: str,
-    expected_value: str | None,
+    expected_values: tuple[str, ...] | None,
 ) -> None:
     with ginjarator.testing.api_for_scan():
         image = metadata.Image(
@@ -215,10 +215,12 @@ def test_image_metadata(
             main=False,
         )
         metadata_html = {
-            str(markupsafe.escape(k)): str(markupsafe.escape(v))
+            str(markupsafe.escape(k)): tuple(
+                map(str, map(markupsafe.escape, v))
+            )
             for k, v in image.metadata.items()
         }
-    assert metadata_html.get(key) == expected_value
+    assert metadata_html.get(key) == expected_values
 
 
 @pytest.mark.parametrize(

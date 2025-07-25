@@ -123,11 +123,13 @@
                 <figure class="figure-float">
                   <figcaption>Metadata</figcaption>
                   <dl class="tabular-dl">
-                    {% for metadata_key, metadata_value
+                    {% for metadata_key, metadata_values
                       in media_item_details_metadata.item.metadata.items()
                     %}
                       <dt class="tabular-dt">{{ metadata_key | e }}</dt>
-                      <dd class="tabular-dd">{{ metadata_value | e }}</dd>
+                      {% for metadata_value in metadata_values %}
+                        <dd class="tabular-dd">{{ metadata_value | e }}</dd>
+                      {% endfor %}
                     {% endfor %}
                   </dl>
                 </figure>
