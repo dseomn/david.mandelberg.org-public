@@ -283,6 +283,16 @@ class Image(MediaItem):
             ) is not None:
                 result["ISO"] = (str(iso),)
 
+            software = []
+            for software_tag in (
+                PIL.ExifTags.Base.Software,
+                PIL.ExifTags.Base.ProcessingSoftware,
+            ):
+                if software_tag in exif:
+                    software.append(exif[software_tag].strip())
+            if software:
+                result["Software"] = tuple(software)
+
         return result
 
 

@@ -196,6 +196,24 @@ def test_image_details_page_item() -> None:
             "ISO",
             ("500",),
         ),
+        (
+            "src/dseomn_website/test-16x12.png",
+            "Software",
+            None,
+        ),
+        (
+            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
+            "Software",
+            ("Ver.1.1", "UFRaw 0.18"),
+        ),
+        (
+            (
+                "../private/posts/2013-02-12-snow-photos/"
+                "P1030324-raw-P1030337-raw.jpg"
+            ),
+            "Software",
+            ("Hugin 2011.4.0.cf9be9344356",),
+        ),
     ),
 )
 def test_image_metadata(
