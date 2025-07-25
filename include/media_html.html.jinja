@@ -119,6 +119,19 @@
                   {% endif %}
                 </ul>
               </nav>
+              {% if media_item_details_metadata.item.metadata %}
+                <figure class="figure-float">
+                  <figcaption>Metadata</figcaption>
+                  <dl class="tabular-dl">
+                    {% for metadata_key, metadata_value
+                      in media_item_details_metadata.item.metadata.items()
+                    %}
+                      <dt class="tabular-dt">{{ metadata_key | e }}</dt>
+                      <dd class="tabular-dd">{{ metadata_value | e }}</dd>
+                    {% endfor %}
+                  </dl>
+                </figure>
+              {% endif %}
               {% if media_item_details_metadata.item.description_template
                 is not none
               %}
