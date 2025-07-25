@@ -10,6 +10,7 @@ from typing import Any
 import uuid
 
 import ginjarator.testing
+import markupsafe
 import pytest
 
 from dseomn_website import metadata
@@ -120,6 +121,99 @@ def test_image_details_page_item() -> None:
         full_screen=True,
         main=False,
     )
+
+
+@pytest.mark.parametrize(
+    "source,key,expected_value",
+    (
+        (
+            "src/dseomn_website/test-16x12.png",
+            "Taken",
+            None,
+        ),
+        (
+            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
+            "Taken",
+            "<time>2013-02-08 16:18:16</time>",
+        ),
+        (
+            "src/dseomn_website/test-16x12.png",
+            "Camera",
+            None,
+        ),
+        (
+            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
+            "Camera",
+            "Panasonic DMC-GH2",
+        ),
+        (
+            "src/dseomn_website/test-16x12.png",
+            "Aperture",
+            None,
+        ),
+        (
+            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
+            "Aperture",
+            "ƒ∕8",
+        ),
+        (
+            "../private/posts/2013-02-12-snow-photos/P1030256-raw.JPG",
+            "Aperture",
+            "ƒ∕6.3",
+        ),
+        (
+            "src/dseomn_website/test-16x12.png",
+            "Exposure time",
+            None,
+        ),
+        (
+            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
+            "Exposure time",
+            "1⁄80 s",
+        ),
+        (
+            "src/dseomn_website/test-16x12.png",
+            "Focal length",
+            None,
+        ),
+        (
+            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
+            "Focal length",
+            "42 mm / 84 mm (35 mm equivalent)",
+        ),
+        (
+            "src/dseomn_website/test-16x12.png",
+            "ISO",
+            None,
+        ),
+        (
+            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
+            "ISO",
+            "500",
+        ),
+    ),
+)
+def test_image_metadata(
+    source: str,
+    key: str,
+    expected_value: str | None,
+) -> None:
+    with ginjarator.testing.api_for_scan():
+        image = metadata.Image(
+            source=ginjarator.paths.Filesystem(source),
+            gallery=None,
+            opengraph=False,
+            description_template=None,
+            alt="",
+            float_=False,
+            full_screen=False,
+            main=False,
+        )
+        metadata_html = {
+            str(markupsafe.escape(k)): str(markupsafe.escape(v))
+            for k, v in image.metadata.items()
+        }
+    assert metadata_html.get(key) == expected_value
 
 
 @pytest.mark.parametrize(

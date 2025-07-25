@@ -9,6 +9,7 @@ import dataclasses
 import datetime
 import email.headerregistry
 import email.utils
+import fractions
 import functools
 import http
 import itertools
@@ -18,6 +19,10 @@ import urllib.parse
 import uuid as uuid_
 
 import ginjarator
+import markupsafe
+import PIL.ExifTags
+import PIL.Image
+import PIL.TiffImagePlugin
 
 from dseomn_website import lint
 from dseomn_website import paths
@@ -164,6 +169,15 @@ class MediaItem(abc.ABC):
         raise NotImplementedError()
 
 
+def _exif_to_fraction(
+    value: PIL.TiffImagePlugin.IFDRational | None,
+) -> fractions.Fraction | None:
+    if value is None or value.denominator == 0:
+        return None
+    # Pass the values separately so that they're reduced.
+    return fractions.Fraction(int(value.numerator), int(value.denominator))
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Image(MediaItem):
     type_: Literal["image"] = "image"
@@ -184,6 +198,82 @@ class Image(MediaItem):
             full_screen=True,
             main=False,
         )
+
+    @functools.cached_property
+    def metadata(
+        self,
+    ) -> Mapping[str | markupsafe.Markup, str | markupsafe.Markup]:
+        result = dict[str | markupsafe.Markup, str | markupsafe.Markup]()
+        ginjarator.api().fs.add_dependency(self.source, defer_ok=False)
+        with PIL.Image.open(ginjarator.api().fs.root / self.source) as image:
+            exif = image.getexif()
+            exif_ifd = exif.get_ifd(PIL.ExifTags.IFD.Exif)
+
+            if PIL.ExifTags.Base.DateTimeOriginal in exif_ifd:
+                result["Taken"] = markupsafe.Markup("<time>{}</time>").format(
+                    datetime.datetime.strptime(
+                        exif_ifd[PIL.ExifTags.Base.DateTimeOriginal],
+                        "%Y:%m:%d %H:%M:%S",
+                    ).isoformat(sep=" ")
+                )
+
+            camera_parts = []
+            if (camera_make := exif.get(PIL.ExifTags.Base.Make)) is not None:
+                camera_parts.append(camera_make)
+            if (camera_model := exif.get(PIL.ExifTags.Base.Model)) is not None:
+                camera_parts.append(camera_model)
+            if camera_parts:
+                result["Camera"] = " ".join(camera_parts)
+
+            if (
+                f_number := _exif_to_fraction(
+                    exif_ifd.get(PIL.ExifTags.Base.FNumber)
+                )
+            ) is not None:
+                result["Aperture"] = (
+                    "\N{LATIN SMALL LETTER F WITH HOOK}\N{DIVISION SLASH}"
+                    f"{f_number:.2g}"
+                )
+
+            if (
+                exposure_time := _exif_to_fraction(
+                    exif_ifd.get(PIL.ExifTags.Base.ExposureTime)
+                )
+            ) is not None:
+                result["Exposure time"] = (
+                    f"{exposure_time:.1f}\N{NO-BREAK SPACE}s"
+                    if exposure_time >= 1
+                    else (
+                        f"{exposure_time.numerator}\N{FRACTION SLASH}"
+                        f"{exposure_time.denominator}\N{NO-BREAK SPACE}s"
+                    )
+                )
+
+            focal_length_parts = []
+            if (
+                focal_length := _exif_to_fraction(
+                    exif_ifd.get(PIL.ExifTags.Base.FocalLength)
+                )
+            ) is not None:
+                focal_length_parts.append(f"{focal_length}\N{NO-BREAK SPACE}mm")
+            if (
+                focal_length_35mm_equiv := exif_ifd.get(
+                    PIL.ExifTags.Base.FocalLengthIn35mmFilm
+                )
+            ) is not None:
+                focal_length_parts.append(
+                    f"{focal_length_35mm_equiv}\N{NO-BREAK SPACE}mm "
+                    "(35\N{NO-BREAK SPACE}mm equivalent)"
+                )
+            if focal_length_parts:
+                result["Focal length"] = " / ".join(focal_length_parts)
+
+            if (
+                iso := exif_ifd.get(PIL.ExifTags.Base.ISOSpeedRatings)
+            ) is not None:
+                result["ISO"] = str(iso)
+
+        return result
 
 
 def _parse_media_item(raw: Any) -> MediaItem:
