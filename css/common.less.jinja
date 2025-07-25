@@ -52,10 +52,10 @@
   {% for font in fonts.FONTS %}
     @font-face {
       font-display: swap;
-      font-family: "{{ font.family }}";
+      font-family: '{{ font.family }}';
       font-style: {{ font.style }};
       font-weight: {{ font.weight }};
-      src: url("{{ font.url_path }}") format(woff2);
+      src: url({{ font.url_path }}) format(woff2);
     }
   {% endfor %}
 {% endcall %}
