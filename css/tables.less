@@ -1,0 +1,19 @@
+// SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+//
+// SPDX-License-Identifier: Apache-2.0
+
+.tabular-dl {
+  display: grid;
+  font-variant-numeric: tabular-nums;
+  gap: 0.5em 1em;
+  grid: auto-flow auto / auto auto;
+}
+
+.tabular-dt {
+  grid-column: 1;
+}
+
+.tabular-dd {
+  grid-column: 2;
+  margin: 0;
+}
