@@ -4,16 +4,10 @@
  # SPDX-License-Identifier: CC-BY-4.0
  #}
 
-{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
-
 {% import "include/error.html.jinja" as error %}
 {% import "include/media_html.html.jinja" as media_html %}
 
 {% call error.page() %}
-  {% set error_metadata = metadata.Error.load(
-    ginjarator.paths.current_template
-  ) %}
-
   <p>
     Unfortunately, I couldn’t find the page you were looking for. I found this
     instead though. Does this help?
@@ -21,9 +15,7 @@
 
   <figure class="figure-main">
     {{ media_html.image(
-      error_metadata.media.item_by_source_str[
-        "../private/errors/404/P1250746-raw-unsharp.jpg"
-      ],
+      "../private/errors/404/P1250746-raw-unsharp.jpg",
       "main",
     ) }}
   </figure>

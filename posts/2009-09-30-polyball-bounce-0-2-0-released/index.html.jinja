@@ -4,32 +4,22 @@
  # SPDX-License-Identifier: CC-BY-4.0
  #}
 
-{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
-
 {% import "include/article.html.jinja" as article %}
 {% import "include/media_html.html.jinja" as media_html %}
 
 {% call article.post() %}
-  {% set post_metadata = metadata.Post.load(
-    ginjarator.paths.current_template
-  ) %}
-
   <p>I just released the second version of <a href="http://david.mandelberg.org/computers/polyball-bounce/">Polyball Bounce</a>. This version is actually playable, but still rough around the edges. A <a href="http://www.youtube.com/watch?v=RswH3kMC6Co">screencast</a> is available.</p>
 
   <div class="figure-main">
     {{ media_html.image(
-      post_metadata.media.item_by_source_str[
-        "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Polyball-Bounce-1.png"
-      ],
+      "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Polyball-Bounce-1.png",
       "main",
     ) }}
   </div>
 
   <div class="figure-main">
     {{ media_html.image(
-      post_metadata.media.item_by_source_str[
-        "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Configure-Polyball-Bounce.png"
-      ],
+      "../private/posts/2009-09-30-polyball-bounce-0-2-0-released/Screenshot-Configure-Polyball-Bounce.png",
       "main",
     ) }}
   </div>

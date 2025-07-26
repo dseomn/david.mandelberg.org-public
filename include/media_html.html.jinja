@@ -9,7 +9,14 @@
 
 {% import "include/base_html.html.jinja" as base_html %}
 
-{% macro image(image_metadata, profile_name, id=none) -%}
+{% macro image(metadata_or_source, profile_name, id=none) -%}
+  {%- if metadata_or_source is string -%}
+    {%- set image_metadata = metadata.Page.current().media.item_by_source_str[
+      metadata_or_source
+    ] -%}
+  {%- else -%}
+    {%- set image_metadata = metadata_or_source -%}
+  {%- endif -%}
   {%- set profile = media.IMAGE_PROFILES[profile_name] -%}
   {%- set primary_output = profile.primary_output(image_metadata.source) -%}
   {%- set outputs = profile.unique_outputs(image_metadata.source) -%}
