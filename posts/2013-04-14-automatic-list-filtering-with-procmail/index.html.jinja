@@ -1,0 +1,68 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+
+{% call article.post() %}
+  <p>I've been using <a href="http://www.procmail.org/">procmail</a> for a
+   while, filtering mailing list messages into per-list folders with one rule
+   per list. I recently decided to try automatically sorting lists by
+   <var>List-Id</var> headers. When I searched for pre-built rules to do this,
+   I found some that came close, but none that did what I wanted. So I wrote my
+   own compound rule and posted it here. The below code sorts a
+   <var>List-Id</var> like <samp>foo.example.com</samp> or
+   <samp>foo.lists.example.com</samp> into the
+   <a href="http://en.wikipedia.org/wiki/Maildir">Maildir</a> folder
+   <samp>.Lists.example-com.foo</samp>.</p>
+
+   <pre><code>:0
+* ^List-Id: .*\/&lt;[a-zA-Z0-9_-]+(\.lists)?\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+&gt;$
+{
+    LISTID="$MATCH"
+    :0
+    * LISTID ?? ^&lt;\/[a-zA-Z0-9_-]+
+    {
+        LISTID_PART1="$MATCH"
+        :0
+        * LISTID ?? ^&lt;[a-zA-Z0-9_-]+(\.lists)?\.\/[a-zA-Z0-9_-]+
+        {
+            LISTID_PART2="$MATCH"
+            :0
+            * LISTID ?? ^&lt;[a-zA-Z0-9_-]+(\.lists)?\.[a-zA-Z0-9_-]+\.\/[a-zA-Z0-9_-]+
+            .Lists.${LISTID_PART2}-${MATCH}.${LISTID_PART1}/
+        }
+    }
+}
+</code></pre>
+
+  <p>This has a few advantages over other rules I found online:</p>
+  <ul>
+   <li>The entire <var>List-Id</var> is used, not just the part before the
+    first dot.</li>
+   <li>The resulting folders are hierarchical.</li>
+   <li>Only a limited character set is allowed in folder names. This prevents
+    something like <samp>List-Id: &lt;foo/../../../etc/passwd&gt;</samp> from
+    causing trouble.</li>
+  </ul>
+
+  <p>It also has a few disadvantages:</p>
+  <ul>
+   <li>It only works as intended for <var>List-Id</var>s of the form
+    <samp><em>list-name</em>.<em>domain</em>.<em>tld</em></samp> or
+    <samp><em>list-name</em>.lists.<em>domain</em>.<em>tld</em></samp>.
+    Other <var>List-Id</var>s are either incorrectly assumed to be in one of
+    those forms, or ignored.</li>
+   <li>It only supports a limited character set. This has security advantages,
+    but usability disadvantages.</li>
+   <li>It does not place a limit on the length of the directory name.
+    Unfortunately, procmail makes that difficult to do.</li>
+   <li>It converts dots in the domain into hyphens, but hyphens are allowed in
+    domain names. This could cause both <samp>foo.bar-baz.quux</samp> and
+    <samp>foo.bar.baz-quux</samp> to be sorted into the same folder,
+    <samp>.Lists.bar-baz-quux.foo</samp>.</li>
+   <li>It's a bit hard to read.</li>
+  </ul>
+{% endcall %}

@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+uuid = "a3bfdf87-b9dc-40a5-b1ca-4af6577ca57a"
+published = 2013-04-13 21:29:46-04:00
+title = "Automatic List Filtering with Procmail"
+tags = ["technology"]
+comments = [
+  "e6fdf5e6-e360-4fa0-8745-015d87531407",
+]
