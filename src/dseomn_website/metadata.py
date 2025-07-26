@@ -434,10 +434,28 @@ class Feed[EntryType](Resource):
         return self.entries_callback()
 
 
+def _template_is_post(path: ginjarator.paths.Filesystem) -> bool:
+    return path.is_relative_to(
+        "posts"
+    ) and path.parent != ginjarator.paths.Filesystem("posts")
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Page(Resource):
     title: str
     media: Media = Media.parse({})
+
+    @classmethod
+    def current(cls) -> Self:
+        current_template = ginjarator.api().paths.current_template
+        if current_template.is_relative_to("errors"):
+            return Error.load(current_template)
+        elif current_template.is_relative_to("standalone"):
+            return Standalone.load(current_template)
+        elif _template_is_post(current_template):
+            return Post.load(current_template)
+        else:
+            raise NotImplementedError(str(current_template))
 
     @classmethod
     def all(cls) -> Collection[Self]:
@@ -698,8 +716,7 @@ class Post(Page):
             (
                 cls.load(template)
                 for template in ginjarator.api().fs.read_config().templates
-                if template.is_relative_to("posts")
-                and template.parent != ginjarator.paths.Filesystem("posts")
+                if _template_is_post(template)
             ),
             key=lambda post_metadata: post_metadata.published,
             reverse=True,

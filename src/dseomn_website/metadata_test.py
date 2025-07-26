@@ -545,6 +545,27 @@ def test_feed() -> None:
     assert feed.entries == (0, 7)
 
 
+@pytest.mark.parametrize(
+    "template,cls",
+    (
+        ("errors/404/index.html.jinja", metadata.Error),
+        ("standalone/about/index.html.jinja", metadata.Standalone),
+        ("posts/2009-06-16-hello-world/index.html.jinja", metadata.Post),
+    ),
+)
+def test_page_current(template: str, cls: type[metadata.Page]) -> None:
+    with ginjarator.testing.api_for_scan(current_template=template):
+        assert isinstance(metadata.Page.current(), cls)
+
+
+def test_page_current_not_implemented() -> None:
+    with ginjarator.testing.api_for_scan(
+        current_template="css/common.less.jinja",
+    ):
+        with pytest.raises(NotImplementedError):
+            metadata.Page.current()
+
+
 def test_page_all() -> None:
     with ginjarator.testing.api_for_scan():
         assert metadata.Page.all()
