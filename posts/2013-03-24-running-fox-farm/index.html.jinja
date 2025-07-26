@@ -1,0 +1,14 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>My sister and I visited <a href="http://runningfoxfarm.net/">Running Fox Farm</a>.</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
