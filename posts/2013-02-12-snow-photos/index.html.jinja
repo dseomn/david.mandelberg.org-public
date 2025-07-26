@@ -4,17 +4,11 @@
  # SPDX-License-Identifier: CC-BY-4.0
  #}
 
-{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
-
 {% import "include/article.html.jinja" as article %}
 {% import "include/media_html.html.jinja" as media_html %}
 
 {% call article.post() %}
-  {% set post_metadata = metadata.Post.load(
-    ginjarator.paths.current_template
-  ) %}
-
   <p>I like snow.</p>
 
-  {{ media_html.gallery(post_metadata, "main") }}
+  {{ media_html.gallery("main") }}
 {% endcall %}

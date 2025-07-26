@@ -5,6 +5,7 @@
  #}
 
 {% set media = ginjarator.py.import_("dseomn_website.media") %}
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 
 {% import "include/base_html.html.jinja" as base_html %}
 
@@ -38,7 +39,8 @@
       >
 {%- endmacro %}
 
-{% macro gallery(page_metadata, gallery_name) %}
+{% macro gallery(gallery_name) %}
+  {% set page_metadata = metadata.Page.current() %}
   <div class="gallery">
     {% for media_item_details_metadata
       in page_metadata.media_item_details_by_source.values()
