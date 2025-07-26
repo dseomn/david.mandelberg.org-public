@@ -39,6 +39,7 @@ templates = [
   "posts/2010-10-09-department-of-survival/index.html.jinja",
   "posts/2013-02-12-snow-photos/index.html.jinja",
   "posts/2013-02-21-the-flurry/index.html.jinja",
+  "posts/2013-02-21-saratoga-spa/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",

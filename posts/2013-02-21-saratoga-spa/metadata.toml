@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "682ac088-947c-4380-b028-118830f73eb8"
+published = 2013-02-20 20:53:36-05:00
+title = "Saratoga Spa"
+tags = ["photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030853-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030867-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030878-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030888-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030892-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030898-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030904-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030907-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030914-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030919-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-02-21-saratoga-spa/P1030924-raw.jpg"
+gallery = "main"
+alt = ""

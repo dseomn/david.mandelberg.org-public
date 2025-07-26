@@ -1,0 +1,14 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>Ducks and water and <a href="http://en.wikipedia.org/wiki/Tufa">tufa</a>, oh my!</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
