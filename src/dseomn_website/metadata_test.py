@@ -17,6 +17,16 @@ from dseomn_website import metadata
 from dseomn_website import paths
 
 
+@pytest.fixture(autouse=True)
+def _clear_caches() -> None:
+    # Normally, loading the same template should return the same data, but
+    # that's not the case in these tests which use different root directories
+    # with the same relative template paths.
+    metadata.Error.load.cache_clear()
+    metadata.Standalone.load.cache_clear()
+    metadata.Post.load.cache_clear()
+
+
 def test_user_parse_error() -> None:
     with pytest.raises(ValueError, match=r"invalid_key_kumquat"):
         metadata.User.parse(dict(name="foo", invalid_key_kumquat=42))

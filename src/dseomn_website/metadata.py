@@ -518,6 +518,7 @@ class Error(Page):
     status: http.HTTPStatus
 
     @classmethod
+    @functools.cache
     def load(cls, template: ginjarator.paths.Filesystem) -> Self:
         raw = tomllib.loads(
             ginjarator.api().fs.read_text(
@@ -562,6 +563,7 @@ _STANDALONE_OTHER = tuple(
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Standalone(Page):
     @classmethod
+    @functools.cache
     def load(cls, template: ginjarator.paths.Filesystem) -> Self:
         raw = tomllib.loads(
             ginjarator.api().fs.read_text(
@@ -633,6 +635,7 @@ class Post(Page):
             )
 
     @classmethod
+    @functools.cache
     def load(cls, template: ginjarator.paths.Filesystem) -> Self:
         raw = tomllib.loads(
             ginjarator.api().fs.read_text(
