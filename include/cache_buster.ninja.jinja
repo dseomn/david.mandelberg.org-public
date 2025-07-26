@@ -76,7 +76,7 @@ build $
 {% set copy_stamp_path = (
   work_dir + "/" + work_filename_base + ".cache-buster-copy-stamp"
 ) %}
-{% for input_filename in input_filenames %}
+{% for input_filename in input_filenames | sort %}
 {% do input_files.append(input_dir + "/" + input_filename) %}
 {% do output_filename_paths.append(
   work_dir + "/" + input_filename + ".cache-buster-output-filename"
