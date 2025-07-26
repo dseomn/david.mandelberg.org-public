@@ -8,7 +8,12 @@ import lxml.html
 
 _SAFE_ATTRIBUTES_BY_TAG = {
     "a": {"href"},
+    "code": set(),
+    "em": set(),
     "p": set(),
+    "pre": set(),
+    "samp": set(),
+    "var": set(),
 }
 
 
