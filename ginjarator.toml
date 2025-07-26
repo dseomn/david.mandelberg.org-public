@@ -41,6 +41,7 @@ templates = [
   "posts/2013-02-21-the-flurry/index.html.jinja",
   "posts/2013-02-21-saratoga-spa/index.html.jinja",
   "posts/2013-03-24-running-fox-farm/index.html.jinja",
+  "posts/2013-04-06-montpelier-vt/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",

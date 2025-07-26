@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "02e03f63-9e19-4d98-a664-1bf7ec5f810c"
+published = 2013-04-06 16:28:52-04:00
+title = "Montpelier, VT"
+tags = ["dance", "photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-04-06-montpelier-vt/P1040025-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-04-06-montpelier-vt/P1040029-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-04-06-montpelier-vt/P1040037-raw-P1040044-raw-crop.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-04-06-montpelier-vt/P1040047-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-04-06-montpelier-vt/P1040052-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-04-06-montpelier-vt/P1040064-raw.jpg"
+gallery = "main"
+alt = ""
