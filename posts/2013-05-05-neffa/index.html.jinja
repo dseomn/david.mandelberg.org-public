@@ -1,0 +1,26 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p><a href="http://www.neffa.org/">The NEFFA Festival</a> was quite
+   enjoyable. Here are some videos:</p>
+  <ul>
+   <li><a href="http://www.youtube.com/watch?v=yjwO9wQfYOo">Contra Dance at NEFFA 2013 (1)</a></li>
+   <li><a href="http://www.youtube.com/watch?v=4wZnrwe-k_s">Contra Dance at NEFFA 2013 (2)</a></li>
+   <li><a href="http://www.youtube.com/watch?v=lb-jNb5VHjs">Waltz at NEFFA 2013 (3)</a></li>
+   <li><a href="http://www.youtube.com/watch?v=q4r7gz3edcY">Rapper at NEFFA 2013 (4)</a></li>
+   <li><a href="http://www.youtube.com/watch?v=HYScIrG3WvQ">Rapper at NEFFA 2013 (5)</a></li>
+   <li><a href="http://www.youtube.com/watch?v=Mkw8I-1xeDk">Contra Dance at NEFFA 2013 (6)</a></li>
+   <li><a href="http://www.youtube.com/watch?v=idOTamC3sVw">Four-Facing-Four at NEFFA 2013 (7)</a></li>
+   <li><a href="http://www.youtube.com/watch?v=mr6Wo8OBPws">Jamming and Singing at NEFFA 2013 (8)</a></li>
+  </ul>
+  <p>And photos:</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}

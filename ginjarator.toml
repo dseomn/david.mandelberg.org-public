@@ -43,6 +43,7 @@ templates = [
   "posts/2013-03-24-running-fox-farm/index.html.jinja",
   "posts/2013-04-06-montpelier-vt/index.html.jinja",
   "posts/2013-04-14-automatic-list-filtering-with-procmail/index.html.jinja",
+  "posts/2013-05-05-neffa/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",
