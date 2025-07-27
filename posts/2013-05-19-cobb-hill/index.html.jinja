@@ -1,0 +1,19 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>I visited <a href="http://www.cobbhill.org/">Cobb Hill</a> for one of
+   their <a href="http://www.cobbhill.org/main/community-fun">work days</a>.
+   I got to try raw cow's milk for the first time and I learned how to drive
+   a tractor. Unfortunately, I didn't take any photos of the work day, but
+   here are some photos I took on my way up and one photo I took the night
+   before the work day.</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}

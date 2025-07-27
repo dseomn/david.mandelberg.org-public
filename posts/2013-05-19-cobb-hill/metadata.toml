@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "83e2d809-66cc-4edf-9ee9-83dfeb82ea5b"
+published = 2013-05-19 16:40:15-04:00
+title = "Cobb Hill"
+tags = ["photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060136-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060144-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060154-raw-P1060160-raw_hdr_pregamma_1_mantiuk06_contrast_mapping_0.5_saturation_factor_1.2_detail_factor_1-crop.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060163-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060181-raw-P1060186-raw_hdr_pregamma_1_mantiuk06_contrast_mapping_0.4_saturation_factor_1.5_detail_factor_1-levels-crop.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060216-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060225-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060233-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-05-19-cobb-hill/P1060249-raw.jpg"
+gallery = "main"
+alt = ""
