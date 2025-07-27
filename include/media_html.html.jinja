@@ -4,6 +4,7 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% set css_constants = ginjarator.py.import_("dseomn_website.css_constants") %}
 {% set media = ginjarator.py.import_("dseomn_website.media") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 
@@ -158,7 +159,20 @@
             </div>
           </section>
         {% endcall %}
-        <a href="{{ media_item_details_metadata.item_fragment.url_path | e }}">
+        <a
+            href="{{ media_item_details_metadata.item_fragment.url_path | e }}"
+            {#
+             # TODO: https://caniuse.com/css3-attr - Give the aspect ratio as an
+             # attribute and do the rest in CSS.
+             #}
+            {% set flex_basis = (
+              (
+                css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE_EM
+                * media_item_details_metadata.item.aspect_ratio
+              ) | string + "em"
+            ) %}
+            style="flex: 0 {{ flex_basis }};"
+            >
           {{ image(
             media_item_details_metadata.item,
             "gallery_thumbnail",

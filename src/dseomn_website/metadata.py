@@ -200,6 +200,12 @@ class Image(MediaItem):
         )
 
     @functools.cached_property
+    def aspect_ratio(self) -> float:
+        ginjarator.api().fs.add_dependency(self.source, defer_ok=False)
+        with PIL.Image.open(ginjarator.api().fs.root / self.source) as image:
+            return image.width / image.height
+
+    @functools.cached_property
     def metadata(
         self,
     ) -> Mapping[str | markupsafe.Markup, Sequence[str | markupsafe.Markup]]:

@@ -133,6 +133,23 @@ def test_image_details_page_item() -> None:
     )
 
 
+def test_image_aspect_ratio() -> None:
+    with ginjarator.testing.api_for_scan():
+        image = metadata.Image(
+            source=ginjarator.paths.Filesystem(
+                "src/dseomn_website/test-16x12.png"
+            ),
+            gallery=None,
+            opengraph=False,
+            description_template=None,
+            alt="",
+            float_=False,
+            full_screen=False,
+            main=False,
+        )
+        assert image.aspect_ratio == 16 / 12
+
+
 @pytest.mark.parametrize(
     "source,key,expected_values",
     (
