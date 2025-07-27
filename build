@@ -29,4 +29,4 @@ htmlproofer \
   --empty-alt-ignore \
   --url-swap '/feed/\Z:/feed/index.atom,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
   output
-pytest -m 'output and not slow' --no-cov
+pytest -m 'output and not slow' --no-cov --numprocesses=auto --dist=worksteal
