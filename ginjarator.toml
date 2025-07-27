@@ -45,6 +45,7 @@ templates = [
   "posts/2013-04-14-automatic-list-filtering-with-procmail/index.html.jinja",
   "posts/2013-05-05-neffa/index.html.jinja",
   "posts/2013-05-11-breton-meadow-farm-day-1/index.html.jinja",
+  "posts/2013-05-19-lexington-muster/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",
