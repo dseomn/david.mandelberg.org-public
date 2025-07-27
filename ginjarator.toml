@@ -49,6 +49,7 @@ templates = [
   "posts/2013-05-19-breton-meadow-farm-day-2/index.html.jinja",
   "posts/2013-05-19-cobb-hill/index.html.jinja",
   "posts/2013-05-25-nature-in-the-rain/index.html.jinja",
+  "posts/2013-06-02-shelburne-falls/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",
