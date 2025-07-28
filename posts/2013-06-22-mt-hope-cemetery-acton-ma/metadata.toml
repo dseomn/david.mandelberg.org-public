@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "44ed6139-b042-4463-936d-ca038854702f"
+published = 2013-06-22 17:40:45-04:00
+title = "Mt. Hope Cemetery, Acton, MA"
+tags = ["photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070164-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070167-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070169-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070186-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070190-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070191-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070196-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070200-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-06-22-mt-hope-cemetery-acton-ma/P1070203-raw.jpg"
+gallery = "main"
+alt = ""
