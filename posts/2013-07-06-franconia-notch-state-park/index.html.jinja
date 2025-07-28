@@ -1,0 +1,16 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>I got distracted by nature on the way to
+   <a href="http://www.nordicfiddlesandfeet.org/">Nordic Fiddles and
+   Feet</a>.</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
