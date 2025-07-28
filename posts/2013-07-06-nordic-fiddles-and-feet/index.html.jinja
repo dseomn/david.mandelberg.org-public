@@ -1,0 +1,17 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p><a href="http://www.nordicfiddlesandfeet.org/">Nordic Fiddles and
+   Feet</a> at <a href="http://www.campogontz.com/">Camp Ogontz</a> had good
+   dancing, food, and boating. And I even got a preview of some of the food
+   they'll serve next year:</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
