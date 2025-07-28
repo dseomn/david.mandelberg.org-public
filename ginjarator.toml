@@ -51,6 +51,7 @@ templates = [
   "posts/2013-05-25-nature-in-the-rain/index.html.jinja",
   "posts/2013-06-02-shelburne-falls/index.html.jinja",
   "posts/2013-06-02-breton-meadow-farm/index.html.jinja",
+  "posts/2013-06-09-bare-hill-wildlife-sanctuary/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",
