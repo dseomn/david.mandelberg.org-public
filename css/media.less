@@ -40,13 +40,12 @@
 }
 
 .image-full-screen {
-  block-size: auto;
-  display: block;
-  inline-size: auto;
-  margin-inline: auto;
   // Give some extra space for .media-item-details-nav to fit on the page.
-  max-block-size: calc(100vb - 4em);
-  max-inline-size: 100%;
+  block-size: calc(100vb - 4em);
+  display: block;
+  inline-size: 100%;
+  margin-inline: auto;
+  object-fit: scale-down;
 }
 
 .media-item-details-text {
