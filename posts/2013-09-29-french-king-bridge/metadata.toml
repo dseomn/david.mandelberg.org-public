@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "194f7f6b-742d-41a6-9a1c-6508278bb685"
+published = 2013-09-29 11:46:11-04:00
+title = "French King Bridge"
+tags = ["photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-09-29-french-king-bridge/P1080608-raw-unsharp.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-09-29-french-king-bridge/P1080637-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-09-29-french-king-bridge/P1080642-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-09-29-french-king-bridge/P1080655-raw-unsharp.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-09-29-french-king-bridge/P1080685-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-09-29-french-king-bridge/P1080694-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2013-09-29-french-king-bridge/P1080698-raw.jpg"
+gallery = "main"
+alt = ""
