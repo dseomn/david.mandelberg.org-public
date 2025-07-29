@@ -1,0 +1,16 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p><a href="http://www.mass.gov/eea/agencies/dcr/massparks/region-north/great-brook-farm-state.html">Great
+   Brook Farm State Park</a> had some good walking/hiking, ice cream, and
+   farm animals (and even a make-shift shelter):</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
