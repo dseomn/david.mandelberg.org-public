@@ -11,7 +11,7 @@ reuse lint
 black --check --diff .
 isort --check --diff .
 mypy
-pytest -m 'not output and not slow'
+pytest -m 'not output and not slow' src
 
 ninja
 ninja -t cleandead
@@ -29,4 +29,9 @@ htmlproofer \
   --empty-alt-ignore \
   --url-swap '/feed/\Z:/feed/index.atom,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
   output
-pytest -m 'output and not slow' --no-cov --numprocesses=auto --dist=worksteal
+pytest \
+  -m 'output and not slow' \
+  --no-cov \
+  --numprocesses=auto \
+  --dist=worksteal \
+  src
