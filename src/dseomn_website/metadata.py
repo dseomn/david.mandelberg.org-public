@@ -27,6 +27,8 @@ import PIL.TiffImagePlugin
 from dseomn_website import lint
 from dseomn_website import paths
 
+PIL.Image.MAX_IMAGE_PIXELS = None
+
 
 def _require_timezone(value: datetime.datetime) -> None:
     if value.tzinfo is None:

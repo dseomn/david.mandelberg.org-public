@@ -17,6 +17,8 @@ import textwrap
 
 import PIL.Image
 
+PIL.Image.MAX_IMAGE_PIXELS = None
+
 
 def _ninja_escape(value: str) -> str:
     return value.translate(

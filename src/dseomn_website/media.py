@@ -16,6 +16,8 @@ from dseomn_website import css_constants
 from dseomn_website import metadata
 from dseomn_website import paths
 
+PIL.Image.MAX_IMAGE_PIXELS = None
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class ImageConversion:
