@@ -33,15 +33,24 @@ def comment(fragments: str, /) -> None:
 
 
 def _headings(parsed: Any) -> None:
-    levels = {f"h{n}" for n in range(1, 7)}
+    levels = {f"h{n}": n for n in range(1, 7)}
+    previous_level = 0
     for element in parsed.cssselect(",".join(levels)):
-        heading_classes = set(element.classes) & levels
+        level = levels[element.tag]
+        if level > previous_level + 1:
+            # https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements#navigation
+            raise ValueError(f"{element.tag} skipped a level.")
+        heading_classes = set(element.classes) & levels.keys()
         if not heading_classes:
             raise ValueError(f"{element.tag} does not have a heading class.")
         elif len(heading_classes) > 1:
             raise ValueError(
                 f"{element.tag} has multiple heading classes: {heading_classes}"
             )
+        previous_level = level
+    if len(parsed.cssselect("h1")) != 1:
+        # https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements#avoid_using_multiple_h1_elements_on_one_page
+        raise ValueError(f"Page does not have exactly one h1.")
 
 
 def _ids(parsed: Any) -> None:
