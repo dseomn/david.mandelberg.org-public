@@ -12,6 +12,7 @@ _SAFE_ATTRIBUTES_BY_TAG = {
     "em": set(),
     "p": set(),
     "pre": set(),
+    "q": set(),
     "samp": set(),
     "var": set(),
 }
