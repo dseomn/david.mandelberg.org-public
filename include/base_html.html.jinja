@@ -45,6 +45,9 @@
           <link
               as="font"
               crossorigin="anonymous"
+              {% if font.fetch_priority is not none %}
+                fetchpriority="{{ font.fetch_priority | e }}"
+              {% endif %}
               href="{{ font.url_path | e }}"
               rel="preload"
               type="font/woff2"

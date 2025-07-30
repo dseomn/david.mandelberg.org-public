@@ -283,6 +283,7 @@ class Font:
     family: str
     style: str
     weight: str
+    fetch_priority: str | None = None
 
     @functools.cached_property
     def unicodes(self) -> str:
@@ -352,5 +353,6 @@ FONTS = (
         family="Noto Serif",
         style="normal",
         weight="100 900",
+        fetch_priority="high",
     ),
 )
