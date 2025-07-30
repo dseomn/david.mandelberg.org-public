@@ -42,8 +42,10 @@ class ImageConversion:
                 (
                     "magick",
                     '"$in"',
+                    "-auto-orient",
                     f"-resize '{max_width}x{max_height}>'",
                     f"-quality {quality}",
+                    "-strip",
                     '"$out"',
                 )
             ),
@@ -64,7 +66,9 @@ class ImageConversion:
                     "magick",
                     "-define png:exclude-chunk=date,tIME",
                     '"$in"',
+                    "-auto-orient",
                     f"-resize '{max_width}x{max_height}>'",
+                    "-strip",
                     '"$out"',
                     "&&",
                     'optipng -quiet "$out"',

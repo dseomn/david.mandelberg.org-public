@@ -25,7 +25,8 @@ from dseomn_website import media
                 work_suffix="-64x48q90.jpg",
                 output_suffix="-q90.jpg",
                 sh_command=(
-                    '''magick "$in" -resize '64x48>' -quality 90 "$out"'''
+                    """magick "$in" -auto-orient -resize '64x48>' """
+                    '''-quality 90 -strip "$out"'''
                 ),
             ),
         ),
@@ -36,7 +37,8 @@ from dseomn_website import media
                 output_suffix=".png",
                 sh_command=(
                     """magick -define png:exclude-chunk=date,tIME "$in" """
-                    '''-resize '64x48>' "$out" && optipng -quiet "$out"'''
+                    """-auto-orient -resize '64x48>' -strip "$out" """
+                    '''&& optipng -quiet "$out"'''
                 ),
             ),
         ),
