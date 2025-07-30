@@ -204,6 +204,14 @@ def test_image_aspect_ratio() -> None:
             ("1⁄80 s",),
         ),
         (
+            (
+                "../private/posts/2013-07-06-nordic-fiddles-and-feet/"
+                "P1070388-raw.jpg"
+            ),
+            "Exposure time",
+            ("13.0 s",),
+        ),
+        (
             "src/dseomn_website/test-16x12.png",
             "Focal length",
             None,
