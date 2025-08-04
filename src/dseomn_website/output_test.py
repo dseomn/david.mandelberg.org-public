@@ -31,14 +31,15 @@ def test_pages_match_metadata() -> None:
 
 
 @pytest.mark.parametrize(
-    "url_path",
+    "path",
     sorted(
-        paths.to_url_path(ginjarator.paths.Filesystem(path))
+        path
         for path in pathlib.Path(paths.OUTPUT).glob("**/*")
         if path.is_file() and path != paths.OUTPUT / ".htaccess"
     ),
 )
-def test_ok(url_path: str) -> None:
+def test_ok(path: pathlib.Path) -> None:
+    url_path = paths.to_url_path(ginjarator.paths.Filesystem(path))
     header_registry = headerregistry.HeaderRegistry()
 
     response = requests.get(urllib.parse.urljoin(_BASE, url_path))
@@ -58,6 +59,8 @@ def test_ok(url_path: str) -> None:
         assert content_type.params["charset"] == "utf-8"
     else:
         assert "charset" not in content_type.params
+
+    assert response.content == path.read_bytes()
 
 
 @pytest.mark.parametrize(
