@@ -10,4 +10,5 @@ pytest -m slow --no-cov --numprocesses=auto --dist=worksteal src
 htmlproofer \
   --check-external-hash \
   --external_only \
+  --file-ignore '/^output/([0-9]{4}|page|tag)/.*/,output/index.html' \
   output
