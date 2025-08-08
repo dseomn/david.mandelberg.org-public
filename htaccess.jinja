@@ -15,6 +15,7 @@ RewriteBase /
 
 DirectoryIndex disabled
 DirectoryIndex {{ paths.DIR_INDEXES | join(" ") }}
+RewriteCond "%{REQUEST_FILENAME}" "-f"
 RewriteRule \
   "^((?:.*/)?)index(?:\.[^/]*)?$" \
   "$1" \

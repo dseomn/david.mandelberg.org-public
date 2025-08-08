@@ -85,6 +85,11 @@ def test_redirect(request_url_path: str, response_url_path: str) -> None:
     (
         ("/.htaccess", http.HTTPStatus.FORBIDDEN),
         ("/does-not-exist", http.HTTPStatus.NOT_FOUND),
+        (
+            # Valid index filename, but file does not exist, so no redirect.
+            "/index.atom",
+            http.HTTPStatus.NOT_FOUND,
+        ),
     ),
 )
 def test_error(url_path: str, expected: http.HTTPStatus) -> None:
