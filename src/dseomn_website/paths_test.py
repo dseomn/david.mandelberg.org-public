@@ -29,6 +29,7 @@ def test_work(source: str, expected: str) -> None:
     (
         ("/", "not-an-index", ValueError, r"Invalid dir_index"),
         ("foo", "index.html", NotImplementedError, r"Relative url paths"),
+        ("/index.html", "index.html", ValueError, r"explicit index"),
     ),
 )
 def test_from_url_path_error(

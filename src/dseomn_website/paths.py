@@ -55,7 +55,10 @@ def from_url_path(
     if relative.endswith("/"):
         return OUTPUT / relative / dir_index
     else:
-        return OUTPUT / relative
+        path = OUTPUT / relative
+        if _is_index(path.name):
+            raise ValueError(f"{url_path!r} has an explicit index filename.")
+        return path
 
 
 def to_url_path(path: ginjarator.paths.Filesystem | str) -> str:
