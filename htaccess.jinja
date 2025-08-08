@@ -4,19 +4,8 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
-{% set re = ginjarator.py.import_("re") %}
-
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
-
-{% set dir_index_regexes = [] %}
-{% for dir_index in paths.DIR_INDEXES %}
-  {#
-   # Apache and Python don't use the same regex engine, but this should be good
-   # enough for simple strings like "index.html".
-   #}
-  {% do dir_index_regexes.append(re.escape(dir_index)) %}
-{% endfor %}
 
 {% call ginjarator.fs.write_text_macro(paths.OUTPUT / ".htaccess") %}
 Options FollowSymlinks
@@ -27,7 +16,7 @@ RewriteBase /
 DirectoryIndex disabled
 DirectoryIndex {{ paths.DIR_INDEXES | join(" ") }}
 RewriteRule \
-  "^((?:.*/)?)(?:{{ dir_index_regexes | join("|") }})$" \
+  "^((?:.*/)?)index(?:\.[^/]*)?$" \
   "$1" \
   [last,nosubreq,redirect=permanent]
 

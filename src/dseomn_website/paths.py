@@ -19,6 +19,10 @@ DIR_INDEXES = (
 )
 
 
+def _is_index(name: str) -> bool:
+    return name == "index" or name.startswith("index.")
+
+
 def work(
     source: ginjarator.paths.Filesystem | str,
 ) -> ginjarator.paths.Filesystem:
@@ -65,6 +69,8 @@ def to_url_path(path: ginjarator.paths.Filesystem | str) -> str:
             unquoted = "/"
         else:
             unquoted = f"/{relative.parent}/"
+    elif _is_index(relative.name):
+        raise ValueError(f"Unknown index filename: {relative.name!r}")
     else:
         unquoted = f"/{relative}"
     return urllib.parse.quote(unquoted)

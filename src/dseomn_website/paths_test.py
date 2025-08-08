@@ -8,6 +8,11 @@ import pytest
 from dseomn_website import paths
 
 
+@pytest.mark.parametrize("name", paths.DIR_INDEXES)
+def test_dir_indexes(name: str) -> None:
+    assert paths._is_index(name)
+
+
 @pytest.mark.parametrize(
     "source,expected",
     (
@@ -51,9 +56,16 @@ def test_from_url_path(url_path: str, expected: str) -> None:
     )
 
 
-def test_to_url_path_error() -> None:
-    with pytest.raises(ValueError, match="not in"):
-        paths.to_url_path("foo")
+@pytest.mark.parametrize(
+    "path,error_regex",
+    (
+        ("foo", r"not in"),
+        ("output/index.unknown", r"Unknown index"),
+    ),
+)
+def test_to_url_path_error(path: str, error_regex: str) -> None:
+    with pytest.raises(ValueError, match=error_regex):
+        paths.to_url_path(path)
 
 
 @pytest.mark.parametrize(
