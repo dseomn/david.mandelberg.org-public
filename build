@@ -20,15 +20,6 @@ find output work -depth -type d -empty -print -delete
 
 # TODO: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=849473 - Validate
 # html.
-# TODO: https://github.com/gjtorikian/html-proofer/pull/717 - Remove
-# --empty-alt-ignore
-htmlproofer \
-  --check-favicon \
-  --check-opengraph \
-  --disable-external \
-  --empty-alt-ignore \
-  --url-swap '/feed/\Z:/feed/index.atom,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
-  output
 pytest \
   -m 'output and not slow' \
   --no-cov \

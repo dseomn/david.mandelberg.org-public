@@ -7,6 +7,16 @@
 set -euxo pipefail
 
 pytest -m slow --no-cov --numprocesses=auto --dist=worksteal src
+
+# TODO: https://github.com/gjtorikian/html-proofer/pull/717 - Remove
+# --empty-alt-ignore
+htmlproofer \
+  --check-favicon \
+  --check-opengraph \
+  --disable-external \
+  --empty-alt-ignore \
+  --url-swap '/feed/\Z:/feed/index.atom,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
+  output
 htmlproofer \
   --check-external-hash \
   --external_only \
