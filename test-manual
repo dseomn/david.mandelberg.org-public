@@ -9,6 +9,5 @@ set -euxo pipefail
 pytest -m slow --no-cov --numprocesses=auto --dist=worksteal src
 htmlproofer \
   --check-external-hash \
-  --empty-alt-ignore \
-  --url-swap '/feed/\Z:/feed/index.atom,\Ahttps\://david\.mandelberg\.org(/|\Z):/' \
+  --external_only \
   output
