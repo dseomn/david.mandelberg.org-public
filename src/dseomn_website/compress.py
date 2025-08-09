@@ -116,11 +116,19 @@ ENCODINGS = (
 )
 
 
+def _actual_input_path(args: argparse.Namespace) -> pathlib.Path:
+    if args.indirect:
+        return pathlib.Path(args.input_file.read_text())
+    else:
+        return args.input_file
+
+
 def _dyndep(args: argparse.Namespace) -> None:
+    actual_input_path = _actual_input_path(args)
     output_paths = (
-        str(_output_path(args.input_file, ".var")),
+        str(_output_path(actual_input_path, ".var")),
         *(
-            str(_output_path(args.input_file, encoding.suffix))
+            str(_output_path(actual_input_path, encoding.suffix))
             for encoding in ENCODINGS
         ),
     )
@@ -135,30 +143,31 @@ def _dyndep(args: argparse.Namespace) -> None:
                     : $
                     dyndep $
                     | $
-                    {_ninja_escape(str(args.input_file))}
+                    {_ninja_escape(str(actual_input_path))}
             """
         )
     )
 
 
 def _compress(args: argparse.Namespace) -> None:
+    actual_input_path = _actual_input_path(args)
     content_type = {
         ".atom": "application/atom+xml",
         ".css": "text/css",
         ".html": "text/html",
         ".txt": "text/plain",
-    }[args.input_file.suffix]
+    }[actual_input_path.suffix]
     var_parts = [
         textwrap.dedent(
             f"""\
             Content-Type: {content_type}
-            URI: {urllib.parse.quote(args.input_file.name)}
+            URI: {urllib.parse.quote(actual_input_path.name)}
             """
         ),
     ]
     for encoding in ENCODINGS:
-        output_path = _output_path(args.input_file, encoding.suffix)
-        encoding.encode(args.input_file, output_path)
+        output_path = _output_path(actual_input_path, encoding.suffix)
+        encoding.encode(actual_input_path, output_path)
         var_parts.append(
             textwrap.dedent(
                 f"""\
@@ -168,7 +177,7 @@ def _compress(args: argparse.Namespace) -> None:
                 """
             )
         )
-    _output_path(args.input_file, ".var").write_text("\n".join(var_parts))
+    _output_path(actual_input_path, ".var").write_text("\n".join(var_parts))
     args.stamp.write_text("")
 
 
@@ -178,6 +187,11 @@ def _add_common_args(parser: argparse.ArgumentParser) -> None:
         type=pathlib.Path,
         required=True,
         help="Stamp file.",
+    )
+    parser.add_argument(
+        "--indirect",
+        action="store_true",
+        help="input_file is a file that contains the actual file's filename.",
     )
     parser.add_argument(
         "input_file",
