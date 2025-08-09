@@ -178,6 +178,14 @@ def _compress(args: argparse.Namespace) -> None:
     _stamp_path(args.input_file).write_text("")
 
 
+def _add_common_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "input_file",
+        type=pathlib.Path,
+        help="File to compress.",
+    )
+
+
 def main(
     *,
     args: Sequence[str] = sys.argv[1:],
@@ -191,16 +199,12 @@ def main(
         help="Write a dyndep file for the compress subcommand.",
     )
     dyndep_parser.set_defaults(subcommand=_dyndep)
+    _add_common_args(dyndep_parser)
     dyndep_parser.add_argument(
         "--dyndep",
         type=pathlib.Path,
         required=True,
         help="Ninja dyndep file to write.",
-    )
-    dyndep_parser.add_argument(
-        "input_file",
-        type=pathlib.Path,
-        help="File to compress.",
     )
 
     compress_parser = subparsers.add_parser(
@@ -208,11 +212,7 @@ def main(
         help="Compress a file.",
     )
     compress_parser.set_defaults(subcommand=_compress)
-    compress_parser.add_argument(
-        "input_file",
-        type=pathlib.Path,
-        help="File to compress.",
-    )
+    _add_common_args(compress_parser)
 
     parsed_args = parser.parse_args(args)
     parsed_args.subcommand(parsed_args)
