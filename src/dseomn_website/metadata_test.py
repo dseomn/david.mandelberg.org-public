@@ -570,6 +570,11 @@ def test_feed() -> None:
     assert feed.entries == (0, 7)
 
 
+def test_feed_all() -> None:
+    with ginjarator.testing.api_for_scan():
+        assert metadata.Feed.all()
+
+
 @pytest.mark.parametrize(
     "template,cls",
     (

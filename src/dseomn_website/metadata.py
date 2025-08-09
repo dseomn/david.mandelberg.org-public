@@ -427,11 +427,22 @@ class Comment(Fragment):
         return f"Comment by {self.author.name} on {self.published}"
 
 
+@final
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Feed[EntryType](Resource):
     title: str
     updated_callback: Callable[[], datetime.datetime]
     entries_callback: Callable[[], Sequence[EntryType]]
+
+    @classmethod
+    def all(cls) -> "Collection[Feed[Any]]":
+        result = list[Feed[Any]]()
+        for post in Post.all():
+            result.append(post.comments_feed)
+        for post_list in PostList.all():
+            result.append(post_list.feed)
+            result.append(post_list.comments_feed)
+        return tuple(result)
 
     @functools.cached_property
     def updated(self) -> datetime.datetime:
