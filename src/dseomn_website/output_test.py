@@ -35,7 +35,10 @@ def test_pages_match_metadata() -> None:
     sorted(
         path
         for path in pathlib.Path(paths.OUTPUT).glob("**/*")
-        if path.is_file() and path != paths.OUTPUT / ".htaccess"
+        if path.is_file()
+        and path != paths.OUTPUT / ".htaccess"
+        and path.suffix != ".var"
+        and not path.suffix.startswith(".c-e-")
     ),
 )
 def test_ok(path: pathlib.Path) -> None:

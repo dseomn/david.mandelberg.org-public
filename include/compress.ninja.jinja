@@ -1,0 +1,47 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% set paths = ginjarator.py.import_("dseomn_website.paths") %}
+
+{% set rules %}
+rule compress_dyndep
+  command = ./src/dseomn_website/compress.py dyndep $args --dyndep=$out $in
+  description = DYNDEP $in
+
+rule compress_compress
+  command = ./src/dseomn_website/compress.py compress $args $in
+  description = COMPRESS $in
+{% endset %}
+
+{% macro compress(input_file, indirect=false) %}
+{% set common_args = [
+  "--stamp=" + paths.work(input_file) | string + ".compress-stamp",
+] %}
+{% if indirect %}
+{% do common_args.append("--indirect") %}
+{% endif %}
+
+build $
+    {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd $
+    : $
+    compress_dyndep $
+    {{ ginjarator.to_ninja(input_file) }} $
+    | $
+    ./src/dseomn_website/compress.py
+  args = {{ ginjarator.to_ninja(common_args, escape_shell=true) }}
+
+build $
+    {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-stamp $
+    : $
+    compress_compress $
+    {{ ginjarator.to_ninja(input_file) }} $
+    | $
+    ./src/dseomn_website/compress.py $
+    || $
+    {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd
+  args = {{ ginjarator.to_ninja(common_args, escape_shell=true) }}
+  dyndep = {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd
+{% endmacro %}

@@ -6,6 +6,7 @@ source_paths = [
   "../private/media",
   "../private/posts",
   "../private/third_party",
+  "compress.ninja.jinja",
   "css",
   "errors",
   "htaccess.jinja",
@@ -23,6 +24,7 @@ python_paths = [
   "src",
 ]
 ninja_templates = [
+  "compress.ninja.jinja",
   "css/build.ninja.jinja",
   "media/build.ninja.jinja",
 ]

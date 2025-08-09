@@ -7,8 +7,10 @@
 {% set fonts = ginjarator.py.import_("dseomn_website.fonts") %}
 
 {% import "include/cache_buster.ninja.jinja" as cache_buster %}
+{% import "include/compress.ninja.jinja" as compress %}
 
 {{ cache_buster.rules }}
+{{ compress.rules }}
 
 rule font_subset
   command = fonttools subset $
@@ -69,4 +71,8 @@ build work/css/main.css: minify work/css/postcss.css
   input_filenames=("main.css",),
   work_dir="work/css",
   work_filename_base="main.css",
+) }}
+{{ compress.compress(
+  "work/css/main.css.cache-buster-output-filename",
+  indirect=true,
 ) }}

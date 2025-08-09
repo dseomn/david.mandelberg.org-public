@@ -1,0 +1,32 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: Apache-2.0
+ #}
+
+{% set fonts = ginjarator.py.import_("dseomn_website.fonts") %}
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
+{% set paths = ginjarator.py.import_("dseomn_website.paths") %}
+
+{% import "include/compress.ninja.jinja" as compress %}
+
+{{ compress.rules }}
+
+{% set input_files = {} %}
+{% for feed_metadata in metadata.Feed.all() %}
+{% do input_files.update(
+  {paths.from_url_path(feed_metadata.url_path, dir_index="index.atom"): none}
+) %}
+{% endfor %}
+{% for page_metadata in metadata.Page.all() %}
+{% do input_files.update({paths.from_url_path(page_metadata.url_path): none}) %}
+{% endfor %}
+{% for font_family in fonts.ALL_FAMILIES %}
+{% do input_files.update(
+  {"output/licenses/" + font_family.replace(" ", "_") + "_OFL.txt": none}
+) %}
+{% endfor %}
+
+{% for input_file in input_files %}
+{{ compress.compress(input_file) }}
+{% endfor %}
