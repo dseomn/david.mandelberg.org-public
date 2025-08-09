@@ -29,11 +29,6 @@ def _ninja_escape(value: str) -> str:
     )
 
 
-def _stamp_path(input_path: pathlib.Path) -> pathlib.Path:
-    base = pathlib.Path("work") / input_path
-    return base.parent / f"{base.name}.compress-stamp"
-
-
 def _output_path(input_path: pathlib.Path, suffix: str) -> pathlib.Path:
     return input_path.parent / f"{input_path.name}{suffix}"
 
@@ -122,7 +117,6 @@ ENCODINGS = (
 
 
 def _dyndep(args: argparse.Namespace) -> None:
-    stamp_path = _stamp_path(args.input_file)
     output_paths = (
         str(_output_path(args.input_file, ".var")),
         *(
@@ -135,7 +129,7 @@ def _dyndep(args: argparse.Namespace) -> None:
             f"""\
             ninja_dyndep_version = 1
             build $
-                    {_ninja_escape(str(stamp_path))} $
+                    {_ninja_escape(str(args.stamp))} $
                     | $
                     {" ".join(map(_ninja_escape, output_paths))} $
                     : $
@@ -175,10 +169,16 @@ def _compress(args: argparse.Namespace) -> None:
             )
         )
     _output_path(args.input_file, ".var").write_text("\n".join(var_parts))
-    _stamp_path(args.input_file).write_text("")
+    args.stamp.write_text("")
 
 
 def _add_common_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--stamp",
+        type=pathlib.Path,
+        required=True,
+        help="Stamp file.",
+    )
     parser.add_argument(
         "input_file",
         type=pathlib.Path,

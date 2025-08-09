@@ -25,6 +25,7 @@ def test_dyndep() -> None:
     compress.main(
         args=(
             "dyndep",
+            "--stamp=work/output/foo.html.compress-stamp",
             "--dyndep=work/output/foo.html.compress-dd",
             "output/foo.html",
         ),
@@ -41,7 +42,13 @@ def test_dyndep() -> None:
 def test_compress() -> None:
     pathlib.Path("output/foo.html").touch()
 
-    compress.main(args=("compress", "output/foo.html"))
+    compress.main(
+        args=(
+            "compress",
+            "--stamp=work/output/foo.html.compress-stamp",
+            "output/foo.html",
+        )
+    )
 
     assert set(map(str, pathlib.Path(".").glob("**/*"))) == {
         "output",
