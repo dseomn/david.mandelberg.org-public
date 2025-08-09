@@ -23,6 +23,11 @@ _BASE = "http://localhost:19265"
 pytestmark = pytest.mark.output
 
 
+def _output_path_example_key(path: pathlib.Path) -> object:
+    """Returns a key to group output paths by and pick one from each group."""
+    return (path.suffix, path.name in paths.DIR_INDEXES)
+
+
 _OUTPUT_PATHS = frozenset(
     path
     for path in pathlib.Path(paths.OUTPUT).glob("**/*")
@@ -31,12 +36,14 @@ _OUTPUT_PATHS = frozenset(
     and path.suffix != ".var"
     and not path.suffix.startswith(".c-e-")
 )
-# One path per suffix.
 _OUTPUT_PATH_EXAMPLES = frozenset(
     next(iter(group))
     for _, group in itertools.groupby(
-        sorted(_OUTPUT_PATHS, key=lambda path: (path.suffix, path)),
-        key=lambda path: path.suffix,
+        sorted(
+            _OUTPUT_PATHS,
+            key=lambda path: (_output_path_example_key(path), path),
+        ),
+        key=_output_path_example_key,
     )
 )
 _OUTPUT_PATH_PARAMS = tuple(
