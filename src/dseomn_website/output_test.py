@@ -36,7 +36,7 @@ def test_pages_match_metadata() -> None:
         path
         for path in pathlib.Path(paths.OUTPUT).glob("**/*")
         if path.is_file()
-        and path != paths.OUTPUT / ".htaccess"
+        and path.name != ".htaccess"
         and path.suffix != ".var"
         and not path.suffix.startswith(".c-e-")
     ),
