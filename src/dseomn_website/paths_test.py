@@ -16,6 +16,7 @@ def test_dir_indexes(name: str) -> None:
 @pytest.mark.parametrize(
     "source,expected",
     (
+        ("work/standalone/about", "work/standalone/about"),
         ("standalone/about", "work/standalone/about"),
         ("../private/standalone/about", "work/standalone/about"),
     ),

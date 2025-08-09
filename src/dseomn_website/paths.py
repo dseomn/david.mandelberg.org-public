@@ -24,14 +24,17 @@ def _is_index(name: str) -> bool:
 
 
 def work(
-    source: ginjarator.paths.Filesystem | str,
+    pathlike: ginjarator.paths.Filesystem | str,
+    /,
 ) -> ginjarator.paths.Filesystem:
-    """Returns a path in WORK for the given source path."""
-    source_path = ginjarator.paths.Filesystem(source)
-    if source_path.is_relative_to(PRIVATE):
-        relative = source_path.relative_to(PRIVATE)
+    """Returns a path in WORK for the given path."""
+    path = ginjarator.paths.Filesystem(pathlike)
+    if path.is_relative_to(WORK):
+        return path
+    if path.is_relative_to(PRIVATE):
+        relative = path.relative_to(PRIVATE)
     else:
-        relative = source_path
+        relative = path
     return WORK / relative
 
 
