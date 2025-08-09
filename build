@@ -20,9 +20,4 @@ find output work -depth -type d -empty -print -delete
 
 # TODO: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=849473 - Validate
 # html.
-pytest \
-  -m 'output and not slow' \
-  --no-cov \
-  --numprocesses=auto \
-  --dist=worksteal \
-  src
+pytest -m 'output and not slow' --no-cov src

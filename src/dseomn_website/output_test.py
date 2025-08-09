@@ -4,6 +4,7 @@
 
 from email import headerregistry
 import http
+import itertools
 import pathlib
 from typing import cast
 import urllib.parse
@@ -22,6 +23,32 @@ _BASE = "http://localhost:19265"
 pytestmark = pytest.mark.output
 
 
+_OUTPUT_PATHS = frozenset(
+    path
+    for path in pathlib.Path(paths.OUTPUT).glob("**/*")
+    if path.is_file()
+    and path.name != ".htaccess"
+    and path.suffix != ".var"
+    and not path.suffix.startswith(".c-e-")
+)
+# One path per suffix.
+_OUTPUT_PATH_EXAMPLES = frozenset(
+    next(iter(group))
+    for _, group in itertools.groupby(
+        sorted(_OUTPUT_PATHS, key=lambda path: (path.suffix, path)),
+        key=lambda path: path.suffix,
+    )
+)
+_OUTPUT_PATH_PARAMS = tuple(
+    pytest.param(
+        path,
+        marks=() if path in _OUTPUT_PATH_EXAMPLES else (pytest.mark.slow,),
+        id=str(path),
+    )
+    for path in sorted(_OUTPUT_PATHS)
+)
+
+
 def test_pages_match_metadata() -> None:
     with ginjarator.testing.api_for_scan():
         assert {
@@ -30,17 +57,7 @@ def test_pages_match_metadata() -> None:
         } == {page.url_path for page in metadata.Page.all()}
 
 
-@pytest.mark.parametrize(
-    "path",
-    sorted(
-        path
-        for path in pathlib.Path(paths.OUTPUT).glob("**/*")
-        if path.is_file()
-        and path.name != ".htaccess"
-        and path.suffix != ".var"
-        and not path.suffix.startswith(".c-e-")
-    ),
-)
+@pytest.mark.parametrize("path", _OUTPUT_PATH_PARAMS)
 def test_ok(path: pathlib.Path) -> None:
     url_path = paths.to_url_path(ginjarator.paths.Filesystem(path))
     header_registry = headerregistry.HeaderRegistry()
