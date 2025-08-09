@@ -56,8 +56,6 @@ def test_compress() -> None:
     }
     assert pathlib.Path("output/foo.html.var").read_text() == textwrap.dedent(
         """\
-        URI: foo.html
-
         Content-Type: text/html
         URI: foo.html
 

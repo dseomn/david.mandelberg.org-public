@@ -157,8 +157,6 @@ def _compress(args: argparse.Namespace) -> None:
     var_parts = [
         textwrap.dedent(
             f"""\
-            URI: {urllib.parse.quote(args.input_file.name)}
-
             Content-Type: {content_type}
             URI: {urllib.parse.quote(args.input_file.name)}
             """
