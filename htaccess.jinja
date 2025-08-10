@@ -4,8 +4,11 @@
  # SPDX-License-Identifier: Apache-2.0
  #}
 
+{% set compress = ginjarator.py.import_("dseomn_website.compress") %}
 {% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 {% set paths = ginjarator.py.import_("dseomn_website.paths") %}
+
+{% set negotiation_suffix_regex %}\.(?:var|c-e-[a-z]+){% endset %}
 
 {% call ginjarator.fs.write_text_macro(paths.OUTPUT / ".htaccess") %}
 Options FollowSymlinks
@@ -19,7 +22,7 @@ RewriteCond "%{ENV:REDIRECT_STATUS}" "!^$"
 RewriteRule "" "-" [env=is_internal_request:1]
 
 DirectoryIndex disabled
-DirectoryIndex {{ paths.DIR_INDEXES | join(" ") }}
+DirectoryIndex {% for path in paths.DIR_INDEXES %} {{ path }}.var{% endfor %}
 RewriteCond "%{ENV:is_internal_request}" "^$"
 RewriteCond "%{REQUEST_FILENAME}" "-f"
 RewriteRule \
@@ -32,6 +35,22 @@ RewriteRule \
 Redirect permanent "{{ url_path_alias }}" "{{ post.url_path }}"
 {%- endfor %}
 {%- endfor %}
+
+RewriteCond "%{ENV:is_internal_request}" "^$"
+RewriteCond "%{REQUEST_FILENAME}" "-f"
+RewriteRule \
+  "^(.*){{ negotiation_suffix_regex }}$" \
+  "$1" \
+  [last,redirect=permanent]
+RewriteCond "%{ENV:is_internal_request}" "^$"
+RewriteCond "%{REQUEST_FILENAME}" "!{{ negotiation_suffix_regex }}$"
+RewriteCond "%{REQUEST_FILENAME}.var" "-f"
+RewriteRule "^.*$" "$0.var"
+AddHandler type-map .var
+{% for encoding in compress.ENCODINGS %}
+AddEncoding {{ encoding.name }} {{ encoding.suffix }}
+{% endfor %}
+Header always unset Content-Location
 
 AddType application/atom+xml .atom
 AddType font/woff2 .woff2

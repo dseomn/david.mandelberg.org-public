@@ -48,6 +48,15 @@ _OUTPUT_PATH_EXAMPLES = frozenset(
 )
 
 
+def _encoded_path(
+    base_path: pathlib.Path, encoding: str | None
+) -> pathlib.Path:
+    if encoding is None:
+        return base_path
+    else:
+        return base_path.parent / f"{base_path.name}.c-e-{encoding}"
+
+
 def test_pages_match_metadata() -> None:
     with ginjarator.testing.api_for_scan():
         assert {
@@ -86,19 +95,74 @@ def test_pages_match_metadata() -> None:
             http.HTTPStatus.NOT_FOUND,
             pathlib.Path("output/errors/404/index.html"),
         ),
+        (
+            "/licenses/Noto_Serif_OFL.txt.c-e-invalid",
+            http.HTTPStatus.NOT_FOUND,
+            pathlib.Path("output/errors/404/index.html"),
+        ),
+    ),
+)
+@pytest.mark.parametrize(
+    "accept,accept_encoding,expected_content_encoding",
+    (
+        (None, None, (None,)),
+        ("*/*", None, (None,)),
+        ("*/*", "br", ("br",)),
+        ("*/*", "gzip", ("gzip",)),
+        ("*/*", "zstd", ("zstd",)),
+        (
+            "*/*",
+            # Roughly reverse size order, to make sure that the smallest is
+            # picked, not the first listed.
+            "gzip, zstd, br",
+            ("gzip", "zstd", "br"),
+        ),
+        # TODO: https://bz.apache.org/bugzilla/show_bug.cgi?id=69775 - Test with
+        # a non-matching accept header.
+        ("*/*", "invalid", (None,)),
     ),
 )
 def test_final_response(
     url_path: str,
+    accept: str | None,
+    accept_encoding: str | None,
     expected_status_code: http.HTTPStatus,
+    expected_content_encoding: tuple[str | None, ...],
     expected_content_path: pathlib.Path,
 ) -> None:
+    compressible = expected_content_path.suffix not in (
+        ".jpg",
+        ".png",
+        ".woff2",
+    )
     header_registry = headerregistry.HeaderRegistry()
 
-    response = requests.get(urllib.parse.urljoin(_BASE, url_path))
+    response = requests.get(
+        urllib.parse.urljoin(_BASE, url_path),
+        headers={
+            "accept": accept,
+            "accept-encoding": accept_encoding,
+        },
+    )
 
     assert not response.history
     assert response.status_code == expected_status_code
+
+    assert "content-location" not in response.headers
+    content_encoding = response.headers.get("content-encoding")
+    if "vary" in response.headers:
+        vary = tuple(
+            header.casefold().strip()
+            for header in response.headers["vary"].split(",")
+        )
+    else:
+        vary = ()
+    if compressible:
+        assert content_encoding in expected_content_encoding
+        assert "accept-encoding" in vary
+    else:
+        assert content_encoding is None
+        assert "accept-encoding" not in vary
 
     assert "content-type" in response.headers
     content_type = cast(
@@ -114,15 +178,38 @@ def test_final_response(
         assert "charset" not in content_type.params
 
     assert response.content == expected_content_path.read_bytes()
+    # I don't see a way to get the encoded content from requests, so this uses
+    # the content-length instead to assert that the right encoded data was sent.
+    expected_encoding_sizes = {
+        encoding: _encoded_path(expected_content_path, encoding).stat().st_size
+        for encoding in (expected_content_encoding if compressible else (None,))
+    }
+    actual_encoding_size = int(response.headers["content-length"])
+    assert actual_encoding_size == expected_encoding_sizes[content_encoding]
+    assert actual_encoding_size == min(expected_encoding_sizes.values())
 
 
 @pytest.mark.parametrize(
     "request_url_path,response_url_path",
     (
         ("/index.html", "/"),
+        ("/index.html.c-e-br", "/"),
+        ("/index.html.c-e-gzip", "/"),
+        ("/index.html.c-e-zstd", "/"),
+        ("/index.html.var", "/"),
         ("/about/index.html", "/about/"),
         ("/feed/index.atom", "/feed/"),
         ("/2025/04/01/placeholder/", "/2025/04/02/placeholder/"),
+        ("/licenses/Noto_Serif_OFL.txt.c-e-br", "/licenses/Noto_Serif_OFL.txt"),
+        (
+            "/licenses/Noto_Serif_OFL.txt.c-e-gzip",
+            "/licenses/Noto_Serif_OFL.txt",
+        ),
+        (
+            "/licenses/Noto_Serif_OFL.txt.c-e-zstd",
+            "/licenses/Noto_Serif_OFL.txt",
+        ),
+        ("/licenses/Noto_Serif_OFL.txt.var", "/licenses/Noto_Serif_OFL.txt"),
     ),
 )
 def test_redirect(request_url_path: str, response_url_path: str) -> None:
