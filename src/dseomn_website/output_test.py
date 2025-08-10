@@ -46,14 +46,6 @@ _OUTPUT_PATH_EXAMPLES = frozenset(
         key=_output_path_example_key,
     )
 )
-_OUTPUT_PATH_PARAMS = tuple(
-    pytest.param(
-        path,
-        marks=() if path in _OUTPUT_PATH_EXAMPLES else (pytest.mark.slow,),
-        id=str(path),
-    )
-    for path in sorted(_OUTPUT_PATHS)
-)
 
 
 def test_pages_match_metadata() -> None:
@@ -64,15 +56,49 @@ def test_pages_match_metadata() -> None:
         } == {page.url_path for page in metadata.Page.all()}
 
 
-@pytest.mark.parametrize("path", _OUTPUT_PATH_PARAMS)
-def test_ok(path: pathlib.Path) -> None:
-    url_path = paths.to_url_path(ginjarator.paths.Filesystem(path))
+@pytest.mark.parametrize(
+    "url_path,expected_status_code,expected_content_path",
+    (
+        *(
+            pytest.param(
+                paths.to_url_path(ginjarator.paths.Filesystem(path)),
+                http.HTTPStatus.OK,
+                path,
+                marks=(
+                    () if path in _OUTPUT_PATH_EXAMPLES else (pytest.mark.slow,)
+                ),
+            )
+            for path in sorted(_OUTPUT_PATHS)
+        ),
+        (
+            "/.htaccess",
+            http.HTTPStatus.FORBIDDEN,
+            pathlib.Path("output/errors/403/index.html"),
+        ),
+        (
+            "/does-not-exist",
+            http.HTTPStatus.NOT_FOUND,
+            pathlib.Path("output/errors/404/index.html"),
+        ),
+        (
+            # Valid index filename, but file does not exist, so no redirect.
+            "/index.atom",
+            http.HTTPStatus.NOT_FOUND,
+            pathlib.Path("output/errors/404/index.html"),
+        ),
+    ),
+)
+def test_final_response(
+    url_path: str,
+    expected_status_code: http.HTTPStatus,
+    expected_content_path: pathlib.Path,
+) -> None:
     header_registry = headerregistry.HeaderRegistry()
 
     response = requests.get(urllib.parse.urljoin(_BASE, url_path))
 
     assert not response.history
-    assert response.status_code == http.HTTPStatus.OK
+    assert response.status_code == expected_status_code
 
     assert "content-type" in response.headers
     content_type = cast(
@@ -87,7 +113,7 @@ def test_ok(path: pathlib.Path) -> None:
     else:
         assert "charset" not in content_type.params
 
-    assert response.content == path.read_bytes()
+    assert response.content == expected_content_path.read_bytes()
 
 
 @pytest.mark.parametrize(
@@ -105,31 +131,6 @@ def test_redirect(request_url_path: str, response_url_path: str) -> None:
     assert len(response.history) == 1
     assert response.url == urllib.parse.urljoin(_BASE, response_url_path)
     assert response.status_code == http.HTTPStatus.OK
-
-
-@pytest.mark.parametrize(
-    "url_path,expected",
-    (
-        ("/.htaccess", http.HTTPStatus.FORBIDDEN),
-        ("/does-not-exist", http.HTTPStatus.NOT_FOUND),
-        (
-            # Valid index filename, but file does not exist, so no redirect.
-            "/index.atom",
-            http.HTTPStatus.NOT_FOUND,
-        ),
-    ),
-)
-def test_error(url_path: str, expected: http.HTTPStatus) -> None:
-    response = requests.get(urllib.parse.urljoin(_BASE, url_path))
-
-    assert not response.history
-    assert response.status_code == expected
-    assert (
-        response.text
-        == pathlib.Path(
-            paths.OUTPUT / f"errors/{expected.value}/index.html"
-        ).read_text()
-    )
 
 
 def test_font_coverage() -> None:
