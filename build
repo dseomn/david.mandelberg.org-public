@@ -11,7 +11,11 @@ reuse lint
 black --check --diff .
 isort --check --diff .
 mypy
-pytest -m 'not output and not slow' src
+# Explicitly ignore output_test to save time collecting its tests.
+pytest \
+  -m 'not output and not slow' \
+  --ignore=src/dseomn_website/output_test.py \
+  src
 
 ninja
 ninja -t cleandead
