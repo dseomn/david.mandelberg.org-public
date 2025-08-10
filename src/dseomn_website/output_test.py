@@ -10,6 +10,7 @@ from typing import cast
 import urllib.parse
 
 import ginjarator
+import ginjarator.testing
 import lxml.html
 import pytest
 import requests
