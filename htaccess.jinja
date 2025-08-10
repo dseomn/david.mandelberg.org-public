@@ -13,13 +13,19 @@ Options FollowSymlinks
 RewriteEngine on
 RewriteBase /
 
+# See https://stackoverflow.com/a/24258932/16979806 for REDIRECT_STATUS.
+RewriteCond "%{IS_SUBREQ}" "^true$" [ornext]
+RewriteCond "%{ENV:REDIRECT_STATUS}" "!^$"
+RewriteRule "" "-" [env=is_internal_request:1]
+
 DirectoryIndex disabled
 DirectoryIndex {{ paths.DIR_INDEXES | join(" ") }}
+RewriteCond "%{ENV:is_internal_request}" "^$"
 RewriteCond "%{REQUEST_FILENAME}" "-f"
 RewriteRule \
   "^((?:.*/)?)index(?:\.[^/]*)?$" \
   "$1" \
-  [last,nosubreq,redirect=permanent]
+  [last,redirect=permanent]
 
 {%- for post in metadata.Post.all() %}
 {%- for url_path_alias in post.url_path_aliases %}
