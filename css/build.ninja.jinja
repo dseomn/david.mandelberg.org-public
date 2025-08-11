@@ -53,9 +53,11 @@ rule minify
   command = minify --output $out --quiet --type=css $in
   description = MINIFY $in
 
+# TODO: https://github.com/ninja-build/ninja/issues/2641 - Make the stamp
+# dependency order-only.
 build work/css/compiled.css | work/css/compiled.css.d: lessc $
     css/main.less $
-    || $
+    | $
     {{ ginjarator.to_ninja(
       ginjarator.paths.template_render_stamp("css/common.less.jinja")
     ) }}
