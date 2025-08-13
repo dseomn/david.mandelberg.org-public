@@ -6,6 +6,7 @@ from collections.abc import Generator
 import contextlib
 import pathlib
 import textwrap
+import time
 
 import pytest
 
@@ -19,6 +20,30 @@ def _root_path(tmp_path: pathlib.Path) -> Generator[None, None, None]:
         pathlib.Path("work").mkdir()
         pathlib.Path("work/output").mkdir()
         yield
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("encoding", compress.ENCODINGS)
+def test_encoding_encode_deterministic(encoding: compress.Encoding) -> None:
+    in_1 = pathlib.Path("in-1")
+    out_1a = pathlib.Path("out-1a")
+    out_1b = pathlib.Path("out-1b")
+    in_2 = pathlib.Path("in-2")
+    out_2 = pathlib.Path("out-2")
+
+    # Use two filenames to test that the output doesn't vary based on the input
+    # filename. Sleep between 1a and 1b to test that the output doesn't vary
+    # based on when the compression is run. Touch in_1 after sleeping to test
+    # that the output doesn't vary based on the input file's mtime.
+    in_1.write_text("kumquat")
+    encoding.encode(in_1, out_1a)
+    in_2.write_text("kumquat")
+    encoding.encode(in_2, out_2)
+    time.sleep(1.01)  # Catch changes to second-resolution timestamps.
+    in_1.touch()
+    encoding.encode(in_1, out_1b)
+
+    assert out_1a.read_bytes() == out_1b.read_bytes() == out_2.read_bytes()
 
 
 def test_dyndep() -> None:

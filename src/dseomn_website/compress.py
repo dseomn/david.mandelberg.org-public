@@ -47,6 +47,7 @@ class Encoding(abc.ABC):
         input_path: pathlib.Path,
         output_path: pathlib.Path,
     ) -> None:
+        # When changing implementations of this, run slow tests.
         raise NotImplementedError()
 
 
@@ -83,7 +84,11 @@ class Gzip(Encoding):
             output_path.open(mode="wb") as output_file,
         ):
             subprocess.run(
-                ("gzip", "--best"),
+                (
+                    "gzip",
+                    "--no-name",  # This also prevents including the timestamp.
+                    "--best",
+                ),
                 stdin=input_file,
                 stdout=output_file,
                 check=True,
