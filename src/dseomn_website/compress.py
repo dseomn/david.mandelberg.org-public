@@ -130,6 +130,10 @@ def _actual_input_path(args: argparse.Namespace) -> pathlib.Path:
 
 def _dyndep(args: argparse.Namespace) -> None:
     actual_input_path = _actual_input_path(args)
+    input_paths = {
+        str(args.input_file),
+        str(actual_input_path),
+    }
     output_paths = (
         str(_output_path(actual_input_path, ".var")),
         *(
@@ -148,7 +152,7 @@ def _dyndep(args: argparse.Namespace) -> None:
                     : $
                     dyndep $
                     | $
-                    {_ninja_escape(str(actual_input_path))}
+                    {" ".join(map(_ninja_escape, input_paths))}
             """
         )
     )

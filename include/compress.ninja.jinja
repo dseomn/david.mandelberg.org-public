@@ -8,12 +8,12 @@
 
 {% set rules %}
 rule compress_dyndep
-  command = ./src/dseomn_website/compress.py dyndep $args --dyndep=$out $in
-  description = DYNDEP $in
+  command = ./src/dseomn_website/compress.py dyndep $args --dyndep=$out $fake_in
+  description = DYNDEP $fake_in
 
 rule compress_compress
-  command = ./src/dseomn_website/compress.py compress $args $in
-  description = COMPRESS $in
+  command = ./src/dseomn_website/compress.py compress $args $fake_in
+  description = COMPRESS $fake_in
 {% endset %}
 
 {% macro compress(input_file, indirect=false) %}
@@ -28,20 +28,35 @@ build $
     {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd $
     : $
     compress_dyndep $
-    {{ ginjarator.to_ninja(input_file) }} $
     | $
+    {%- if indirect %}
+    {#-
+     # If indirect, then the input_file is actually read to get the filename of
+     # the real input file, so we add a dependency on it. Otherwise, the
+     # filename of input_file is used, but the actual file is never read and
+     # doesn't even need to exist yet.
+     #
+     # While it would be simpler to add it as a dependency unconditionally, that
+     # wouldn't work when it's a dynamic out, see
+     # https://github.com/ninja-build/ninja/issues/2648. Luckily, so far every
+     # case when it's a dynamic out is also a case when it's not indirect.
+     #}
+    {{ ginjarator.to_ninja(input_file) }} $
+    {%- endif %}
     ./src/dseomn_website/compress.py
   args = {{ ginjarator.to_ninja(common_args, escape_shell=true) }}
+  fake_in = {{ ginjarator.to_ninja(input_file, escape_shell=true) }}
 
 build $
     {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-stamp $
     : $
     compress_compress $
-    {{ ginjarator.to_ninja(input_file) }} $
     | $
     ./src/dseomn_website/compress.py $
     || $
-    {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd
+    {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd $
+    {{ ginjarator.to_ninja(ginjarator.paths.scan_done_stamp) }}
   args = {{ ginjarator.to_ninja(common_args, escape_shell=true) }}
   dyndep = {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd
+  fake_in = {{ ginjarator.to_ninja(input_file, escape_shell=true) }}
 {% endmacro %}
