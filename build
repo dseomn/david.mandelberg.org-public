@@ -24,6 +24,7 @@ if [[ "$(ninja -n)" != 'ninja: no work to do.' ]]; then
   exit 1
 fi
 ninja -t cleandead
+ninja -t missingdeps
 # TODO: https://github.com/ninja-build/ninja/issues/2617 - Delete this.
 find output work -depth -type d -empty -print -delete
 
