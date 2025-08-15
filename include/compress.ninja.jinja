@@ -43,7 +43,7 @@ build $
      #}
     {{ ginjarator.to_ninja(input_file) }} $
     {%- endif %}
-    ./src/dseomn_website/compress.py
+    src/dseomn_website/compress.py
   args = {{ ginjarator.to_ninja(common_args, escape_shell=true) }}
   fake_in = {{ ginjarator.to_ninja(input_file, escape_shell=true) }}
 
@@ -52,7 +52,7 @@ build $
     : $
     compress_compress $
     | $
-    ./src/dseomn_website/compress.py $
+    src/dseomn_website/compress.py $
     || $
     {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd $
     {{ ginjarator.to_ninja(ginjarator.paths.scan_done_stamp) }}
