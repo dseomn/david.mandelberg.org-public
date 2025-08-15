@@ -16,7 +16,11 @@ rule compress_compress
   description = COMPRESS $fake_in
 {% endset %}
 
-{% macro compress(input_file, indirect=false) %}
+{% macro compress(
+  input_file,
+  indirect=false,
+  order_only_deps=(ginjarator.paths.scan_done_stamp,)
+) %}
 {% set common_args = [
   "--stamp=" + paths.work(input_file) | string + ".compress-stamp",
 ] %}
@@ -55,7 +59,7 @@ build $
     src/dseomn_website/compress.py $
     || $
     {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd $
-    {{ ginjarator.to_ninja(ginjarator.paths.scan_done_stamp) }}
+    {{ ginjarator.to_ninja(order_only_deps) }}
   args = {{ ginjarator.to_ninja(common_args, escape_shell=true) }}
   dyndep = {{ ginjarator.to_ninja(paths.work(input_file)) }}.compress-dd
   fake_in = {{ ginjarator.to_ninja(input_file, escape_shell=true) }}

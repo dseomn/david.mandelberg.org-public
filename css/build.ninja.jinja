@@ -77,4 +77,5 @@ build work/css/main.css: minify work/css/postcss.css
 {{ compress.compress(
   "work/css/main.css.cache-buster-output-filename",
   indirect=true,
+  order_only_deps=("work/css/main.css.cache-buster-dd",),
 ) }}
