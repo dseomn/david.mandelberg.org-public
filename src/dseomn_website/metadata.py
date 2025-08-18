@@ -9,25 +9,19 @@ import dataclasses
 import datetime
 import email.headerregistry
 import email.utils
-import fractions
 import functools
 import http
 import itertools
+import json
 import tomllib
 from typing import Any, final, Literal, override, Self
 import urllib.parse
 import uuid as uuid_
 
 import ginjarator
-import markupsafe
-import PIL.ExifTags
-import PIL.Image
-import PIL.TiffImagePlugin
 
 from dseomn_website import lint
 from dseomn_website import paths
-
-PIL.Image.MAX_IMAGE_PIXELS = None
 
 
 def _require_timezone(value: datetime.datetime) -> None:
@@ -171,15 +165,6 @@ class MediaItem(abc.ABC):
         raise NotImplementedError()
 
 
-def _exif_to_fraction(
-    value: PIL.TiffImagePlugin.IFDRational | None,
-) -> fractions.Fraction | None:
-    if value is None or value.denominator == 0:
-        return None
-    # Pass the values separately so that they're reduced.
-    return fractions.Fraction(int(value.numerator), int(value.denominator))
-
-
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Image(MediaItem):
     type_: Literal["image"] = "image"
@@ -202,106 +187,16 @@ class Image(MediaItem):
         )
 
     @functools.cached_property
-    def aspect_ratio(self) -> float:
-        ginjarator.api().fs.add_dependency(self.source, defer_ok=False)
-        with PIL.Image.open(ginjarator.api().fs.root / self.source) as image:
-            return image.width / image.height
+    def metadata_path(self) -> ginjarator.paths.Filesystem:
+        path = paths.work(self.source)
+        return path.parent / f"{path.name}.json"
 
     @functools.cached_property
-    def metadata(
-        self,
-    ) -> Mapping[str | markupsafe.Markup, Sequence[str | markupsafe.Markup]]:
-        result = dict[
-            str | markupsafe.Markup, Sequence[str | markupsafe.Markup]
-        ]()
-        ginjarator.api().fs.add_dependency(self.source, defer_ok=False)
-        with PIL.Image.open(ginjarator.api().fs.root / self.source) as image:
-            exif = image.getexif()
-            exif_ifd = exif.get_ifd(PIL.ExifTags.IFD.Exif)
-
-            if PIL.ExifTags.Base.DateTimeOriginal in exif_ifd:
-                result["Taken"] = (
-                    markupsafe.Markup("<time>{}</time>").format(
-                        datetime.datetime.strptime(
-                            exif_ifd[PIL.ExifTags.Base.DateTimeOriginal],
-                            "%Y:%m:%d %H:%M:%S",
-                        ).isoformat(sep=" ")
-                    ),
-                )
-
-            camera_parts = []
-            if (camera_make := exif.get(PIL.ExifTags.Base.Make)) is not None:
-                camera_parts.append(camera_make)
-            if (camera_model := exif.get(PIL.ExifTags.Base.Model)) is not None:
-                camera_parts.append(camera_model)
-            if camera_parts:
-                result["Camera"] = (" ".join(camera_parts),)
-
-            result["Resolution"] = (f"{image.width} × {image.height}",)
-
-            if (
-                f_number := _exif_to_fraction(
-                    exif_ifd.get(PIL.ExifTags.Base.FNumber)
-                )
-            ) is not None:
-                result["Aperture"] = (
-                    (
-                        "\N{LATIN SMALL LETTER F WITH HOOK}\N{DIVISION SLASH}"
-                        f"{f_number:.2g}"
-                    ),
-                )
-
-            if (
-                exposure_time := _exif_to_fraction(
-                    exif_ifd.get(PIL.ExifTags.Base.ExposureTime)
-                )
-            ) is not None:
-                result["Exposure time"] = (
-                    (
-                        f"{exposure_time:.1f}\N{NO-BREAK SPACE}s"
-                        if exposure_time >= 1
-                        else (
-                            f"{exposure_time.numerator}\N{FRACTION SLASH}"
-                            f"{exposure_time.denominator}\N{NO-BREAK SPACE}s"
-                        )
-                    ),
-                )
-
-            focal_length_parts = []
-            if (
-                focal_length := _exif_to_fraction(
-                    exif_ifd.get(PIL.ExifTags.Base.FocalLength)
-                )
-            ) is not None:
-                focal_length_parts.append(f"{focal_length}\N{NO-BREAK SPACE}mm")
-            if (
-                focal_length_35mm_equiv := exif_ifd.get(
-                    PIL.ExifTags.Base.FocalLengthIn35mmFilm
-                )
-            ) is not None:
-                focal_length_parts.append(
-                    f"{focal_length_35mm_equiv}\N{NO-BREAK SPACE}mm "
-                    "(35\N{NO-BREAK SPACE}mm equivalent)"
-                )
-            if focal_length_parts:
-                result["Focal length"] = tuple(focal_length_parts)
-
-            if (
-                iso := exif_ifd.get(PIL.ExifTags.Base.ISOSpeedRatings)
-            ) is not None:
-                result["ISO"] = (str(iso),)
-
-            software = []
-            for software_tag in (
-                PIL.ExifTags.Base.Software,
-                PIL.ExifTags.Base.ProcessingSoftware,
-            ):
-                if software_tag in exif:
-                    software.append(exif[software_tag].strip())
-            if software:
-                result["Software"] = tuple(software)
-
-        return result
+    def metadata(self) -> Any:
+        contents = ginjarator.api().fs.read_text(self.metadata_path)
+        if contents is None:
+            return None
+        return json.loads(contents)
 
 
 def _parse_media_item(raw: Any) -> MediaItem:

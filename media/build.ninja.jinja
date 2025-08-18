@@ -5,14 +5,39 @@
  #}
 
 {% set media = ginjarator.py.import_("dseomn_website.media") %}
+{% set metadata = ginjarator.py.import_("dseomn_website.metadata") %}
 
 {% import "include/cache_buster.ninja.jinja" as cache_buster %}
 
 {{ cache_buster.rules }}
 
+rule image_metadata
+  command = ./src/dseomn_website/image_metadata.py $in $out
+  description = METADATA $in
+
 rule image_convert
   command = in=$in; out=$out; $conversion_command
   description = CONVERT $in ($conversion)
+
+{% set source_by_metadata_path = {} %}
+{% for page_metadata in metadata.Page.all() %}
+{% for media_item in page_metadata.media.item_by_source.values()
+  if media_item.type_ == "image"
+%}
+{% do source_by_metadata_path.update(
+  {media_item.metadata_path: media_item.source}
+) %}
+{% endfor %}
+{% endfor %}
+{% for metadata_path, source in source_by_metadata_path.items() %}
+build $
+    {{ ginjarator.to_ninja(metadata_path) }} $
+    : $
+    image_metadata $
+    {{ ginjarator.to_ninja(source) }} $
+    | $
+    src/dseomn_website/image_metadata.py
+{% endfor %}
 
 {% for source, image_outputs in media.image_outputs_by_source().items() %}
 {% set work_dir = (image_outputs | first).work_path.parent %}

@@ -129,16 +129,22 @@
                   {% endif %}
                 </ul>
               </nav>
-              {% if media_item_details_metadata.item.metadata %}
+              {% if (
+                media_item_details_metadata.item.metadata is not none and
+                media_item_details_metadata.item.metadata.human_readable_html
+              ) %}
                 <figure class="figure-float">
                   <figcaption>Metadata</figcaption>
                   <dl class="tabular-dl">
-                    {% for metadata_key, metadata_values
-                      in media_item_details_metadata.item.metadata.items()
-                    %}
-                      <dt class="tabular-dt">{{ metadata_key | e }}</dt>
+                    {% for metadata_key, metadata_values in (
+                      media_item_details_metadata
+                      .item
+                      .metadata
+                      .human_readable_html
+                    ) %}
+                      <dt class="tabular-dt">{{ metadata_key }}</dt>
                       {% for metadata_value in metadata_values %}
-                        <dd class="tabular-dd">{{ metadata_value | e }}</dd>
+                        <dd class="tabular-dd">{{ metadata_value }}</dd>
                       {% endfor %}
                     {% endfor %}
                   </dl>
@@ -165,13 +171,16 @@
              # TODO: https://caniuse.com/css3-attr - Give the aspect ratio as an
              # attribute and do the rest in CSS.
              #}
-            {% set flex_basis = (
-              (
-                css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE_EM
-                * media_item_details_metadata.item.aspect_ratio
-              ) | string + "em"
-            ) %}
-            style="flex: 0 {{ flex_basis }};"
+            {% if media_item_details_metadata.item.metadata is not none %}
+              {% set flex_basis = (
+                (
+                  css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE_EM
+                  * media_item_details_metadata.item.metadata.width
+                  / media_item_details_metadata.item.metadata.height
+                ) | string + "em"
+              ) %}
+              style="flex: 0 {{ flex_basis }};"
+            {% endif %}
             >
           {{ image(
             media_item_details_metadata.item,

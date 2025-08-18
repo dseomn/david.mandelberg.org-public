@@ -4,13 +4,13 @@
 
 import datetime
 import http
+import json
 import pathlib
 import textwrap
 from typing import Any
 import uuid
 
 import ginjarator.testing
-import markupsafe
 import pytest
 
 from dseomn_website import metadata
@@ -133,7 +133,7 @@ def test_image_details_page_item() -> None:
     )
 
 
-def test_image_aspect_ratio() -> None:
+def test_image_metadata_scan() -> None:
     with ginjarator.testing.api_for_scan():
         image = metadata.Image(
             source=ginjarator.paths.Filesystem(
@@ -147,118 +147,36 @@ def test_image_aspect_ratio() -> None:
             full_screen=False,
             main=False,
         )
-        assert image.aspect_ratio == 16 / 12
+        assert image.metadata_path == ginjarator.paths.Filesystem(
+            "work/src/dseomn_website/test-16x12.png.json"
+        )
+        assert image.metadata is None
 
 
-@pytest.mark.parametrize(
-    "source,key,expected_values",
-    (
-        (
-            "src/dseomn_website/test-16x12.png",
-            "Taken",
-            None,
-        ),
-        (
-            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
-            "Taken",
-            ("<time>2013-02-08 16:18:16</time>",),
-        ),
-        (
-            "src/dseomn_website/test-16x12.png",
-            "Camera",
-            None,
-        ),
-        (
-            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
-            "Camera",
-            ("Panasonic DMC-GH2",),
-        ),
-        (
-            "src/dseomn_website/test-16x12.png",
-            "Resolution",
-            ("16 × 12",),
-        ),
-        (
-            "src/dseomn_website/test-16x12.png",
-            "Aperture",
-            None,
-        ),
-        (
-            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
-            "Aperture",
-            ("ƒ∕8",),
-        ),
-        (
-            "../private/posts/2013-02-12-snow-photos/P1030256-raw.JPG",
-            "Aperture",
-            ("ƒ∕6.3",),
-        ),
-        (
-            "src/dseomn_website/test-16x12.png",
-            "Exposure time",
-            None,
-        ),
-        (
-            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
-            "Exposure time",
-            ("1⁄80 s",),
-        ),
-        (
-            (
-                "../private/posts/2013-07-06-nordic-fiddles-and-feet/"
-                "P1070388-raw.jpg"
-            ),
-            "Exposure time",
-            ("13.0 s",),
-        ),
-        (
-            "src/dseomn_website/test-16x12.png",
-            "Focal length",
-            None,
-        ),
-        (
-            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
-            "Focal length",
-            ("42 mm", "84 mm (35 mm equivalent)"),
-        ),
-        (
-            "src/dseomn_website/test-16x12.png",
-            "ISO",
-            None,
-        ),
-        (
-            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
-            "ISO",
-            ("500",),
-        ),
-        (
-            "src/dseomn_website/test-16x12.png",
-            "Software",
-            None,
-        ),
-        (
-            "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
-            "Software",
-            ("Ver.1.1", "UFRaw 0.18"),
-        ),
-        (
-            (
-                "../private/posts/2013-02-12-snow-photos/"
-                "P1030324-raw-P1030337-raw.jpg"
-            ),
-            "Software",
-            ("Hugin 2011.4.0.cf9be9344356",),
-        ),
-    ),
-)
-def test_image_metadata(
-    source: str,
-    key: str,
-    expected_values: tuple[str, ...] | None,
-) -> None:
-    with ginjarator.testing.api_for_scan():
+def test_image_metadata_render(tmp_path: pathlib.Path) -> None:
+    (tmp_path / "ginjarator.toml").write_text(
+        textwrap.dedent(
+            """\
+            source_paths = ["src"]
+            build_paths = ["work"]
+            """
+        )
+    )
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src/test-16x12.png").write_bytes(
+        pathlib.Path("src/dseomn_website/test-16x12.png").read_bytes()
+    )
+    (tmp_path / "work").mkdir()
+    (tmp_path / "work/src").mkdir()
+    metadata_path = "work/src/test-16x12.png.json"
+    (tmp_path / metadata_path).write_text(json.dumps(dict(kumquat=42)))
+
+    with ginjarator.testing.api_for_render(
+        root_path=tmp_path,
+        dependencies=(metadata_path,),
+    ):
         image = metadata.Image(
-            source=ginjarator.paths.Filesystem(source),
+            source=ginjarator.paths.Filesystem("src/test-16x12.png"),
             gallery=None,
             opengraph=False,
             description_template=None,
@@ -267,13 +185,7 @@ def test_image_metadata(
             full_screen=False,
             main=False,
         )
-        metadata_html = {
-            str(markupsafe.escape(k)): tuple(
-                map(str, map(markupsafe.escape, v))
-            )
-            for k, v in image.metadata.items()
-        }
-    assert metadata_html.get(key) == expected_values
+        assert image.metadata == dict(kumquat=42)
 
 
 @pytest.mark.parametrize(
