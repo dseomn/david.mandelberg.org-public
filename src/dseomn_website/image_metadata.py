@@ -59,18 +59,24 @@ def _human_readable_html(image: PIL.ImageFile.ImageFile) -> Any:
             )
         )
 
-    camera_parts = []
-    if (camera_make := exif.get(PIL.ExifTags.Base.Make)) is not None:
-        camera_parts.append(camera_make)
-    if (camera_model := exif.get(PIL.ExifTags.Base.Model)) is not None:
-        camera_parts.append(camera_model)
-    if camera_parts:
-        result.append(
+    # Hardcoding the list of cameras serves two unrelated purposes: 1. It fixes
+    # duplication like with the Canon PowerShot S90. 2. When adding a new camera
+    # I can look at the metadata that camera writes and decide whether to change
+    # anything else about this script.
+    if (
+        camera := {
+            ("Canon", "Canon PowerShot A530"): "Canon PowerShot A530",
+            ("Canon", "Canon PowerShot S90"): "Canon PowerShot S90",
+            ("Panasonic", "DMC-GH2"): "Panasonic DMC-GH2",
+            (None, None): None,
+        }[
             (
-                "Camera",
-                (str(markupsafe.escape(" ".join(camera_parts))),),
+                exif.get(PIL.ExifTags.Base.Make),
+                exif.get(PIL.ExifTags.Base.Model),
             )
-        )
+        ]
+    ) is not None:
+        result.append(("Camera", (camera,)))
 
     result.append(
         (

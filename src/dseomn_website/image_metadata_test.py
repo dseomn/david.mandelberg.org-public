@@ -65,6 +65,14 @@ def test_size(
             None,
         ),
         (
+            (
+                "../private/posts/2013-12-15-vancouver-and-canadian-rockies/"
+                "IMG_4439.JPG"
+            ),
+            "Camera",
+            ["Canon PowerShot S90"],
+        ),
+        (
             "../private/posts/2013-02-12-snow-photos/P1030242-raw.JPG",
             "Camera",
             ["Panasonic DMC-GH2"],
