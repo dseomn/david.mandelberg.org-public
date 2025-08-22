@@ -17,9 +17,13 @@ import markupsafe
 import PIL.ExifTags
 import PIL.Image
 import PIL.ImageFile
+import PIL.ImageOps
 import PIL.TiffImagePlugin
 
 PIL.Image.MAX_IMAGE_PIXELS = None
+
+# See https://github.com/python-pillow/Pillow/issues/9162
+PIL.ImageFile.MAXBLOCK = 512 * 1024 * 1024
 
 
 def _exif_to_fraction(
@@ -173,6 +177,9 @@ def main(
     parsed_args = parser.parse_args(args)
 
     with PIL.Image.open(parsed_args.image) as image:
+        # https://github.com/python-pillow/Pillow/discussions/9115
+        PIL.ImageOps.exif_transpose(image, in_place=True)
+
         parsed_args.metadata.write_text(
             json.dumps(
                 dict(

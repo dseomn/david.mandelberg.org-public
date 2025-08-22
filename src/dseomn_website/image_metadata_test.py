@@ -21,6 +21,15 @@ def _metadata(image_path: str, *, tmp_path: pathlib.Path) -> Any:
     "image_path,expected_width,expected_height",
     (
         ("src/dseomn_website/test-16x12.png", 16, 12),
+        (
+            # Test that EXIF orientation is used.
+            (
+                "../private/posts/2013-12-15-vancouver-and-canadian-rockies/"
+                "IMG_4439.JPG"
+            ),
+            2736,
+            3648,
+        ),
     ),
 )
 def test_size(
@@ -61,6 +70,15 @@ def test_size(
             "src/dseomn_website/test-16x12.png",
             "Resolution",
             ["16 × 12"],
+        ),
+        (
+            # Test that EXIF orientation is used.
+            (
+                "../private/posts/2013-12-15-vancouver-and-canadian-rockies/"
+                "IMG_4439.JPG"
+            ),
+            "Resolution",
+            ["2736 × 3648"],
         ),
         (
             "src/dseomn_website/test-16x12.png",
