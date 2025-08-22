@@ -172,12 +172,10 @@
              # attribute and do the rest in CSS.
              #}
             {% if media_item_details_metadata.item.metadata is not none %}
-              {% set flex_basis = (
-                (
-                  css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE_EM
-                  * media_item_details_metadata.item.metadata.width
-                  / media_item_details_metadata.item.metadata.height
-                ) | string + "em"
+              {% set flex_basis = "{:.4f}em".format(
+                css_constants.GALLERY_ITEM_MAX_BLOCK_SIZE_EM
+                * media_item_details_metadata.item.metadata.width
+                / media_item_details_metadata.item.metadata.height
               ) %}
               style="flex: 0 {{ flex_basis }};"
             {% endif %}
