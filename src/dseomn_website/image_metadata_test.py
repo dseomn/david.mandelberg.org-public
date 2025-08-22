@@ -2,8 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import functools
 import json
 import pathlib
+import tempfile
 from typing import Any
 
 import pytest
@@ -11,10 +13,12 @@ import pytest
 from dseomn_website import image_metadata
 
 
-def _metadata(image_path: str, *, tmp_path: pathlib.Path) -> Any:
-    metadata_path = tmp_path / "metadata.json"
-    image_metadata.main(args=(image_path, str(metadata_path)))
-    return json.loads(metadata_path.read_text())
+@functools.cache
+def _metadata(image_path: str) -> Any:
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        metadata_path = pathlib.Path(tmp_dir) / "metadata.json"
+        image_metadata.main(args=(image_path, str(metadata_path)))
+        return json.loads(metadata_path.read_text())
 
 
 @pytest.mark.parametrize(
@@ -36,9 +40,8 @@ def test_size(
     image_path: str,
     expected_width: int,
     expected_height: int,
-    tmp_path: pathlib.Path,
 ) -> None:
-    metadata = _metadata(image_path, tmp_path=tmp_path)
+    metadata = _metadata(image_path)
     assert metadata["width"] == expected_width
     assert metadata["height"] == expected_height
 
@@ -157,9 +160,8 @@ def test_human_readable_html(
     image_path: str,
     key: str,
     expected_values: list[str] | None,
-    tmp_path: pathlib.Path,
 ) -> None:
-    metadata = _metadata(image_path, tmp_path=tmp_path)
+    metadata = _metadata(image_path)
     human_readable_html = dict(metadata["human_readable_html"])
     # Assert no duplicate keys.
     assert len(human_readable_html) == len(metadata["human_readable_html"])
