@@ -1,0 +1,572 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "0914bb6d-05e5-4c9b-a8df-13e7fad24f2f"
+published = 2014-04-19 13:37:58-04:00
+title = "Edinburgh and London"
+tags = ["dance", "photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100487-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100489-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100491-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100492-raw-unsharp.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100493-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100495-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100499-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100500-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100502-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100521-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100525-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100545-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100549-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100556-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100558-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100562-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100563-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100566-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100569-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100572-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100573-raw.jpg"
+gallery = "2014-02-27--2014-02-28"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100579-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100591-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100594-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100599-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100618-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100623-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100647-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100648-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100649-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100650-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100651-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100653-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100656-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100660-raw.jpg"
+gallery = "2014-03-01"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100676.JPG"
+gallery = "2014-03-02"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100685-raw.jpg"
+gallery = "2014-03-02"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100695-raw.jpg"
+gallery = "2014-03-04"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100702-raw.jpg"
+gallery = "2014-03-04"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100704-raw.jpg"
+gallery = "2014-03-07"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100710-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100714-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100721-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100722-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100728-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100734-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100738-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100742-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100745-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100750-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100759-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100761-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100766-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100770-raw.jpg"
+gallery = "2014-03-08-1"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100774-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100779-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100783-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100789-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100792-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100797-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100800-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100802-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100804-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100805-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100807-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100816-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100819-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100825-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100829-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100830-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100834-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100836-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100837-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100838-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100839-raw.jpg"
+gallery = "2014-03-08-2"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100840-raw.jpg"
+gallery = "2014-03-08-3"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100844-raw.jpg"
+gallery = "2014-03-08-3"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100846-raw.jpg"
+gallery = "2014-03-08-3"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100850-raw.jpg"
+gallery = "2014-03-08-3"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100852-raw.jpg"
+gallery = "2014-03-08-3"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100856-raw.jpg"
+gallery = "2014-03-08-3"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100862-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100866-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100869-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100875-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100882-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100894-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100895-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100896-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100897-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100899-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100903-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100906-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-edinburgh-and-london/P1100913-raw.jpg"
+gallery = "2014-03-08-4"
+alt = ""
