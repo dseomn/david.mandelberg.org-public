@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "d0b1ba88-e60d-4d39-81e4-2e570c15e757"
+published = 2014-02-17 11:53:01-05:00
+title = "Adventure for Tufa"
+tags = ["photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-02-17-adventure-for-tufa/P1100482-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-02-17-adventure-for-tufa/P1100485-raw.jpg"
+gallery = "main"
+alt = ""
