@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "e30aec41-c47e-4da2-9a58-2db8aea597e8"
+published = 2014-02-01 09:56:18-05:00
+title = "Ski Dance"
+tags = ["photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-02-01-ski-dance/P1100354-raw-unsharp.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-02-01-ski-dance/P1100373-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-02-01-ski-dance/P1100376-raw-unsharp.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-02-01-ski-dance/P1100398-raw.jpg"
+gallery = "main"
+alt = ""
