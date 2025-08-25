@@ -66,6 +66,7 @@ templates = [
   "posts/2013-12-15-vancouver-and-canadian-rockies/index.html.jinja",
   "posts/2013-12-22-exploring/index.html.jinja",
   "posts/2014-02-01-ski-dance/index.html.jinja",
+  "posts/2014-02-17-horses-and-snow/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",
