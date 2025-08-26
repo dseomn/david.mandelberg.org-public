@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "67b10fb7-1c15-4aec-93b5-d5dacb27e661"
+published = 2014-04-20 20:10:34-04:00
+title = "Salisbury Beach State Reservation"
+tags = ["photos"]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-21-salisbury-beach-state-reservation/P1100934-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-21-salisbury-beach-state-reservation/P1100944-raw-unsharp.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-21-salisbury-beach-state-reservation/P1100956-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-21-salisbury-beach-state-reservation/P1100967-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-21-salisbury-beach-state-reservation/P1100986-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-21-salisbury-beach-state-reservation/P1100988-raw.jpg"
+gallery = "main"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-21-salisbury-beach-state-reservation/P1100992-raw.jpg"
+gallery = "main"
+alt = ""

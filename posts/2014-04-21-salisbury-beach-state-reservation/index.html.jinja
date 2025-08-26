@@ -1,0 +1,17 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>I met a friend at
+   <a href="http://www.mass.gov/eea/agencies/dcr/massparks/region-north/salisbury-beach-state-reservation.html">Salisbury
+   Beach State Reservation</a> to go seal spotting. We didn't see any seals, but
+   it was a grand adventure anyway.</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
