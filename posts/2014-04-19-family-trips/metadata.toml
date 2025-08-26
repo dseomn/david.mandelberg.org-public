@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+#
+# SPDX-License-Identifier: CC-BY-4.0
+
+uuid = "ad60ee7a-9757-4374-9231-088e7112670d"
+published = 2014-04-19 14:14:17-04:00
+title = "Family Trips"
+tags = ["photos"]
+comments = [
+  "549a2083-ee84-4c42-acee-5d25714c9328",
+]
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-family-trips/P1100915-raw.jpg"
+gallery = "state-line-lookout"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-family-trips/P1100918-raw.jpg"
+gallery = "state-line-lookout"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-family-trips/P1100924-raw.jpg"
+gallery = "state-line-lookout"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-family-trips/P1100926-raw.jpg"
+gallery = "palmer-arboretum"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-family-trips/P1100927-raw.jpg"
+gallery = "palmer-arboretum"
+alt = ""
+
+[[media.items]]
+type = "image"
+source = "../private/posts/2014-04-19-family-trips/P1100929-raw.jpg"
+gallery = "palmer-arboretum"
+alt = ""

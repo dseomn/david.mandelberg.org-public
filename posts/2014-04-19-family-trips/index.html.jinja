@@ -1,0 +1,20 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>Here are some photos from some recent family trips. The keychain is from a
+   <a href="http://lootours.com/">London Loo Tour</a>. I thought it should see
+   a bit more of the world.</p>
+
+  <h2>State Line Lookout (New Jersey)</h2>
+  {{ media_html.gallery("state-line-lookout") }}
+
+  <h2>Palmer Arboretum (Thornbury, Pennsylvania)</h2>
+  {{ media_html.gallery("palmer-arboretum") }}
+{% endcall %}
