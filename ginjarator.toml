@@ -71,6 +71,7 @@ templates = [
   "posts/2014-04-19-edinburgh-and-london/index.html.jinja",
   "posts/2014-04-19-family-trips/index.html.jinja",
   "posts/2014-04-21-salisbury-beach-state-reservation/index.html.jinja",
+  "posts/2014-05-04-museum-of-science-and-chinatown/index.html.jinja",
   "posts/2022-01-01-placeholder/index.html.jinja",
   "posts/2024-06-01-placeholder/index.html.jinja",
   "posts/2024-07-01-placeholder/index.html.jinja",

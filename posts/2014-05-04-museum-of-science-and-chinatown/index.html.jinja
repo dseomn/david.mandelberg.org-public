@@ -1,0 +1,16 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>I went to the <a href="http://www.mos.org/">Boston Museum of Science</a>
+   and Chinatown with some friends and the <a href="http://lootours.com/">Loo
+   Lady</a> keychain.</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
