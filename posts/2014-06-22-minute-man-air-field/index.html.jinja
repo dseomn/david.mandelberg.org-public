@@ -1,0 +1,17 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>I had a good lunch at <a href="http://www.nancysairfieldcafe.com/">Nancy's
+   Air Field Cafe</a>, then the owner of the
+   <a href="http://minutemanairfield.com/">Minute Man Air Field</a> let me into
+   the aerodrome so I could get pictures.</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
