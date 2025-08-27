@@ -1,0 +1,17 @@
+{#
+ # SPDX-FileCopyrightText: 2025 David Mandelberg <david@mandelberg.org>
+ #
+ # SPDX-License-Identifier: CC-BY-4.0
+ #}
+
+{% import "include/article.html.jinja" as article %}
+{% import "include/media_html.html.jinja" as media_html %}
+
+{% call article.post() %}
+  <p>I took some friends to see the double-triple-outhouse behind the old school
+   house on Picnic St (Boxborough, MA) and go looking for cows. (We didn't find
+   the cows, but we did find wildflowers.) Then I wandered around Delaney Flood
+   Control Site in Stow.</p>
+
+  {{ media_html.gallery("main") }}
+{% endcall %}
