@@ -362,14 +362,20 @@ class Page(Resource):
     @classmethod
     def current(cls) -> Self:
         current_template = ginjarator.api().paths.current_template
+        page: Page
         if current_template.is_relative_to("errors"):
-            return Error.load(current_template)
+            page = Error.load(current_template)
         elif current_template.is_relative_to("standalone"):
-            return Standalone.load(current_template)
+            page = Standalone.load(current_template)
         elif _template_is_post(current_template):
-            return Post.load(current_template)
+            page = Post.load(current_template)
         else:
             raise NotImplementedError(str(current_template))
+        if not isinstance(page, cls):
+            raise TypeError(
+                f"{str(current_template)!r} is not an instance of {cls}"
+            )
+        return page
 
     @classmethod
     def all(cls) -> Collection[Self]:

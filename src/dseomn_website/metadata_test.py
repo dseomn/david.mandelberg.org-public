@@ -508,6 +508,14 @@ def test_page_current_not_implemented() -> None:
             metadata.Page.current()
 
 
+def test_page_current_type_error() -> None:
+    with ginjarator.testing.api_for_scan(
+        current_template="errors/404/index.html.jinja",
+    ):
+        with pytest.raises(TypeError, match=r"instance of"):
+            metadata.Post.current()
+
+
 def test_page_all() -> None:
     with ginjarator.testing.api_for_scan():
         assert metadata.Page.all()

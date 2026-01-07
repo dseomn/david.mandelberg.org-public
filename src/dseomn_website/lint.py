@@ -24,8 +24,8 @@ def comment(fragments: str, /) -> None:
         for node in root_node.iter():
             match node:
                 case lxml.html.HtmlElement(tag=tag, attrib=attrib) if (
-                    tag in _SAFE_ATTRIBUTES_BY_TAG  # type: ignore[has-type]
-                    and not {*attrib} - _SAFE_ATTRIBUTES_BY_TAG[tag]  # type: ignore[has-type]
+                    tag in _SAFE_ATTRIBUTES_BY_TAG
+                    and not {*attrib} - _SAFE_ATTRIBUTES_BY_TAG[tag]
                 ):
                     pass
                 case _:
